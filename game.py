@@ -36,20 +36,18 @@ class Game:
                     self.grid.toggle_cell(gridX, gridY)
 
                     print(f"Clicked on cell at position ({gridX}, {gridY})")
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 2:  # Left mouse button
+                        self.grid.start_drag(*event.pos)
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 2:  # Left mouse button
+                        self.grid.stop_drag()
+
             elif event.type == pygame.MOUSEMOTION:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 self.grid.update_hover(mouse_x, mouse_y)
 
                 # Handle player movement
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT]:
-                self.player.move("left")
-            if keys[pygame.K_RIGHT]:
-                self.player.move("right")
-            if keys[pygame.K_UP]:
-                self.player.move("up")
-            if keys[pygame.K_DOWN]:
-                self.player.move("down")
 
     def update(self):
         pass
