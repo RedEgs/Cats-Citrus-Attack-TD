@@ -1,12 +1,10 @@
-import pygame, sys
+import pygame
+import sys
 from grid import *
 from player import *
 
-FPS = 60 # Set Constant FPS
-
+FPS = 60  # Set Constant FPS
 cellSize = 20
-
-
 
 
 class Game:
@@ -15,7 +13,7 @@ class Game:
         self.clock = clock
         self.width, self.height = self.screen.get_size()
         self.grid = Grid(50, 50, 20)
-        self.player = Player()
+        # self.player = Player()
 
     def run(self):
         self.playing = True
@@ -26,23 +24,23 @@ class Game:
             self.draw()
 
     def events(self):
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: # Quit Event
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # Quit Event
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
-                    mouseX, mouseY = pygame.mouse.get_pos() 
+                    mouseX, mouseY = pygame.mouse.get_pos()
 
                     gridX, gridY = positionOnGrid(mouseX, mouseY, cellSize)
                     self.grid.toggle_cell(gridX, gridY)
 
-                    print(f"Clicked on cell at position ({gridX}, {gridY})") 
-            elif event.type == pygame.MOUSEMOTION: 
+                    print(f"Clicked on cell at position ({gridX}, {gridY})")
+            elif event.type == pygame.MOUSEMOTION:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 self.grid.update_hover(mouse_x, mouse_y)
-            
-                        # Handle player movement
+
+                # Handle player movement
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
                 self.player.move("left")
@@ -53,24 +51,12 @@ class Game:
             if keys[pygame.K_DOWN]:
                 self.player.move("down")
 
-
-
-
-
-
-
     def update(self):
         pass
 
     def draw(self):
         self.screen.fill((0, 0, 0))
 
-
         self.grid.draw(self.screen)
-        self.player.draw(self.screen)
 
         pygame.display.update()
-
-
-
-
