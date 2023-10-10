@@ -29,7 +29,7 @@ class GridDebug:
         self.text_color = (255, 255, 255, 20)
 
     def update(self, x, y, is_selected):
-        self.debug_text = f"Grid Coords: {x},{y}, Selected: {is_selected}"
+        self.debug_text = f"Grid Coords: {x},{y} Selected: {is_selected}"
 
     def draw(self):
         debug_text_render = self.font.render(
