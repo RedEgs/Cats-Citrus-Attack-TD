@@ -1,6 +1,7 @@
 import pygame
 import sys
 from grid import *
+from camera import *
 from player import *
 from debugs import *
 
@@ -17,6 +18,9 @@ class Game:
 
         self.fpsCounter = FPSCounter(screen, clock)
         self.gridDebug = GridDebug(screen)
+
+        self.camera = Camera(screen)
+        self.player = Player(screen)
 
     def run(self):
         self.playing = True
@@ -43,10 +47,20 @@ class Game:
                 self.grid.update_hover(mouseX, mouseY)
                 self.gridDebug.update(
                     gridX, gridY, self.grid.get_hovered_cell(mouseX, mouseY).selected)
+            elif event.type == pygame.KEYDOWN:
+                if event.key in self.player.keys:
+                    self.player.keys[event.key] = True
 
-                # Handle player movement
+            if event.type == pygame.KEYUP:
+                if event.key in self.player.keys:
+                    self.player.keys[event.key] = False
+
     def update(self):
         self.fpsCounter.update()
+        self.player.update()
+        self.player.handle_input()
+
+        self.camera.update(self.player)
 
         pass
 
@@ -59,6 +73,15 @@ class Game:
         # Debugging
         self.fpsCounter.draw()
         self.gridDebug.draw()
+
+        # Camera Stuff
+        player_position = self.camera.apply(self.player)
+        self.player.x, self.player.y = player_position.topleft
+        self.player.draw()
+
+        # TODO - FIX THE CAMERA. MAKE THE CAMERA FOLLOW THE PLAYER
+
+        # Player
 
         # Update The Display
         pygame.display.update()
