@@ -1,5 +1,5 @@
-import pygame.math as pma
 import pygame
+import pygame.math as pma
 
 
 class Player(pygame.sprite.Sprite):
@@ -12,7 +12,9 @@ class Player(pygame.sprite.Sprite):
         self.velY = 0
 
         self.directionVector = pma.Vector2((0, -1))
-        self.velocity = 3
+        self.velocity = 0  # Initial velocity
+        self.max_velocity = 3  # Maximum speed
+        self.acceleration = 0.1  # Acceleration rate
 
         self.color = (250, 120, 60)
 
@@ -35,18 +37,26 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         keys = pygame.key.get_pressed()
 
+        # Reset velocity to 0
         self.velX = 0
         self.velY = 0
 
+        # Update velocity using lerping
         if keys[pygame.K_w]:
             self.velY = -self.velocity
-        if keys[pygame.K_s]:
+        elif keys[pygame.K_s]:
             self.velY = self.velocity
         if keys[pygame.K_a]:
             self.velX = -self.velocity
-        if keys[pygame.K_d]:
+        elif keys[pygame.K_d]:
             self.velX = self.velocity
 
+        # Lerping (smoothly increase velocity)
+        target_velocity = self.max_velocity if any(
+            [keys[pygame.K_w], keys[pygame.K_s], keys[pygame.K_a], keys[pygame.K_d]]) else 0
+        self.velocity += (target_velocity - self.velocity) * self.acceleration
+
+        # Calculate movement based on velocity
         self.rect.x += self.velX
         self.rect.y += self.velY
 
