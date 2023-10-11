@@ -1,33 +1,53 @@
 import pygame.math as pma
 import pygame
 
+
 class Player(pygame.sprite.Sprite):
-    def __init__(self, startingVector, screen):
+    def __init__(self, x, y, screen):
         pygame.sprite.Sprite.__init__(self)
-        self.currentVector = pma.Vector2(startingVector)
-        self.velocityVector = pma.Vector2()
+
+        self.x = int(x)
+        self.y = int(y)
+        self.velX = 0
+        self.velY = 0
+
         self.directionVector = pma.Vector2((0, -1))
-        self.velocity = 5
+        self.velocity = 3
 
         self.color = (250, 120, 60)
 
         self.originalImage = pygame.image.load("player.png")
         self.image = self.originalImage
-        self.rect = self.image.get_rect(center=self.currentVector)
+        self.rect = self.image.get_rect(center=(self.x, self.y))
         self.screen = screen
 
         self.left_pressed = False
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
-        
+
     def point_at(self, x, y):
         self.direction = pygame.math.Vector2(x, y) - self.rect.center
         angle = self.direction.angle_to((0, -1))
         self.image = pygame.transform.rotate(self.originalImage, angle)
         self.rect = self.image.get_rect(center=self.rect.center)
 
+    def move(self):
+        keys = pygame.key.get_pressed()
 
+        self.velX = 0
+        self.velY = 0
 
+        if keys[pygame.K_w]:
+            self.velY = -self.velocity
+        if keys[pygame.K_s]:
+            self.velY = self.velocity
+        if keys[pygame.K_a]:
+            self.velX = -self.velocity
+        if keys[pygame.K_d]:
+            self.velX = self.velocity
 
+        self.rect.x += self.velX
+        self.rect.y += self.velY
 
+        self.point_at(*pygame.mouse.get_pos())

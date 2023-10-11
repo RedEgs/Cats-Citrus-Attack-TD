@@ -1,16 +1,3 @@
 {
-    "cSpell.diagnosticLevel": "Hint",
-    "factorio.versions": [
-        {
-            "name": "Steam",
-            "factorioPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Factorio\\bin\\x64\\factorio.exe",
-            "active": true
-        }
-    ],
-    "Lua.workspace.library": [
-        "c:\\Program Files (x86)\\Steam\\steamapps\\common\\Factorio\\data"
-    ],
-    "Lua.workspace.userThirdParty": [
-        "c:\\Users\\User\\AppData\\Roaming\\Code\\User\\workspaceStorage\\6dde6823a63fb328c4fc48a593ef98eb\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
-    ],
+    "cSpell.diagnosticLevel": "Hint"
 }

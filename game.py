@@ -1,4 +1,5 @@
-import pygame, sys
+import pygame
+import sys
 import pygame.math as pma
 from grid import *
 from camera import *
@@ -7,7 +8,6 @@ from debugs import *
 
 FPS = 60  # Set Constant FPS
 cellSize = 20
-
 
 
 class Game:
@@ -20,10 +20,9 @@ class Game:
         self.fpsCounter = FPSCounter(screen, clock)
         self.gridDebug = GridDebug(screen)
 
-        
-        self.player = Player(pma.Vector2(13, 13), screen)
+        self.player = Player(13, 13, screen)
         self.allSprites = pygame.sprite.Group(self.player)
-        
+
     def run(self):
         self.playing = True
         while self.playing:
@@ -47,21 +46,13 @@ class Game:
 
                     print(f"Clicked on cell at position ({gridX}, {gridY})")
             elif event.type == pygame.MOUSEMOTION:
-
-                self.player.point_at(*event.pos)
-
                 self.grid.update_hover(mouseX, mouseY)
                 self.gridDebug.update(
                     gridX, gridY, self.grid.get_hovered_cell(mouseX, mouseY).selected)
-            
-            self.player.move(keys[pygame.K_d]-keys[pygame.K_a], keys[pygame.K_s]-keys[pygame.K_w])
-            self.player.point_at(*pygame.mouse.get_pos())
-
-
 
     def update(self):
         self.fpsCounter.update()
-        self.player.update()
+        self.player.move()
         pass
 
     def draw(self):
@@ -72,7 +63,7 @@ class Game:
 
         # Debugging
         self.fpsCounter.draw()
-        #self.gridDebug.draw()
+        # self.gridDebug.draw()
 
         # Player Stuff
         self.allSprites.draw(self.screen)
