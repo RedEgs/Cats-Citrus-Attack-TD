@@ -1,41 +1,54 @@
-import pygame, sys
-import pygame.math as pma
-from grid import *
-from camera import *
-from player import *
+import pygame
+import pygame_gui
+import sys
+from map import Map
 from debugs import *
+import pytweening as pt
+from grid import positionOnGrid  # Add this line to import positionOnGrid
 
 FPS = 60  # Set Constant FPS
 cellSize = 20
-
-
 
 class Game:
     def __init__(self, screen, clock):
         self.screen = screen
         self.clock = clock
         self.width, self.height = self.screen.get_size()
-        self.grid = Grid(50, 50, 20)
+
+        # Load the map from a file (adjust the filename, width, and height accordingly)
+        self.map = Map('map.txt', self.width // cellSize, self.height // cellSize)
 
         self.fpsCounter = FPSCounter(screen, clock)
-        self.gridDebug = GridDebug(screen)
 
-        
-        self.player = Player(pma.Vector2(13, 13), screen)
-        self.allSprites = pygame.sprite.Group(self.player)
-        
+           # Initialize Pygame GUI manager
+        self.manager = pygame_gui.UIManager((self.width, self.height))
+
+        # Create a button to toggle the menu
+        self.menu_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((10, 10), (100, 50)),
+            text='Toggle Menu',
+            object_id="menuToggle",
+            manager=self.manager
+        )
+
+        # Create a UI container for the side menu
+        self.menu_container = pygame_gui.elements.UIPanel(
+            relative_rect=pygame.Rect((200, 0), (200, self.height)),
+            manager=self.manager
+        )
+
+
     def run(self):
         self.playing = True
         while self.playing:
-            self.clock.tick(FPS)
+            time_delta = self.clock.tick(FPS) / 1000.0
             self.events()
-            self.update()
+            self.update(time_delta)
             self.draw()
 
     def events(self):
         mouseX, mouseY = pygame.mouse.get_pos()
         gridX, gridY = positionOnGrid(mouseX, mouseY, cellSize)
-        keys = pygame.key.get_pressed()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Quit Event
@@ -43,41 +56,44 @@ class Game:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
-                    self.grid.toggle_cell(gridX, gridY)
-
+                    self.map.grid.toggle_cell(gridX, gridY)
                     print(f"Clicked on cell at position ({gridX}, {gridY})")
             elif event.type == pygame.MOUSEMOTION:
+                self.map.grid.update_hover(mouseX, mouseY)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    # Save the map when Ctrl + S is pressed
+                    self.map.save_map('map.txt')
+                    print("Saved Map")
+            elif event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_object_id == "menuToggle":
+                    print("Toggle Menu")
+                    new_button_position = (500, 40)  # Replace with the desired position
+                    self.menu_button.relative_rect.topleft = new_button_position
 
-                self.player.point_at(*event.pos)
 
-                self.grid.update_hover(mouseX, mouseY)
-                self.gridDebug.update(
-                    gridX, gridY, self.grid.get_hovered_cell(mouseX, mouseY).selected)
-            
-            self.player.move(keys[pygame.K_d]-keys[pygame.K_a], keys[pygame.K_s]-keys[pygame.K_w])
-            self.player.point_at(*pygame.mouse.get_pos())
+            # Pass events to Pygame GUI manager
+            self.manager.process_events(event)
 
-
-
-    def update(self):
+    def update(self, time_delta):
         self.fpsCounter.update()
-        self.player.update()
-        pass
+
+        # Update Pygame GUI manager
+        self.manager.update(time_delta)
+
 
     def draw(self):
         self.screen.fill((0, 0, 0))
 
-        # Draw the Grid
-        self.grid.draw(self.screen)
+        # Draw the Grid from the loaded map
+        self.map.grid.draw(self.screen)
 
         # Debugging
         self.fpsCounter.draw()
-        #self.gridDebug.draw()
 
-        # Player Stuff
-        self.allSprites.draw(self.screen)
-
-        # TODO - FIX THE CAMERA. MAKE THE CAMERA FOLLOW THE PLAYER
+        # Draw the GUI using Pygame GUI manager
+        self.manager.draw_ui(self.screen)
 
         # Update The Display
         pygame.display.update()
+

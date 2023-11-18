@@ -1,10 +1,9 @@
 # grid.py
-
 import pygame
 
 DefaultColor = (38, 41, 46)
 GridColor = (50, 54, 61)
-
+HighlightColor = (80, 87, 97)
 
 class GridCell:
     def __init__(self, x, y, cell_size):
@@ -20,7 +19,7 @@ class GridCell:
             if self.selected:
                 color = (0, 255, 0)  # Green if selected
             elif self.hovered:
-                color = (255, 0, 0)  # Red if hovered
+                color = HighlightColor  # Use HighlightColor if hovered
             else:
                 color = DefaultColor  # White otherwise
 
@@ -60,7 +59,12 @@ class Grid:
                              (self.width * self.cell_size, y))
 
     def toggle_cell(self, x, y):
-        self.grid[y][x].toggle_select()
+        if 0 <= x < self.height and 0 <= y < self.width:
+            print(f"x: {x}")
+            print(f"y: {y}")
+            self.grid[y][x].toggle_select()
+        else:
+            print(f"Invalid cell coordinates: ({x}, {y})")
 
     def update_hover(self, mouse_x, mouse_y):
         for row in self.grid:

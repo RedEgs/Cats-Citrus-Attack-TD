@@ -17,7 +17,7 @@ def main():
     #* Window Constants
     SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600 # Window Height Constants
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # Create the window height and width
-    pygame.display.set_caption("Manufactorio: Satisfaction Edition") # Set Window Title
+    pygame.display.set_caption("Cats Citrus Attack") # Set Window Title
 
     game = Game(SCREEN, clock)
 
