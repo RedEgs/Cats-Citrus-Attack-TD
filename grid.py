@@ -1,36 +1,28 @@
 # grid.py
 import pygame
+from pygame import math
 
 DefaultColor = (38, 41, 46)
-GridColor = (50, 54, 61)
 HighlightColor = (80, 87, 97)
+
 
 class GridCell:
     def __init__(self, x, y, cell_size):
-        self.x = x  # x position in grid
-        self.y = y  # y position in grid
+        self.x = x
+        self.y = y
         self.cell_size = cell_size
-        self.selected = False  # Whether the cell is selected
-        self.hovered = False   # Whether the mouse is hovering over the cell
-        self.visible = True    # Whether the cell is visible
+        self.hovered = False
+        self.visible = True
 
-    def draw(self, screen):
+    def draw(self, screen, toggle):
         if self.visible:
-            if self.selected:
-                color = (0, 255, 0)  # Green if selected
-            elif self.hovered:
-                color = HighlightColor  # Use HighlightColor if hovered
+            if self.hovered & toggle:
+                color = HighlightColor
             else:
-                color = DefaultColor  # White otherwise
+                color = DefaultColor
 
-            # Draw a thin border (line) around the cell
             pygame.draw.rect(screen, color, (self.x * self.cell_size,
                              self.y * self.cell_size, self.cell_size, self.cell_size))
-            pygame.draw.rect(screen, GridColor, (self.x * self.cell_size,
-                             self.y * self.cell_size, self.cell_size, self.cell_size), 1)
-
-    def toggle_select(self):
-        self.selected = not self.selected
 
     def is_hovered(self, mouse_x, mouse_y):
         cell_x, cell_y = self.x * self.cell_size, self.y * self.cell_size
@@ -38,45 +30,46 @@ class GridCell:
 
 
 class Grid:
-    def __init__(self, width, height, cell_size):
-        self.width = width
-        self.height = height
+    def __init__(self, cell_size, render_width, render_height):
         self.cell_size = cell_size
+        self.render_width = render_width
+        self.render_height = render_height
         self.grid = [[GridCell(x, y, cell_size)
-                      for x in range(width)] for y in range(height)]
+                      for x in range(render_width)] for y in range(render_height)]
 
     def draw(self, screen):
         for row in self.grid:
             for cell in row:
-                cell.draw(screen)
+                if cell.x < self.render_width and cell.y < self.render_height:
+                    cell.draw(screen)
 
-        # Draw grid lines
-        for x in range(0, self.width * self.cell_size, self.cell_size):
-            pygame.draw.line(screen, GridColor, (x, 0),
-                             (x, self.height * self.cell_size))
-        for y in range(0, self.height * self.cell_size, self.cell_size):
-            pygame.draw.line(screen, GridColor, (0, y),
-                             (self.width * self.cell_size, y))
-
-    def toggle_cell(self, x, y):
-        if 0 <= x < self.height and 0 <= y < self.width:
-            print(f"x: {x}")
-            print(f"y: {y}")
-            self.grid[y][x].toggle_select()
+    def update_hover(self, mouse_x, mouse_y, grid_overlay_enabled=True):
+        if grid_overlay_enabled:
+            for row in self.grid:
+                for cell in row:
+                    if cell.x < self.render_width and cell.y < self.render_height:
+                        cell.hovered = cell.is_hovered(mouse_x, mouse_y)
         else:
-            print(f"Invalid cell coordinates: ({x}, {y})")
-
-    def update_hover(self, mouse_x, mouse_y):
-        for row in self.grid:
-            for cell in row:
-                cell.hovered = cell.is_hovered(mouse_x, mouse_y)
+            # Disable hovering when grid overlay is disabled
+            for row in self.grid:
+                for cell in row:
+                    cell.hovered = False
 
     def get_hovered_cell(self, mouse_x, mouse_y):
         for row in self.grid:
             for cell in row:
                 if cell.is_hovered(mouse_x, mouse_y):
                     return cell
-        return None  # Return None if no cell is hovered
+        return None
+
+    def draw_within_map_bounds(self, screen, map_width, map_height, toggle):
+        for i in range(min(self.render_height, map_height)):
+            for j in range(min(self.render_width, map_width)):
+                cell = self.grid[i][j]
+                cell.draw(screen, toggle)
+
+    def get_grid_res(self):
+        return math.Vector2(self.render_width * self.cell_size, self.render_height * self.cell_size)
 
 
 def positionOnGrid(mouseX, mouseY, cellSize):

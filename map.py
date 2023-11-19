@@ -1,44 +1,55 @@
 # map.py
 import pygame
-from grid import Grid
+from grid import Grid, positionOnGrid
+import ast
 
 cellSize = 20
+COORDINATE_TOLERANCE = 5  # Adjust this value based on your needs
 
-# map.py
-import pygame
-from grid import Grid
 
 class Map:
-    def __init__(self, filename, width, height):
-        self.grid = self.load_map(filename, width, height)
+    def __init__(self, filename, render_width, render_height):
+        self.grid, self.map_mask = self.load_map(
+            filename, render_width, render_height)
+        self.waypoints = []
 
-    def load_map(self, filename, width, height):
+    def load_map(self, filename, render_width, render_height):
+        map_image = pygame.image.load(filename).convert_alpha()
+        map_mask_image = pygame.image.load("mask.png").convert_alpha()
+
+        map_mask_rect = map_mask_image.get_rect()
+        map_mask = pygame.mask.from_surface(map_mask_image)
+
+        return map_image, map_mask
+
+    def load_waypoints(self, filename):
         with open(filename, 'r') as file:
-            lines = file.readlines()
-            map_width = max(len(line.strip()) for line in lines)  # Find the maximum length among all lines
-            map_height = len(lines)
+            waypoints_str = file.read()
+            self.waypoints = ast.literal_eval(waypoints_str)
 
-            map_grid = Grid(width, height, cellSize)
+    def draw(self, screen):
+        screen.blit(self.grid, (0, 0))
 
-            for i in range(map_height):
-                # Pad the line with zeros if its length is less than the maximum length
-                padded_line = lines[i].strip().ljust(map_width, '0')
-
-                for j, char in enumerate(padded_line):
-                    cell_type = int(char)
-                    if cell_type == 1:
-                        map_grid.toggle_cell(j, i)
-
-            # Fill the rest of the grid with default squares
-            for i in range(map_height, height):
-                for j in range(map_width):
-                    map_grid.toggle_cell(j, i)
-
-        return map_grid
-    
     def save_map(self, filename):
         with open(filename, 'w') as file:
-            for row in self.grid.grid:
-                # Convert each cell's selected state to 1 or 0 and join them into a string
-                line = ''.join(str(int(cell.selected)) for cell in row)
-                file.write(line + '\n')
+            file.write("[\n")
+            for waypoint in self.waypoints:
+                file.write(f"    {waypoint},\n")
+            file.write("]\n")
+
+    def add_waypoint(self, coordinates):
+        self.waypoints.append(coordinates)
+
+    def remove_waypoint(self, coordinates):
+        # Remove waypoints that are within the tolerance range
+        self.waypoints = [wp for wp in self.waypoints if self.distance_squared(
+            coordinates, wp) > COORDINATE_TOLERANCE**2]
+
+    def distance_squared(self, point1, point2):
+        return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2
+
+    def get_rounded_coordinates(self, mouse_x, mouse_y):
+        gridX, gridY = positionOnGrid(mouse_x, mouse_y, 1)
+        rounded_x = round(gridX * 1)
+        rounded_y = round(gridY * 1)
+        return rounded_x, rounded_y
