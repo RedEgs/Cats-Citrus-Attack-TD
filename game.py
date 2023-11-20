@@ -34,7 +34,7 @@ class Game:
         self.grid_overlay = GridOverlay(self.grid)
         self.path_overlay = PathOverlay(self.map.waypoints)
         self.mousePreview = MousePreviewOverlay(
-            (32, 32), (255, 255, 255), 100)
+            (48, 48), "tower.png", 100)
 
         self.show_debugs = True
         self.grid_enabled = True
@@ -172,7 +172,6 @@ class Game:
             self.map_mask_surface = self.map_mask.to_surface()
             self.screen.blit(self.map_mask_surface, (0, 0))
             self.path_overlay.draw(self.screen)
-            self.mousePreview.draw(self.screen)
 
         if self.grid_enabled:
             self.grid_overlay.draw(self.screen)
@@ -181,6 +180,7 @@ class Game:
         self.tower_group.draw(self.screen)
 
         self.manager.draw_ui(self.screen)
+        self.mousePreview.draw(self.screen, self.tower_group, self.map_mask)
 
         # Update The Display
         pygame.display.update()

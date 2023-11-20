@@ -125,11 +125,10 @@ class EditorModeOverlay:
 
 
 class MousePreviewOverlay(pygame.sprite.Sprite):
-    def __init__(self, rect_size, color, alpha):
+    def __init__(self, rect_size, image_path, alpha):
         pygame.sprite.Sprite.__init__(self)
 
         self.width, self.height = rect_size
-        self.color = color
         self.alpha = alpha
 
         # Create a rect attribute
@@ -137,11 +136,10 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
         self.rect_x = 0
         self.rect_y = 0
 
-        # Create an image attribute
-        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0, 0))  # Make the surface transparent initially
-        pygame.draw.rect(self.image, (self.color[0], self.color[1],
-                                      self.color[2], self.alpha), (0, 0, self.width, self.height))
+        # Load the image
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(
+            self.image, (self.width, self.height))
 
         # Set the rect position based on the initial values
         self.rect.topleft = (self.rect_x, self.rect_y)
@@ -153,8 +151,45 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
         # Update the rect's position
         self.rect.topleft = (self.rect_x, self.rect_y)
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect.topleft)
+    def check_bounds(self):
+        if pygame.mouse.get_pos()[0] <= 600 and pygame.mouse.get_pos()[1] <= 600:
+            return True
+
+        return False
+
+    def check_conditions(self, tower_group, mask):
+        default_color = (255, 0, 0)
+
+        # Create a copy of the image to avoid modifying the original
+        tinted_image = self.image.copy()
+
+        # Check collision with other towers
+        if not pygame.sprite.spritecollideany(self, tower_group):
+
+            # Get the rect of the preview tower
+            preview_rect = self.get_rect()
+
+            # Create a mask for the preview tower
+            preview_mask = pygame.mask.from_surface(self.image)
+
+            # Check collision with the mask
+            if mask.overlap(preview_mask, (int(preview_rect.x), int(preview_rect.y))) is None:
+                # Check if the tower position exceeds the specified limits
+                if pygame.mouse.get_pos()[0] <= 600 and pygame.mouse.get_pos()[1] <= 600:
+                    default_color = (0, 255, 255)
+
+                    tinted_image.fill((*default_color, self.alpha),
+                                      special_flags=pygame.BLEND_RGBA_MULT)
+
+        tinted_image.fill((*default_color, self.alpha),
+                          special_flags=pygame.BLEND_RGBA_MULT)
+
+        return tinted_image
+
+    def draw(self, screen, tower_group, mask):
+        if self.check_bounds():
+            tinted_image = self.check_conditions(tower_group, mask)
+            screen.blit(tinted_image, self.rect.topleft)
 
     def get_rect(self):
         return self.rect

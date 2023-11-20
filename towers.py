@@ -10,6 +10,9 @@ def rect_to_surface(rect):
 
 
 def placeTower(tower_group, preview_tower, mask):
+    max_width = 600
+    max_height = 600
+
     new_tower = Tower()
 
     # Check collision with other towers
@@ -23,9 +26,13 @@ def placeTower(tower_group, preview_tower, mask):
 
         # Check collision with the mask
         if mask.overlap(preview_mask, (int(preview_rect.x), int(preview_rect.y))) is None:
-            new_tower.placeTower(preview_rect.center)
-            tower_group.add(new_tower)
-            return new_tower  # Return the placed tower
+            # Check if the tower position exceeds the specified limits
+            if pg.mouse.get_pos()[0] <= max_width and pg.mouse.get_pos()[1] <= max_height:
+                new_tower.placeTower(preview_rect.center)
+                tower_group.add(new_tower)
+                return new_tower  # Return the placed tower
+            else:
+                print("Tower placed outside of the 600x600 limits.")
 
 
 class Tower(pg.sprite.Sprite):
