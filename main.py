@@ -1,6 +1,6 @@
 import pygame, sys
 from game import *
-from grid import *
+from menu import *
 
 #! End of Imports
 
@@ -17,11 +17,22 @@ def main():
     #* Window Constants
     SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600 # Window Height Constants
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # Create the window height and width
-    pygame.display.set_caption("Cats Citrus Attack") # Set Window Title
+    pygame.display.set_caption("Citrus Cats TD") # Set Window Title
 
+    menu = Menu(SCREEN, clock)
     game = Game(SCREEN, clock)
+    
+
 
     while running:
+
+        menu.run()
+
+
+
+
+
+
 
         # Menu Goes here
 
