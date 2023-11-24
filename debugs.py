@@ -176,7 +176,7 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
             if mask.overlap(preview_mask, (int(preview_rect.x), int(preview_rect.y))) is None:
                 # Check if the tower position exceeds the specified limits
                 if pygame.mouse.get_pos()[0] <= 600 and pygame.mouse.get_pos()[1] <= 600:
-                    default_color = (0, 255, 255)
+                    default_color = (0, 255, 0)
 
                     tinted_image.fill((*default_color, self.alpha),
                                       special_flags=pygame.BLEND_RGBA_MULT)

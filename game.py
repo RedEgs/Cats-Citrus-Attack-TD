@@ -34,7 +34,7 @@ class Game:
         self.grid_overlay = GridOverlay(self.grid)
         self.path_overlay = PathOverlay(self.map.waypoints)
         self.mousePreview = MousePreviewOverlay(
-            (48, 48), "tower.png", 100)
+            (48, 48), "tower.png", 200)
 
         self.show_debugs = True
         self.grid_enabled = True
