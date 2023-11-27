@@ -14,7 +14,7 @@ cellSize = 20
 
 
 class Game(Scene):
-    def __init__(self, screen, scene_director, clock):
+    def __init__(self, screen, scene_director):
         super().__init__(screen, scene_director)
         self.clock = clock
         self.screen = screen
