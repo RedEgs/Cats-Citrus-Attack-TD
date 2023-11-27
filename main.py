@@ -1,46 +1,55 @@
-import pygame, sys
-from game import *
+import pygame
+import sys
+
+from scenes import *
 from menu import *
+from game import *
+from utils import *
+import pytweening
 
 #! End of Imports
 
 
+class Main:
+    def __init__(self):
+        pygame.init()  # Initialize Pygame
+        pygame.mixer.init()
 
-def main():
-    pygame.init() # Initialize Pygame
-    pygame.mixer.init()
-    clock = pygame.time.Clock()
+        FPS = 60
+        self.clock = pygame.time.Clock()
 
-    running = True
-    playing = True
+        SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600  # Window Height Constants
+        self.SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Citrus Cats TD")  # Set Window Title
+        icon = pygame.image.load("ICO.png")
+        pygame.display.set_icon(icon)
 
-    #* Window Constants
-    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600 # Window Height Constants
-    SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # Create the window height and width
-    pygame.display.set_caption("Citrus Cats TD") # Set Window Title
+        self.SceneDirector = SceneDirector("main_menu")
 
-    menu = Menu(SCREEN, clock)
-    game = Game(SCREEN, clock)
-    
+        self.main_menu = Menu(self.SCREEN, self.SceneDirector)
+        self.debug_scene = Game(self.SCREEN, self.SceneDirector, self.clock)
 
+        self.states = {"main_menu": self.main_menu,
+                       "debug_scene": self.debug_scene}
 
-    while running:
+    def run(self):
+        while True:
+            delta_time = self.clock.tick(FPS) / 1000.0
+            self.events()
+            self.update()
+            self.draw()
 
-        menu.run()
+            self.clock.tick(FPS)
 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
+            self.states[self.SceneDirector.get_scene()].run(event)
+            pygame.display.flip()
 
-
-
-
-
-        # Menu Goes here
-
-        while playing:
-
-            # Game Loop Here
-
-            game.run()
 
 if __name__ == "__main__":
-    main()
+    main = Main()
+    main.run()

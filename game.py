@@ -1,6 +1,7 @@
 # game.py
 import pygame
 import sys
+from scenes import *
 from map import Map
 from debugs import *
 from grid import positionOnGrid, Grid, GridCell
@@ -12,10 +13,14 @@ FPS = 60
 cellSize = 20
 
 
-class Game:
-    def __init__(self, screen, clock):
-        self.screen = screen
+class Game(Scene):
+    def __init__(self, screen, scene_director, clock):
+        super().__init__(screen, scene_director)
         self.clock = clock
+        self.screen = screen
+
+        self.scene_director = scene_director
+
         self.width, self.height = self.screen.get_size()
 
         self.render_size = 30
@@ -67,21 +72,16 @@ class Game:
         self.enemyOverlay = EnemyOverlay(self.manager, len(self.enemy_group))
         self.preview_tower = self.mousePreview
 
-    def run(self):
-        self.playing = True
-        while self.playing:
-            time_delta = self.clock.tick(FPS) / 1000.0
-            self.events()
-            self.update(time_delta)
-            self.draw()
-            self.gameplay()
+    def run(self, event):
+        time_delta = self.clock.tick(FPS) / 1000.0
+        self.events(event)
+        self.update(time_delta)
+        self.draw()
+        self.gameplay()
 
-    def events(self):
+    def events(self, event):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     mouseX, mouseY = pygame.mouse.get_pos()
                     gridX, gridY = positionOnGrid(mouseX, mouseY, cellSize)
