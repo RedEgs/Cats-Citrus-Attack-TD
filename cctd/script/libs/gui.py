@@ -1,34 +1,83 @@
-import pygame
-import pygame_gui
+import pytweening, pygame, sys, os
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
+resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 
-class Sidebar:
-    def __init__(self, manager):
-        self.manager = manager
-        self.width = 200  # Adjust the width as needed
-        self.height = 600  # Adjust the height as needed
+from ..libs.utils import *
+from ..libs.scenes import *
+from ..libs.transitions import *
+class Button:
+    def __init__(self, x, y, image_off_path, image_on_path, on_click):
+        self.image_off_path = image_off_path
+        self.image_on_path = image_on_path
+        self.on_click = on_click
+        self.tween_target_pos = None
+        self.tween_pos_duration = 0
+        self.tween_pos_delay = 0
+        self.tween_pos_function = None
+        self.tween_pos_clock = 0
+        self.state = "off"
+        self.load_images()
 
-        # Create a panel for the sidebar
-        self.sidebar_panel = pygame_gui.elements.UIPanel(
-            pygame.Rect((800, 0), (self.width, self.height)),
-            starting_height=1,
-            manager=self.manager
-        )
+        # Set the initial rect alignment to the center of the image
+        self.rect = self.image_off.get_rect(center=(x, y))
 
-        # Add any UI elements you want to the sidebar_panel
-        # For example, you can add buttons, labels, etc.
-        # Example Button:
-        self.example_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((10, 10), (180, 30)),
-            text='Click me!',
-            manager=self.manager,
-            container=self.sidebar_panel
-        )
-
-    def update(self, time_delta):
-        # Add any updates if needed
-        pass
+    def load_images(self):
+        self.image_off = load_image(self.image_off_path)
+        self.image_on = load_image(self.image_on_path)
 
     def draw(self, screen):
-        # Draw any additional graphics if needed
-        pass
+        image = self.image_on if self.state == "on" else self.image_off
+        screen.blit(image, self.rect)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                self.state = "on"
+
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if self.state == "on":
+                self.state = "off"
+                self.on_click()
+
+    def tween_pos(self, target, duration_sec, delay_sec=0, tweening_function=easeInOutQuad):
+        self.tween_target_pos = target
+        # Assuming 60 frames per second
+        self.tween_pos_duration = int(duration_sec * 60)
+        self.tween_pos_delay = int(delay_sec * 60)
+        self.tween_pos_function = tweening_function
+        self.tween_pos_clock = 0
+
+    def update(self):
+        if self.tween_target_pos is not None:
+            self.update_tween('pos')
+
+    def update_tween(self, tween_type):
+        tween_target = getattr(self, f'tween_target_{tween_type}')
+        tween_duration = getattr(self, f'tween_{tween_type}_duration', 0)
+        tween_delay = getattr(self, f'tween_{tween_type}_delay', 0)
+        tween_function = getattr(self, f'tween_{tween_type}_function', None)
+        tween_clock = getattr(self, f'tween_{tween_type}_clock', 0)
+
+        if tween_delay > 0:
+            setattr(self, f'tween_{tween_type}_delay', tween_delay - 1)
+        else:
+            setattr(self, f'tween_{tween_type}_clock', tween_clock + 1)
+            if tween_duration > 0 and tween_clock <= tween_duration:
+                progress = tween_clock / tween_duration
+                eased_progress = tween_function(progress)
+
+                if tween_type == 'pos':
+                    new_x = int(
+                        self.rect.centerx + (tween_target[0] - self.rect.centerx) * eased_progress)
+                    new_y = int(
+                        self.rect.centery + (tween_target[1] - self.rect.centery) * eased_progress)
+
+                    self.rect.center = (new_x, new_y)
+            else:
+                setattr(self, f'tween_target_{tween_type}', None)
+                setattr(self, f'tween_{tween_type}_clock', 0)
+                setattr(self, f'tween_{tween_type}_duration', 0)
+                setattr(self, f'tween_{tween_type}_delay', 0)
+                setattr(self, f'tween_{tween_type}_function', None)
+

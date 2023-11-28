@@ -1,14 +1,14 @@
-# map.py
-import pygame
-from grid import Grid, positionOnGrid
-import ast
+import pytweening, pygame, sys, os
 
-cellSize = 20
+current_dir = os.path.dirname(os.path.realpath(__file__))
+resources_dir = os.path.join(current_dir, '..', '..', 'resources')
+
+from ..libs.scenes import *
+
 COORDINATE_TOLERANCE = 5  # Adjust this value based on your needs
 
-
 class Map:
-    def __init__(self, filename, render_width, render_height):
+    def __init__(self, filepath, render_width, render_height):
         self.grid, self.map_mask = self.load_map(
             filename, render_width, render_height)
         self.waypoints = []

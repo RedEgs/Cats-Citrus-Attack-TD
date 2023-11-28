@@ -1,31 +1,84 @@
-# game.py
-import pygame
-import sys
-from scenes import *
-from map import Map
-from debugs import *
-from grid import positionOnGrid, Grid, GridCell
-from enemy import Enemy
-from towers import Tower, placeTower
-import pygame_gui as pygui
+import pytweening, pygame, sys, os
 
-FPS = 60
-cellSize = 20
+current_dir = os.path.dirname(os.path.realpath(__file__))
+resources_dir = os.path.join(current_dir, '..', '..', 'resources')
+
+from ..libs.scenes import *
+
+class DebugScene(Scene):
+    def __init__(self, screen, scene_director, scene_name):
+        super().__init__(screen, scene_director, scene_name)
+
+        self.screen = screen
+        self.sceneDirector = scene_director
+        self.scene_name = scene_name
+        
+
+
+
+
+
+
+
+
+
+
+
+
+    def on_exit(self):
+        return super().on_exit()
+
+    def on_enter(self):
+        return super().on_enter()
+    
+    def events(self, event):
+        return super().events(event)
+
+    def update(self):
+        return super().update()
+
+    def draw(self):
+        return super().draw()
+
+    def run(self, event):
+        self.events(event)
+        self.update()
+        self.draw()
+
+    def get_scene_info(self):
+        return self.scene_name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Game(Scene):
     def __init__(self, screen, scene_director):
         super().__init__(screen, scene_director)
-        self.clock = clock
-        self.screen = screen
 
-        self.scene_director = scene_director
-
-        self.width, self.height = self.screen.get_size()
-
-        self.render_size = 30
-        self.render_width = self.render_size
-        self.render_height = self.render_size
 
         # Load the map from a file (adjust the filename, width, and height accordingly)
         self.map = Map(

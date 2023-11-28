@@ -2,11 +2,11 @@ import pygame, sys, os
 
 # Imported global libs
 
-
-
 from cctd.script.libs.scenes import *
 from cctd.script.libs.utils import *
+from cctd.script.libs.transitions import *
 
+from cctd.script.scenes.example import ExampleScene
 from cctd.script.scenes.menu import Menu
 
 pygame.init()
@@ -27,10 +27,14 @@ screen = pygame.display.set_mode(
 
 class Main:
     def __init__(self):
-        self.SceneDirector = SceneDirector("main_menu")
+        self.transitionDirector = TransitionDirector(screen)
+        self.SceneDirector = SceneDirector("main_menu", screen, self.transitionDirector)
+        
 
         game_scenes = []
         game_scenes.append(Menu(screen, self.SceneDirector, "main_menu"))
+        game_scenes.append(ExampleScene(screen, self.SceneDirector, "example_scene"))
+
         # Game(self.SCREEN, self.SceneDirector, "debug_scene")
         self.SceneDirector.load_scenes(game_scenes)
 
@@ -53,6 +57,7 @@ class Main:
 
     def update(self):
         self.SceneDirector.run_scene(self.eventQueue)
+        self.transitionDirector.update()
 
     def draw(self):
         pygame.display.flip()

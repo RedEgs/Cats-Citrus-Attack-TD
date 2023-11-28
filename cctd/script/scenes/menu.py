@@ -3,6 +3,7 @@ import pytweening, pygame, sys, os
 current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 
+from ..libs.gui import *
 from ..libs.utils import *
 from ..libs.scenes import *
 
@@ -45,7 +46,7 @@ class Menu(Scene):
             (self.center_x, self.center_y+75), 5, 2.5, pytweening.easeInOutCubic)
 
         self.quitButton = Button(
-            self.center_x, self.center_y+500, os.path.join(resources_dir, "main_menu", "quit_button_off.png"), os.path.join(resources_dir, "main_menu", "quit_button_on.png"), self.quitGame)
+            self.center_x, self.center_y+500, os.path.join(resources_dir, "main_menu", "quit_button_off.png"), os.path.join(resources_dir, "main_menu", "quit_button_on.png"), quitGame)
         self.quitButton.tween_pos(
             (self.center_x, self.center_y+150), 5, 3, pytweening.easeInOutCubic)
 
@@ -53,12 +54,7 @@ class Menu(Scene):
         print("pressed")
 
     def playGame(self):
-        self.loadingSprite.start()
-        # self.scene_director.switch_scene("debug_scene")
-
-    def quitGame(self):
-        pygame.quit()
-        sys.exit()
+        self.scene_director.switch_scene("example_scene")
 
     def menuInit(self):
         background = pygame.image.load(
@@ -69,6 +65,12 @@ class Menu(Scene):
 
         return background, logo, loadingScreen
 
+    def on_exit(self):
+        print("Left Menu")
+
+    def on_enter(self):
+        print("Entered Menu")
+   
     def run(self, event):
         self.events(event)
         self.update()
