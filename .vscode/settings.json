@@ -13,4 +13,5 @@
     "Lua.workspace.userThirdParty": [
         "c:\\Users\\User\\AppData\\Roaming\\Code\\User\\workspaceStorage\\6dde6823a63fb328c4fc48a593ef98eb\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
     ],
+    "python.analysis.autoImportCompletions": false,
 }
