@@ -54,7 +54,7 @@ class Menu(Scene):
         print("pressed")
 
     def playGame(self):
-        self.scene_director.switch_scene("example_scene")
+        self.scene_director.switch_scene("lobby_scene")
 
     def menuInit(self):
         background = pygame.image.load(

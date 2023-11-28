@@ -8,6 +8,7 @@ from cctd.script.libs.transitions import *
 
 from cctd.script.scenes.example import ExampleScene
 from cctd.script.scenes.menu import Menu
+from cctd.script.scenes.lobby import LobbyScene
 
 pygame.init()
 pygame.mixer.init()
@@ -33,6 +34,7 @@ class Main:
 
         game_scenes = []
         game_scenes.append(Menu(screen, self.SceneDirector, "main_menu"))
+        game_scenes.append(LobbyScene(screen, self.SceneDirector, "lobby_scene"))
         game_scenes.append(ExampleScene(screen, self.SceneDirector, "example_scene"))
 
         # Game(self.SCREEN, self.SceneDirector, "debug_scene")
