@@ -66,5 +66,7 @@ class Map:
         self.waypoints = [wp for wp in self.waypoints if distance_squared(
             coordinates, wp) > COORDINATE_TOLERANCE**2]
 
+    def get_mask(self):
+        return self.map_mask
 
 

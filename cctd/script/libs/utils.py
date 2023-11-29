@@ -1,9 +1,17 @@
-import pygame, sys, os
-from pytweening import easeInOutQuad
+import pytweening, pygame, sys, os
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+resources_dir = os.path.join(current_dir, '..', '..', 'resources')
+
+def rect_to_surface(rect):
+    # Create a Surface with the dimensions of the Rect
+    surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+
+    # Return the created Surface
+    return surface
 
 def distance_squared(self, point1, point2):
     return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2
-
 
 def load_image(image_path):
     return pygame.image.load(image_path).convert_alpha()

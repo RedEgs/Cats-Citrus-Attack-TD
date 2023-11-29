@@ -74,7 +74,7 @@ class Button:
                 self.state = "off"
                 self.on_click()
 
-    def tween_pos(self, target, duration_sec, delay_sec=0, tweening_function=easeInOutQuad):
+    def tween_pos(self, target, duration_sec, delay_sec=0, tweening_function=pytweening.easeInOutQuad):
         self.tween_target_pos = target
         # Assuming 60 frames per second
         self.tween_pos_duration = int(duration_sec * 60)
