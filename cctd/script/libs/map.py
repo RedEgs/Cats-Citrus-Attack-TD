@@ -2,33 +2,54 @@ import pytweening, pygame, sys, os
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
+map_dir = os.path.join(current_dir, '..', '..', '..', 'maps')
 
 from ..libs.scenes import *
+from ..libs.utils import *
 
 COORDINATE_TOLERANCE = 5  # Adjust this value based on your needs
 
+class MapDirector:
+    def __init__(self, screen):
+        self.all_maps = self.get_available_maps()
+        self.loaded_map = None
+
+    def load_map(self, folder_path):
+        print("LOADING MAP")
+        self.loaded_map = Map(folder_path)
+        print("LOADED MAP")
+
+        return self.loaded_map
+        
+    def get_loaded_map(self):
+        return self.loaded_map
+        
+    def get_available_maps(self):
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        map_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'maps'))
+        map_folders = [os.path.join(map_dir, d) for d in os.listdir(map_dir) if os.path.isdir(os.path.join(map_dir, d))]
+        return map_folders
+
 class Map:
-    def __init__(self, filepath, render_width, render_height):
-        self.grid, self.map_mask = self.load_map(
-            filename, render_width, render_height)
+    def __init__(self, map_folder):
+        self.map_folder = map_folder
+        self.map_image, self.map_mask = self.load_map()
         self.waypoints = []
 
-    def load_map(self, filename, render_width, render_height):
-        map_image = pygame.image.load(filename).convert_alpha()
-        map_mask_image = pygame.image.load("mask.png").convert_alpha()
+    def load_map(self):
+        map_path = os.path.join(self.map_folder, 'map.png')
+        mask_path = os.path.join(self.map_folder, 'mask.png')
+
+        map_image = pygame.image.load(map_path).convert_alpha()
+        map_mask_image = pygame.image.load(mask_path).convert_alpha()
 
         map_mask_rect = map_mask_image.get_rect()
         map_mask = pygame.mask.from_surface(map_mask_image)
 
         return map_image, map_mask
 
-    def load_waypoints(self, filename):
-        with open(filename, 'r') as file:
-            waypoints_str = file.read()
-            self.waypoints = ast.literal_eval(waypoints_str)
-
     def draw(self, screen):
-        screen.blit(self.grid, (0, 0))
+        screen.blit(self.map_image, (0, 0))
 
     def save_map(self, filename):
         with open(filename, 'w') as file:
@@ -42,14 +63,8 @@ class Map:
 
     def remove_waypoint(self, coordinates):
         # Remove waypoints that are within the tolerance range
-        self.waypoints = [wp for wp in self.waypoints if self.distance_squared(
+        self.waypoints = [wp for wp in self.waypoints if distance_squared(
             coordinates, wp) > COORDINATE_TOLERANCE**2]
 
-    def distance_squared(self, point1, point2):
-        return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2
 
-    def get_rounded_coordinates(self, mouse_x, mouse_y):
-        gridX, gridY = positionOnGrid(mouse_x, mouse_y, 1)
-        rounded_x = round(gridX * 1)
-        rounded_y = round(gridY * 1)
-        return rounded_x, rounded_y
+

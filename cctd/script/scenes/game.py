@@ -4,24 +4,23 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 
 from ..libs.scenes import *
-
-class DebugScene(Scene):
+from ..libs.map import *
+from ..libs.gui import *
+class EndlessGameScene(Scene):
     def __init__(self, screen, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
 
         self.screen = screen
-        self.sceneDirector = scene_director
+        self.scene_director = scene_director
         self.scene_name = scene_name
         
-
-
-
-
-
-
-
-
-
+        # Load the map
+        self.map_director = MapDirector(screen)
+        self.map = self.map_director.load_map(self.map_director.all_maps[0])
+    
+        # Load the GUI Overlay
+        overlayImage = os.path.join(os.path.join(current_dir, '..', '..', 'resources', "game_overlay", 'game_menu.png'))
+        self.gameOverlay = GameOverlay(0, 0, overlayImage)
 
 
 
@@ -38,7 +37,8 @@ class DebugScene(Scene):
         return super().update()
 
     def draw(self):
-        return super().draw()
+        self.map.draw(self.screen)
+        self.gameOverlay.draw(self.screen)
 
     def run(self, event):
         self.events(event)
@@ -74,7 +74,7 @@ class DebugScene(Scene):
 
 
 
-
+"""
 class Game(Scene):
     def __init__(self, screen, scene_director):
         super().__init__(screen, scene_director)
@@ -237,3 +237,4 @@ class Game(Scene):
 
         # Update The Display
         pygame.display.update()
+"""

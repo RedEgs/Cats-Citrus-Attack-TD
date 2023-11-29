@@ -1,6 +1,10 @@
 import pygame, sys, os
 from pytweening import easeInOutQuad
 
+def distance_squared(self, point1, point2):
+    return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2
+
+
 def load_image(image_path):
     return pygame.image.load(image_path).convert_alpha()
 

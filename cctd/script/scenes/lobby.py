@@ -6,15 +6,19 @@ resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 from ..libs.gui import *
 from ..libs.utils import *
 from ..libs.scenes import *
+from ..libs.map import *
+
 
 class LobbyScene(Scene):
     def __init__(self, screen, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
 
         self.screen = screen
-        self.sceneDirector = scene_director
+        self.scene_director = scene_director
         self.scene_name = scene_name
         
+        self.map_director = MapDirector(screen)
+
         self.width, self.height = self.screen.get_size()
         self.center_x = self.width // 2
         self.center_y = self.height // 2
@@ -26,7 +30,7 @@ class LobbyScene(Scene):
             os.path.join(resources_dir, "main_menu", "background.png")).convert_alpha()
 
     def playGame(self):
-        print("Started Endless")
+        self.scene_director.switch_scene("game_scene")
 
 
     def on_exit(self):

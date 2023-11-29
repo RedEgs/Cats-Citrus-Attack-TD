@@ -6,6 +6,40 @@ resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 from ..libs.utils import *
 from ..libs.scenes import *
 from ..libs.transitions import *
+
+class GUIElement:
+    def __init__(self, x, y, image_path):
+        self.x = x
+        self.y = y
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect.topleft)
+
+class GameOverlay(GUIElement):
+    def __init__(self, x, y, image_path):
+        super().__init__(x, y, image_path)
+        self.healthText = None
+        self.roundCounter = None
+
+
+
+    def draw(self, surface):
+        return super().draw(surface)
+    
+
+
+
+
+
+
+
+
+
+
+
 class Button:
     def __init__(self, x, y, image_off_path, image_on_path, on_click):
         self.image_off_path = image_off_path
@@ -80,4 +114,10 @@ class Button:
                 setattr(self, f'tween_{tween_type}_duration', 0)
                 setattr(self, f'tween_{tween_type}_delay', 0)
                 setattr(self, f'tween_{tween_type}_function', None)
+
+
+
+
+
+
 
