@@ -17,8 +17,6 @@ class MapSelectScene(Scene):
         self.sceneDirector = scene_director
         self.scene_name = scene_name
 
-    
-
 
     def on_exit(self):
         return super().on_exit()

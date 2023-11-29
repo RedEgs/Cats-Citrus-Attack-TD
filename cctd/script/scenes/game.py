@@ -14,6 +14,9 @@ class EndlessGameScene(Scene):
         self.scene_director = scene_director
         self.scene_name = scene_name
         
+        self.game = Game()
+
+
         # Load the map
         self.map_director = MapDirector(screen)
         self.map = self.map_director.load_map(self.map_director.all_maps[0])
@@ -21,8 +24,6 @@ class EndlessGameScene(Scene):
         # Load the GUI Overlay
         overlayImage = os.path.join(os.path.join(current_dir, '..', '..', 'resources', "game_overlay", 'game_menu.png'))
         self.gameOverlay = GameOverlay(0, 0, overlayImage)
-
-
 
     def on_exit(self):
         return super().on_exit()
@@ -34,7 +35,7 @@ class EndlessGameScene(Scene):
         return super().events(event)
 
     def update(self):
-        return super().update()
+        self.game.update()
 
     def draw(self):
         self.map.draw(self.screen)
@@ -48,7 +49,25 @@ class EndlessGameScene(Scene):
     def get_scene_info(self):
         return self.scene_name
 
+class Game:
+    def __init__(self):
 
+        # Player Variables
+        self.health = 100.0
+        self.current_round = 0
+        
+        self.first_round = True
+    
+        self.towers = []
+        self.towers_amount = len(self.towers)
+        self.towers_limit = 4
+
+    def update(self):
+        pass
+    
+
+    
+        
 
 
 
