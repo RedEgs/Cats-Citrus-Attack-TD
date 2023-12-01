@@ -7,6 +7,48 @@ from ..libs.utils import *
 from ..libs.scenes import *
 from ..libs.transitions import *
 
+pygame.font.init()
+
+
+
+
+class GUIText:
+    def __init__(self, text, size, color, pos):
+        self.text = text
+        self.color = color
+        self.pos = pos
+        self.default_font = pygame.font.Font(os.path.join(current_dir, '..', '..', 'resources', 'constant', 'font.ttf'), size)
+        self.stroke_color = (0, 0, 0)  # Default stroke color
+        self.stroke_thickness = 1  # Default stroke thickness
+
+    def normal_text(self, text):
+        self.text = self.default_font.render(text, True, self.color)
+
+    def stroke_text(self, text, thickness, color):
+        self.stroke_thickness = thickness
+        self.stroke_color = color
+
+        # Create a surface for the actual text
+        text_surface = self.default_font.render(text, True, self.color)
+
+        # Create a surface for the text with stroke
+        text_with_stroke = pygame.Surface((text_surface.get_width() + 2 * self.stroke_thickness,
+                                           text_surface.get_height() + 2 * self.stroke_thickness), pygame.SRCALPHA)
+
+        # Draw the stroke
+        for dx in range(-self.stroke_thickness, self.stroke_thickness + 1):
+            for dy in range(-self.stroke_thickness, self.stroke_thickness + 1):
+                text_with_stroke.blit(text_surface, (dx + self.stroke_thickness, dy + self.stroke_thickness))
+
+        # Fill the text surface with the stroke color
+        text_with_stroke.fill(color + (255,), special_flags=pygame.BLEND_RGBA_MULT)
+
+        self.text = text_with_stroke
+
+    def draw(self, screen):
+        screen.blit(self.text, self.pos)
+
+
 class GUIElement:
     def __init__(self, x, y, image_path):
         self.x = x

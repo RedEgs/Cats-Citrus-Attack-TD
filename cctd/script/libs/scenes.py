@@ -11,8 +11,10 @@ class SceneDirector:
     def __init__(self, current_scene, screen, transition_director):
         self.screen = screen
         self.transition_director = transition_director
+
         self.current_scene = current_scene
         self.previous_scene = None
+        
         self.scenes = {}
 
     def enter_scene(self):
@@ -27,8 +29,15 @@ class SceneDirector:
             self.scenes.update({str(name): scene})
 
     def switch_scene(self, scene):
+        self.transition_director.canTransition = False
+        self.transition_director.isTransitioning = True
+
         FadeTransition(self.screen, self, self.transition_director, self.get_previous_scene(), scene, 1)
         
+        self.transition_director.canTransition = True
+        self.transition_director.isTransitioning = False
+
+
     def run_scene(self, event):
         self.scenes[self.get_scene()].run(event)
 

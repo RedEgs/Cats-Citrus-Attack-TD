@@ -8,13 +8,14 @@ from ..libs.scenes import *
 
 class TransitionDirector:
     def __init__(self, screen):
-        self.isTransitioning = False
-        self.canTransition = True
-
         self.transitions = []
 
+        self.isTransitioning = len(self.transitions) == 1
+        self.canTransition = not self.isTransitioning 
+
     def add_transition(self, transition):
-        self.transitions.append(transition)
+        if len(self.transitions) < 1:
+            self.transitions.append(transition)
 
     def remove_transition(self):
         self.transitions.clear()
@@ -26,7 +27,7 @@ class TransitionDirector:
 
 class Transition:
     def __init__(self, screen, scene_director, transition_director, from_scene, to_scene):
-        self.transitionDirector = transition_director
+        self.transition_director = transition_director
         self.sceneDirector = scene_director
         self.screen = screen
         self.from_scene = from_scene
@@ -39,11 +40,10 @@ class Transition:
         self.add_transition()
     
     def kill_transition(self):
-        self.transitionDirector.remove_transition()
+        self.transition_director.remove_transition()
     
-
     def add_transition(self):
-        self.transitionDirector.add_transition(self)
+        self.transition_director.add_transition(self)
 
     def update(self):
         pass
@@ -86,13 +86,13 @@ class FadeTransition(Transition):
         if self.curr_percentage == self.timing * 100:
             self.sceneDirector.set_scene(self.to_scene) # Change the scene while black
             self.FadeOut.start()
-
+                
         if self.curr_percentage == self.timing * 200:
             self.kill_transition()
             self.completed = True
     
         self.curr_percentage += 1
-            
+
 
     def draw(self):
         self.FadeIn.draw(self.screen)

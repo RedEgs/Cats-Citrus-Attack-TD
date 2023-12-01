@@ -29,17 +29,25 @@ class Tower(pygame.sprite.Sprite):
 
 class TowerDirector:
     def __init__(self, map):
-        self.mousePreview = MousePreviewOverlay((48,48), os.path.join(current_dir, '..', '..', 'resources', 'towers', 'tower.png'), 100)
+        self.mousePreview = MousePreviewOverlay(self, (48,48), os.path.join(current_dir, '..', '..', 'resources', 'towers', 'tower.png'))
         self.map = map
-        
+                
         self.tower_sprite_group = pygame.sprite.Group()
         self.towers = []
         
         self.towers_limit = 4
         self.towers_placed = 0
         self.towers = []  
+       
         self.click = False
+
+        self.tower_selected = None
+        self.towers_selected = []
         
+        self.placing_tower = False
+        self.placing_tower_data = None
+
+
     def add_tower(self, tower):
         if self.towers_placed != self.towers_limit:
             self.tower_sprite_group.add(tower)
@@ -71,35 +79,36 @@ class TowerDirector:
         
 
 def place_tower(tower_director, preview_tower, mask, group):
-    max_width = 600
-    max_height = 600
+    max_size = (600,600)
 
     new_tower = Tower(tower_director)
 
     # Check collision with other towers
-    if not pygame.sprite.spritecollideany(preview_tower, group):
+    if tower_director.placing_tower == True:
+        if not pygame.sprite.spritecollideany(preview_tower, group):
 
-        # Get the rect of the preview tower
-        preview_rect = preview_tower.get_rect()
+            # Get the rect of the preview tower
+            preview_rect = preview_tower.get_rect()
 
-        # Create a mask for the preview tower
-        preview_mask = pygame.mask.from_surface(preview_tower.image)
+            # Create a mask for the preview tower
+            preview_mask = pygame.mask.from_surface(preview_tower.image)
 
-        # Check collision with the mask
-        if mask.overlap(preview_mask, (int(preview_rect.x), int(preview_rect.y))) is None:
-            # Check if the tower position exceeds the specified limits
-            if pygame.mouse.get_pos()[0] <= max_width and pygame.mouse.get_pos()[1] <= max_height:
-                new_tower.place_tower(pygame.mouse.get_pos())
-                return new_tower  # Return the placed tower
-            else:
-                print("Tower placed outside of the 600x600 limits.")
+            # Check collision with the mask
+            if mask.overlap(preview_mask, (int(preview_rect.x), int(preview_rect.y))) is None:
+                # Check if the tower position exceeds the specified limits
+                if pygame.mouse.get_pos() <= max_size:
+                    new_tower.place_tower(pygame.mouse.get_pos())
+                    return new_tower  # Return the placed tower
+                else:
+                    print("Tower placed outside of the 600x600 limits.")
 
 class MousePreviewOverlay(pygame.sprite.Sprite):
-    def __init__(self, rect_size, image_path, alpha):
+    def __init__(self, tower_director, rect_size, image_path):
         pygame.sprite.Sprite.__init__(self)
 
+        self.tower_director = tower_director
         self.width, self.height = rect_size
-        self.alpha = alpha
+        self.alpha = 100
 
         # Create a rect attribute
         self.rect = pygame.Rect(0, 0, self.width, self.height)
@@ -121,8 +130,8 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
         # Update the rect's position
         self.rect.topleft = (self.rect_x, self.rect_y)
 
-    def check_bounds(self):
-        if pygame.mouse.get_pos()[0] <= 600 and pygame.mouse.get_pos()[1] <= 600:
+    def check_bounds(self, play_area_size):
+        if pygame.mouse.get_pos() <= play_area_size:
             return True
 
         return False
@@ -157,9 +166,10 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
         return tinted_image
 
     def draw(self, screen, tower_group, mask):
-        if self.check_bounds():
-            tinted_image = self.check_conditions(tower_group, mask)
-            screen.blit(tinted_image, self.rect.topleft)
+        if self.tower_director.placing_tower == True:
+            if self.check_bounds((600, 600)):
+                tinted_image = self.check_conditions(tower_group, mask)
+                screen.blit(tinted_image, self.rect.topleft)
 
     def get_rect(self):
         return self.rect

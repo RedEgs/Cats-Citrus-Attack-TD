@@ -30,6 +30,7 @@ class LobbyScene(Scene):
             os.path.join(resources_dir, "main_menu", "background.png")).convert_alpha()
 
     def playGame(self):
+        print("Clicked")
         self.scene_director.switch_scene("game_scene")
 
 

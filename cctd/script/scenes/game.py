@@ -33,6 +33,10 @@ class EndlessGameScene(Scene):
         self.roundButton.tween_pos(
             (300, 516), 2, 0, pytweening.easeInOutCubic)  
         
+        # Cash Text
+        self.money_text = GUIText("$:", 20, (255, 255, 255), (15 ,10))
+        self.money_text.stroke_text("$:", 1, (0, 0, 0))
+        
     def callback(self):
         print("Pressed")
         
@@ -58,6 +62,10 @@ class EndlessGameScene(Scene):
         
         self.gameOverlay.draw(self.screen)
         self.roundButton.draw(self.screen)
+
+        self.money_text.draw(self.screen)
+
+    
 
     def run(self, event):
         self.events(event)
