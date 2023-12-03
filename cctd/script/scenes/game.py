@@ -7,6 +7,7 @@ from ..libs.scenes import *
 from ..libs.map import *
 from ..libs.gui import *
 from ..libs.towers import *
+from ..libs.shop import *
 class EndlessGameScene(Scene):
     def __init__(self, screen, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
@@ -21,21 +22,32 @@ class EndlessGameScene(Scene):
         self.map_director = MapDirector(screen)
         self.map = self.map_director.load_map(self.map_director.all_maps[0])
         
-        self.tower_director = TowerDirector(self.map)
+        self.shop = Shop()
+    
+    
+    
+        #self.tower_director = TowerDirector(self.map)
         
         # Load the GUI Overlay
-        overlayImage = os.path.join(os.path.join(current_dir, '..', '..', 'resources', "game_overlay", 'game_menu.png'))
-        self.gameOverlay = GameOverlay(0, 0, overlayImage)
+        overlay_image = os.path.join(os.path.join(current_dir, '..', '..', 'resources', "game_overlay", 'game_menu.png'))
+        self.game_overlay = GameOverlay(0, 0, overlay_image)
         
         # Load start button
-        self.roundButton = Button(
+        self.round_button = Button(
             300, 516+500, os.path.join(resources_dir, "game_overlay", "round_button_off.png"), os.path.join(resources_dir, "game_overlay", "round_button_on.png"), self.callback)
-        self.roundButton.tween_pos(
+        self.round_button.tween_pos(
             (300, 516), 2, 0, pytweening.easeInOutCubic)  
         
+        self.purchase_button = Button(
+            700, 310+500, os.path.join(resources_dir, "game_overlay", "purchase_button_off.png"), os.path.join(resources_dir, "game_overlay", "purchase_button_on.png"), self.callback)
+        self.purchase_button.tween_pos(
+            (700, 310), 2, 0, pytweening.easeInOutCubic)  
+        
+        
+         
         # Cash Text
-        self.money_text = GUIText("$:", 20, (255, 255, 255), (15 ,10))
-        self.money_text.stroke_text("$:", 1, (0, 0, 0))
+        self.money_text = GUIText(20, (255,255,255), (15 ,10))
+        self.money_text.outline_text("$:", "black")
         
     def callback(self):
         print("Pressed")
@@ -47,25 +59,31 @@ class EndlessGameScene(Scene):
         return super().on_enter()
     
     def events(self, event):
-        self.roundButton.handle_event(event)
-        self.tower_director.handle_event(event)
+        self.round_button.handle_event(event)
+        self.purchase_button.handle_event(event)
+        self.shop.handle_event(event)
+        #self.tower_director.handle_event(event)
 
     def update(self):
         self.game.update()
-        self.tower_director.update()
+        #self.tower_director.update()
+        self.shop.update()
         
-        self.roundButton.update()
+        self.purchase_button.update()
+        self.round_button.update()
 
     def draw(self):
         self.map.draw(self.screen)
-        self.tower_director.draw(self.screen)
+        self.game_overlay.draw(self.screen)
+        #self.tower_director.draw(self.screen)
+        self.shop.draw(self.screen)
         
-        self.gameOverlay.draw(self.screen)
-        self.roundButton.draw(self.screen)
+        
+        self.round_button.draw(self.screen)
+        self.purchase_button.draw(self.screen)
 
         self.money_text.draw(self.screen)
 
-    
 
     def run(self, event):
         self.events(event)

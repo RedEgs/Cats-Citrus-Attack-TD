@@ -1,4 +1,6 @@
-import pytweening, pygame, sys, os
+import pytweening, pydantic, pygame, json, sys, os
+from pydantic import BaseModel, DirectoryPath
+
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
@@ -7,6 +9,115 @@ from ..libs.scenes import *
 from ..libs.map import *
 from ..libs.gui import *
 from ..libs.utils import *
+
+
+
+
+class TowerDirector:
+    def __init__(self):
+        self.towers = []
+        self.towers_amount = len(self.towers)
+        self.towers_limit = 5
+    
+    #def instance_tower(self):
+        #new_tower_data = ""
+    
+    
+    
+    
+    
+    
+    
+    def update(self):
+        for tower in self.towers:
+            tower.update()
+            
+    def draw(self):
+        for tower in self.towers:
+            tower.draw() 
+   
+   
+   
+   
+   
+   
+    #def instance_tower(self):
+        
+
+
+class TowerData(BaseModel):
+    # Technical tower data
+    id: str # The "technical" name for the tower, not instance specific (should be same as variable name for convention and ease of access).
+    name: str # The "pretty" name for the tower. For example, id = example_tower | name = "Example Tower"
+    
+    base_rarity: int
+    
+    # Base tower values
+    base_damage: float
+    base_cooldown: float
+    base_damage: float
+    base_crit_multiplier: float
+    base_crit_chance: float
+    base_fire_rate: float
+    base_cooldown: float
+    base_projectile_speed: float
+    
+    # Variables values
+    damage_multiplier: float
+    crit_multiplier: float
+    crit_chance_multiplier: float
+    fire_rate_multiplier: float
+    cooldown_reduction_multiplier: float
+    projectile_speed_multiplier: float
+
+    global_positive_multiplier: float
+    global_negative_multiplier: float
+
+    # Runtime values
+    current_buffs: list 
+    current_debuffs: list
+
+class Tower(pygame.sprite.Sprite):
+    def __init__(self, tower_data):
+        self.tower_data = tower_data.model_dump()
+        self.file_path = f"cctd/towers/{tower_data['id']}"
+        self.sprite_path = f"{self.file_path}/sprite.png"
+        
+        self.sprite = pygame.image.load(self.sprite_path)  
+        self.tower_rect = self.sprite.get_rect()
+        
+    def update(self):
+        pass
+    
+    def draw(self, screen):
+        pygame.draw(screen, (0, 0, 0), self.tower_rect())
+        
+    def get_sprite(self):
+        return self.sprite
+    
+    def get_rect(self):
+        return self.tower_rect
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 class Tower(pygame.sprite.Sprite):
     def __init__(self, tower_director):
         pygame.sprite.Sprite.__init__(self)
@@ -25,58 +136,7 @@ class Tower(pygame.sprite.Sprite):
         pygame.draw(screen, (0, 255, 00), self.rect)
 
     def get_rect(self):
-        return self.rect
-
-class TowerDirector:
-    def __init__(self, map):
-        self.mousePreview = MousePreviewOverlay(self, (48,48), os.path.join(current_dir, '..', '..', 'resources', 'towers', 'tower.png'))
-        self.map = map
-                
-        self.tower_sprite_group = pygame.sprite.Group()
-        self.towers = []
-        
-        self.towers_limit = 4
-        self.towers_placed = 0
-        self.towers = []  
-       
-        self.click = False
-
-        self.tower_selected = None
-        self.towers_selected = []
-        
-        self.placing_tower = False
-        self.placing_tower_data = None
-
-
-    def add_tower(self, tower):
-        if self.towers_placed != self.towers_limit:
-            self.tower_sprite_group.add(tower)
-            self.towers.append(tower)
-            self.towers_placed += 1
-        else:
-            print("Reached tower limit")
-         
-    def handle_event(self, event):        
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            self.click = True
-
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            if self.click == True:
-                self.click = False
-                place_tower(self, self.mousePreview, self.map.get_mask(), self.tower_sprite_group)    
-        
-        elif event.type == pygame.MOUSEMOTION:
-            self.mousePreview.update_position()        
-            
-    def update(self):
-        self.mousePreview.update()
-        self.tower_sprite_group.update()
-        
-    
-    def draw(self, screen):
-        self.tower_sprite_group.draw(screen)
-        self.mousePreview.draw(screen, self.tower_sprite_group, self.map.get_mask())
-        
+        return self.rect        
 
 def place_tower(tower_director, preview_tower, mask, group):
     max_size = (600,600)
@@ -173,4 +233,4 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
 
     def get_rect(self):
         return self.rect
-
+"""

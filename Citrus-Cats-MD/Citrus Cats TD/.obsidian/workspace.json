@@ -1,0 +1,158 @@
+{
+  "main": {
+    "id": "00bf4fcf847dcb4a",
+    "type": "split",
+    "children": [
+      {
+        "id": "b884012d51e1832b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9a41970fee289974",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Citrus Cats Wiki.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "decaaab60164eb38",
+    "type": "split",
+    "children": [
+      {
+        "id": "62aca59b9100386b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3d1d616d24a98b39",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "adf4d0b2cd40dc22",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:#Nex",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "df7501d821aa8d69",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "8262cf70f6b2245c",
+    "type": "split",
+    "children": [
+      {
+        "id": "fe45029e49c5ec67",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b23e76891d74a7fc",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Citrus Cats Wiki.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "15165490c7db2e14",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Citrus Cats Wiki.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "919769d5efcce83f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "b12561037624513b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Citrus Cats Wiki.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "9a41970fee289974",
+  "lastOpenFiles": [
+    "Gameplay/Tower System.md",
+    "Documentation/Towers.py.md",
+    "Citrus Cats Wiki.md",
+    "Untitled.md",
+    "Documentation"
+  ]
+}

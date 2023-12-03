@@ -5,6 +5,7 @@ import pygame, sys, os
 from cctd.script.libs.scenes import *
 from cctd.script.libs.utils import *
 from cctd.script.libs.transitions import *
+from cctd.script.libs.registry import *
 
 from cctd.script.scenes.example import ExampleScene
 from cctd.script.scenes.menu import Menu
@@ -28,19 +29,24 @@ screen = pygame.display.set_mode(
 
 class Main:
     def __init__(self):
+        self.game_registry = Registry()
+        
         self.transitionDirector = TransitionDirector(screen)
         self.SceneDirector = SceneDirector("main_menu", screen, self.transitionDirector)
+
     
         game_scenes = []
         game_scenes.append(Menu(screen, self.SceneDirector, "main_menu"))
-        game_scenes.append(LobbyScene(screen, self.SceneDirector, "lobby_scene"))
+        game_scenes.append(LobbyScene(screen, self.game_registry, self.SceneDirector, "lobby_scene"))
         game_scenes.append(ExampleScene(screen, self.SceneDirector, "example_scene"))
         game_scenes.append(EndlessGameScene(screen, self.SceneDirector, "game_scene"))
 
         # Game(self.SCREEN, self.SceneDirector, "debug_scene")
         self.SceneDirector.load_scenes(game_scenes)
+   
 
     def run(self):
+        self.game_registry.load_tower_registry()
         while True:
             clock.tick(FPS)
             delta_time = clock.tick(FPS) / 1000.0
