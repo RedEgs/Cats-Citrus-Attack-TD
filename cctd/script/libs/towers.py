@@ -1,18 +1,14 @@
 import pytweening, pydantic, pygame, json, sys, os
-from pydantic import BaseModel, DirectoryPath
-
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
+
+from dataclasses import dataclass
 
 from ..libs.scenes import *
 from ..libs.map import *
 from ..libs.gui import *
 from ..libs.utils import *
-
-
-
-
 class TowerDirector:
     def __init__(self):
         self.towers = []
@@ -40,7 +36,8 @@ class TowerDirector:
         
 
 
-class TowerData(BaseModel):
+@dataclass
+class TowerData():
     # Technical tower data
     id: str # The "technical" name for the tower, not instance specific (should be same as variable name for convention and ease of access).
     name: str # The "pretty" name for the tower. For example, id = example_tower | name = "Example Tower"

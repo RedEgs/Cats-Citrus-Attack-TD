@@ -5,6 +5,23 @@ resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 
 
 
+#SECTION - Python Miscs
+
+def is_in_list(item, list):
+    try:
+        list.index(item)
+        return True
+    except ValueError:
+        return False
+        
+    
+    
+    
+
+
+#!SECTION
+
+
 #SECTION - Pygames Specifics
 def rect_to_surface(rect):
     # Create a Surface with the dimensions of the Rect
@@ -28,28 +45,35 @@ def distance_squared(point1, point2):
 
 def calculate_index_spacing(i, starting_pos_x, starting_pos_y, image_width, image_height, h_spacing, v_spacing, v_limit):
     if v_limit <= i:
-        print("reached v limit")
         y = starting_pos_y + (image_height + v_spacing) * (i-v_limit + 1)
         x = starting_pos_x+(image_width+h_spacing)*(i-v_limit)
+        
         spacing = (x, y)
-        print(spacing)
         return spacing
     else:
-        spacing = (starting_pos_x+(image_width+h_spacing)*i, starting_pos_y)
-        print(spacing)
+        y = starting_pos_y
+        x = starting_pos_x+(image_width+h_spacing)*(i)
+        
+        
+        spacing = (x, y)
         return spacing
     
-    
-    
-
 def calculate_index_spacing_out(i, starting_pos_x, starting_pos_y, image_width, image_height, h_spacing, v_spacing, v_limit):
-    if v_limit >= i:
-        spacing = (starting_pos_x+(image_width+h_spacing)*i, starting_pos_y+(image_height+v_spacing)*(i-v_limit))
+    if v_limit <= i:
+        y = starting_pos_y + (image_height + v_spacing) * (i-v_limit + 1)
+        x = starting_pos_x+(image_width+h_spacing)*(i-v_limit)
+        
+        spacing = (x, y)
         return spacing[0], spacing[1]
     else:
-        spacing = (starting_pos_x+(image_width+h_spacing)*i, starting_pos_y)
+        y = starting_pos_y
+        x = starting_pos_x+(image_width+h_spacing)*(i)
+        
+        
+        spacing = (x, y)
         return spacing[0], spacing[1]
-    
+
+
 
 
 #!SECTION
@@ -88,17 +112,17 @@ def check_rarity_color(rarity):
         #img_path = os.path.join(current_dir, '..', '..', 'resources', 'lobby', 'tower_select_red.png')
     else:
         return False
+
     
-    
-    
-
-
-
-
-
 def quitGame():
         pygame.quit()
         sys.exit()
+    
+
+
+
+
+
 
 #!SECTION
 
