@@ -35,12 +35,7 @@ class TowerDirector:
     def draw(self):
         for tower in self.towers:
             tower.draw() 
-   
-   
-   
-   
-   
-   
+
     #def instance_tower(self):
         
 

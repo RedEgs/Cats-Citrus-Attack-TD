@@ -16,14 +16,41 @@ def rect_to_surface(rect):
 def load_image(image_path):
     return pygame.image.load(image_path).convert_alpha()
 
+def callback():
+    print("Callbacked")
+
 #!SECTION
-
-
 
 
 #SECTION - Maths Based
 def distance_squared(point1, point2):
     return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2
+
+def calculate_index_spacing(i, starting_pos_x, starting_pos_y, image_width, image_height, h_spacing, v_spacing, v_limit):
+    if v_limit <= i:
+        print("reached v limit")
+        y = starting_pos_y + (image_height + v_spacing) * (i-v_limit + 1)
+        x = starting_pos_x+(image_width+h_spacing)*(i-v_limit)
+        spacing = (x, y)
+        print(spacing)
+        return spacing
+    else:
+        spacing = (starting_pos_x+(image_width+h_spacing)*i, starting_pos_y)
+        print(spacing)
+        return spacing
+    
+    
+    
+
+def calculate_index_spacing_out(i, starting_pos_x, starting_pos_y, image_width, image_height, h_spacing, v_spacing, v_limit):
+    if v_limit >= i:
+        spacing = (starting_pos_x+(image_width+h_spacing)*i, starting_pos_y+(image_height+v_spacing)*(i-v_limit))
+        return spacing[0], spacing[1]
+    else:
+        spacing = (starting_pos_x+(image_width+h_spacing)*i, starting_pos_y)
+        return spacing[0], spacing[1]
+    
+
 
 #!SECTION
 

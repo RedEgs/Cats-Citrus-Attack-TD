@@ -41,21 +41,11 @@ class Registry:
             towers_data.append(tower_data)
             
         return towers_data
-            
-    def get_tower_cover(self):
-        tower_covers = []
+     
+    def get_towers_dir(self):
+        towers_dirs = []
+        
         for tower in self.get_tower_registry():
-            tower_cover = os.path.join(current_dir, '..', '..', 'towers', tower, 'cover.png')
-            tower_covers.append(tower_cover)
-        
-        return tower_covers
-        
-    def get_towers_sprite(self):
-        tower_sprites = []
-        for tower in self.get_tower_registry():
-            tower_cover = os.path.join(current_dir, '..', '..', 'towers', tower, 'sprite.png')
-            tower_sprites.append(tower_cover)
-        
-        return tower_sprites
-        
-    
+            tower_data_file = open(os.path.join(current_dir, '..', '..', 'towers', tower, "tower_data.json"), "r")
+
+        return towers_dirs

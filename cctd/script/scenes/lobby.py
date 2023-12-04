@@ -24,34 +24,34 @@ class LobbyScene(Scene):
         self.center_x = self.width // 2
         self.center_y = self.height // 2
         
-        self.current_selected_index = 0
-        
         self.playButton = Button(
             self.center_x, self.center_y+200, os.path.join(resources_dir, "lobby", "endless_button_off.png"), os.path.join(resources_dir, "lobby", "endless_button_on.png"), self.playGame)
         self.background = pygame.image.load(
             os.path.join(resources_dir, "lobby", "background.png")).convert_alpha()
 
-    def load_towers(self):
+        
+
+    def load_select_towers(self):
         towers_data = self.registry.get_towers_data()
-        
         self.tower_items = []  
+        self.tower_buttons = []
         
-        for tower_data in towers_data:
+        for tower_data in towers_data:   
+            print("Loading Item")         
             image = pygame.image.load(os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png')).convert_alpha()
             cover = pygame.image.load(os.path.join(current_dir, '..', '..', 'towers', tower_data["id"], f'cover.png')).convert_alpha()
            
             cover_pos = cover.get_rect(center=(image.get_width()//2, image.get_height()//2))
             image.blit(cover, cover_pos)
             
-            self.tower_items.append((image, self.calculate_positions(towers_data.index(tower_data))))
+            #pos_x, pos_y = calculate_index_spacing_out(towers_data.index(tower_data), 163, 178, image.get_width(), image.get_height(), 44, 9, 4)
+            button = Button(0,0 , os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), callback)
             
-        return self.tower_items    
+            self.tower_buttons.append(button)
+            self.tower_items.append((image, calculate_index_spacing(towers_data.index(tower_data), 107, 110, image.get_width(), image.get_height(), 44, 9, 4)))
             
-    def calculate_positions(self, i):
-        item_pos = (107+(113+44)*i,110)
-
-        return item_pos
-
+        return self.tower_items, self.tower_buttons
+            
 
     def playGame(self):
         self.scene_director.switch_scene("game_scene")
@@ -60,24 +60,28 @@ class LobbyScene(Scene):
         return super().on_exit()
 
     def on_enter(self):
-        return super().on_enter()
+        self.towers, self.tower_buttons = self.load_select_towers()
     
     def events(self, event):
         self.playButton.handle_event(event)
+        
+        for button in self.tower_buttons:
+            button.handle_event(event)
 
     def update(self):
         self.playButton.update()
+        
+        for button in self.tower_buttons:
+            button.update()
 
     def draw(self):
-
-        
         self.screen.fill(0)
         
         self.screen.blit(self.background, (0,0))
         self.playButton.draw(self.screen)
         
-        for tower_item in self.load_towers():
-            self.screen.blit(tower_item[0], tower_item[1]) 
+        for tower in self.towers:
+            self.screen.blit(tower[0], tower[1]) 
             
     def run(self, event):
         self.events(event)

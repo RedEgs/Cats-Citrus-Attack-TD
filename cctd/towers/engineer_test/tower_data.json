@@ -1,7 +1,7 @@
 {
-    "id": "example_tower",
+    "id": "engineer_test",
     "name": "Example",
-    "base_rarity": 1,
+    "base_rarity": 2,
     "base_damage": 1.0,
     "base_cooldown": 2.0,
     "base_crit_multiplier": 5.0,
