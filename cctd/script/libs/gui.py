@@ -83,8 +83,69 @@ class GameOverlay(GUIElement):
 
 
 
+class NewButton:
+    def __init__(self, position, image_off_path, image_on_path, on_left_click, on_right_click):
+        self.image_off = pygame.image.load(image_off_path).convert_alpha()
+        self.image_on = pygame.image.load(image_on_path).convert_alpha()
 
+        self.on_left_click = on_left_click
+        self.on_right_click = on_right_click
 
+        self.click_state = False
+        self.hovered_state = False
+        
+        
+        
+        self.rect = self.image_off.get_rect(center=position)
+
+    def on_hover_enter(self):
+        print("hello")
+        pass 
+    
+    def on_hover_exit(self):
+        print("bye")
+        pass
+
+    def handle_event(self, event):
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.hovered_state == False:
+                self.hovered_state = True
+                self.on_hover_enter()
+            else:
+                pass       
+        else:
+            if self.hovered_state == True:
+                self.hovered_state = False
+                self.on_hover_exit()
+            else:
+                pass
+    
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:  # Right Click
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                self.click_state = True
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
+            if self.click_state == True:
+                self.click_state = False
+                self.on_right_click()
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                self.click_state = True
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if self.click_state == True:
+                self.click_state = False
+                self.on_left_click()
+
+    def draw(self, screen, position):
+        
+        if position == None:
+            image = self.image_on if self.click_state == True else self.image_off
+            screen.blit(image, self.rect)
+        else:
+            self.rect = self.image_off.get_rect(center=position)
+            
+            image = self.image_on if self.click_state == True else self.image_off
+            screen.blit(image, self.rect)
 
 
 class Button:

@@ -37,7 +37,8 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Easy tower instancing #WIP 
 - [ ] Tower logic refactor #WIP 
 - [ ] Mouse preview refactor
-- [x] Refactor tweening on EVERYTHING (Use dataclasses)
+- [x] Refactor tweening on EVERYTHING (Use dataclasses) 
+	- [ ] Improve interaction between buttons and tweens 
 - [ ] ↑ Refactor buttons (specifically add group rendering, improve tweening) #WIP 
 	- [ ] Fix buttons holding down when pressed but not hovered.
 	- [ ] Make a variant to buttons which allows for surfaces to be passed directly
