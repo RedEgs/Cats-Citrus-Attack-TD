@@ -31,20 +31,14 @@ tween = TweenVector2(tween_data)
 
 running = True
 
-  
-def move_button():
-    tween.start()
-    
-
-button = NewButton((100, 100),  os.path.join(current_dir, '..', '..', 'resources', 'lobby', 'endless_button_off.png'), 
-                    os.path.join(current_dir, '..', '..', 'resources', 'lobby', 'endless_button_off.png'), move_button, callback)
+player = pygame.surface((50,50))
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             
-        button.handle_event(event)
+        .handle_event(event)
 
     screen.fill((255, 255, 255))
     button.draw(screen, tween.get_output())

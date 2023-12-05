@@ -17,59 +17,43 @@ class Menu(Scene):
         self.scene_director = scene_director
         self.scene_name = scene_name
 
+        self.tween_director = TweenDirector()
+
         self.width, self.height = self.screen.get_size()
-        self.center_x = self.width // 2
-        self.center_y = self.height // 2
+        self.center_pos = (self.width //2, self.height // 2)        
 
-        self.bgImage, self.logoImage, self.loadingImage = self.menuInit()
+        self.background_image = load_image(os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'background.png'))
+        self.background_image.set_alpha(0)
+        
+        
+        self.background_image_tween = Tween(opacity_fade_in_data, self.tween_director)
+        self.background_image_tween.start()
 
-        self.bgSprite = TweenOpacity(
-            0, 255, self.bgImage, 1, pytweening.easeInOutQuad)
-        self.bgSprite.start()
-        self.logoSprite = TweenSprite(
-            start_pos=(self.width - 800, -800),
-            end_pos=(0, -150),
-            image=self.logoImage,
-            duration=3,
-            easing_function=pytweening.easeInOutCubic)
-        self.loadingSprite = TweenOpacity(
-            0, 255, self.loadingImage, 1, pytweening.easeInOutQuad)
+        self.logo_image = load_image(os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'logo.png'))
+        
 
-        self.playButton = Button(
-            self.center_x, self.center_y+500, os.path.join(resources_dir, "main_menu", "play_button_off.png"), os.path.join(resources_dir, "main_menu", "play_button_on.png"), self.playGame)
-        self.playButton.tween_pos(
-            (self.center_x, self.center_y), 5, 2, pytweening.easeInOutCubic)
 
-        self.optionsButton = Button(
-            self.center_x, self.center_y+500, os.path.join(resources_dir, "main_menu", "options_button_off.png"), os.path.join(resources_dir, "main_menu", "options_button_on.png"), self.callback)
-        self.optionsButton.tween_pos(
-            (self.center_x, self.center_y+75), 5, 2.5, pytweening.easeInOutCubic)
 
-        self.quitButton = Button(
-            self.center_x, self.center_y+500, os.path.join(resources_dir, "main_menu", "quit_button_off.png"), os.path.join(resources_dir, "main_menu", "quit_button_on.png"), quitGame)
-        self.quitButton.tween_pos(
-            (self.center_x, self.center_y+150), 5, 3, pytweening.easeInOutCubic)
 
-    def callback(self):
-        print("pressed")
+
+
+        # background positions : (0,0) | background alpha: 0, 255
+        # logo positions : (self.width - 800, -800), (0, -150)
+        
+        # play button: (self.center_x, self.center_y+500), (self.center_x, self.center_y)
+        # options button: (self.center_x, self.center_y+500), (self.ceqnter_x, self.center_y+75)
+        # quit buttons: (self.center_x, self.center_y+500), (self.center_x, self.center_y+150)
 
     def playGame(self):
         self.scene_director.switch_scene("lobby_scene")
 
-    def menuInit(self):
-        background = pygame.image.load(
-            os.path.join(resources_dir, "main_menu", "background.png")).convert_alpha()
-        logo = pygame.image.load(os.path.join(resources_dir, "main_menu", "logo.png")).convert_alpha()
-        loadingScreen = pygame.image.load(
-            os.path.join(resources_dir, "loading", "loading_screen.png")).convert_alpha()
-
-        return background, logo, loadingScreen
 
     def on_exit(self):
-        print("Left Menu")
+        pass
 
     def on_enter(self):
-        print("Entered Menu")
+        pass
+        
    
     def run(self, event):
         self.events(event)
@@ -77,27 +61,15 @@ class Menu(Scene):
         self.draw()
 
     def events(self, event):
-        self.playButton.handle_event(event)
-        self.optionsButton.handle_event(event)
-        self.quitButton.handle_event(event)
+        pass
 
-    def update(self):
-        self.bgSprite.update()
-        self.loadingSprite.update()
-        self.logoSprite.update()
-
-        self.playButton.update()
-        self.optionsButton.update()
-        self.quitButton.update()
-
+    def update(self):   
+        pass    
+    
     def draw(self):
         self.screen.fill(0)
 
-        self.bgSprite.draw(self.screen)
-        self.logoSprite.draw(self.screen)
+        self.screen.blit(self.background_image, (0,0))
+        self.tween_director.update(self.background_image.set_alpha(self.background_image_tween.get_output()))
 
-        self.playButton.draw(self.screen)
-        self.optionsButton.draw(self.screen)
-        self.quitButton.draw(self.screen)
 
-        self.loadingSprite.draw(self.screen)

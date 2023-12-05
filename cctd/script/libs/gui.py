@@ -6,6 +6,7 @@ resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 from ..libs.utils import *
 from ..libs.scenes import *
 from ..libs.transitions import *
+from ..libs.tween import *
 
 pygame.font.init()
 
@@ -75,18 +76,15 @@ class GameOverlay(GUIElement):
     def draw(self, surface):
         return super().draw(surface)
     
-
-
-
-
-    
-
-
-
-class NewButton:
+class Button:
     def __init__(self, position, image_off_path, image_on_path, on_left_click, on_right_click):
-        self.image_off = pygame.image.load(image_off_path).convert_alpha()
-        self.image_on = pygame.image.load(image_on_path).convert_alpha()
+        self.original_image_off = pygame.image.load(image_off_path).convert_alpha()
+        self.original_image_on = pygame.image.load(image_on_path).convert_alpha()
+
+        # Set the initial size of the button
+        self.size = self.original_image_off.get_size()
+        self.image_off = pygame.transform.scale(self.original_image_off, self.size)
+        self.image_on = pygame.transform.scale(self.original_image_on, self.size)
 
         self.on_left_click = on_left_click
         self.on_right_click = on_right_click
@@ -94,17 +92,31 @@ class NewButton:
         self.click_state = False
         self.hovered_state = False
         
-        
-        
         self.rect = self.image_off.get_rect(center=position)
 
+        self.button_tweens = []
+        self.button_tweens_out = []
+
     def on_hover_enter(self):
-        print("hello")
-        pass 
+        self.scale(1.1)    
     
     def on_hover_exit(self):
-        print("bye")
-        pass
+        self.scale(0.9)  
+
+    
+    def scale(self, scale_factor):
+        # Calculate the new dimensions based on the original size
+        new_size = int(self.original_image_off.get_width() * scale_factor), int(self.original_image_off.get_height() *  scale_factor)
+        
+        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutElastic)
+        self.tween_size = TweenVector2(tween_size_data) 
+        self.button_tweens.append(self.tween_size)
+        self.tween_size.start()
+        
+        # Update the button size
+        self.size = self.tween_size.get_output()
+
+        # Update the images based on the new size
 
     def handle_event(self, event):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
@@ -137,7 +149,15 @@ class NewButton:
                 self.on_left_click()
 
     def draw(self, screen, position):
-        
+        for tween in self.button_tweens:
+            tween.update()
+
+            if tween.check_finished():
+                self.button_tweens.pop(self.button_tweens.index(tween))
+            else:
+                self.image_off = pygame.transform.scale(self.original_image_off, self.tween_size.get_output())
+                self.image_on = pygame.transform.scale(self.original_image_on, self.tween_size.get_output())
+
         if position == None:
             image = self.image_on if self.click_state == True else self.image_off
             screen.blit(image, self.rect)
@@ -146,86 +166,3 @@ class NewButton:
             
             image = self.image_on if self.click_state == True else self.image_off
             screen.blit(image, self.rect)
-
-
-class Button:
-    def __init__(self, x, y, image_off_path, image_on_path, on_click):
-        self.image_off_path = image_off_path
-        self.image_on_path = image_on_path
-        self.on_click = on_click
-        self.tween_target_pos = None
-        self.tween_pos_duration = 0
-        self.tween_pos_delay = 0
-        self.tween_pos_function = None
-        self.tween_pos_clock = 0
-        self.state = "off"
-        self.load_images()
-
-        # Set the initial rect alignment to the center of the image
-        self.rect = self.image_off.get_rect(center=(x, y))
-
-    def load_images(self):
-        self.image_off = load_image(self.image_off_path)
-        self.image_on = load_image(self.image_on_path)
-
-    def draw(self, screen):
-        image = self.image_on if self.state == "on" else self.image_off
-        screen.blit(image, self.rect)
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if self.rect.collidepoint(event.pos):
-                self.state = "on"
-
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            if self.state == "on":
-                self.state = "off"
-                self.on_click()
-
-    def tween_pos(self, target, duration_sec, delay_sec=0, tweening_function=pytweening.easeInOutQuad):
-        self.tween_target_pos = target
-        # Assuming 60 frames per second
-        self.tween_pos_duration = int(duration_sec * 60)
-        self.tween_pos_delay = int(delay_sec * 60)
-        self.tween_pos_function = tweening_function
-        self.tween_pos_clock = 0
-
-    def update(self):
-        if self.tween_target_pos is not None:
-            self.update_tween('pos')
-
-    def update_tween(self, tween_type):
-        tween_target = getattr(self, f'tween_target_{tween_type}')
-        tween_duration = getattr(self, f'tween_{tween_type}_duration', 0)
-        tween_delay = getattr(self, f'tween_{tween_type}_delay', 0)
-        tween_function = getattr(self, f'tween_{tween_type}_function', None)
-        tween_clock = getattr(self, f'tween_{tween_type}_clock', 0)
-
-        if tween_delay > 0:
-            setattr(self, f'tween_{tween_type}_delay', tween_delay - 1)
-        else:
-            setattr(self, f'tween_{tween_type}_clock', tween_clock + 1)
-            if tween_duration > 0 and tween_clock <= tween_duration:
-                progress = tween_clock / tween_duration
-                eased_progress = tween_function(progress)
-
-                if tween_type == 'pos':
-                    new_x = int(
-                        self.rect.centerx + (tween_target[0] - self.rect.centerx) * eased_progress)
-                    new_y = int(
-                        self.rect.centery + (tween_target[1] - self.rect.centery) * eased_progress)
-
-                    self.rect.center = (new_x, new_y)
-            else:
-                setattr(self, f'tween_target_{tween_type}', None)
-                setattr(self, f'tween_{tween_type}_clock', 0)
-                setattr(self, f'tween_{tween_type}_duration', 0)
-                setattr(self, f'tween_{tween_type}_delay', 0)
-                setattr(self, f'tween_{tween_type}_function', None)
-
-
-
-
-
-
-

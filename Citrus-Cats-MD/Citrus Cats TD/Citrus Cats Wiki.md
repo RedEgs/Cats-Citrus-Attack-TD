@@ -1,7 +1,5 @@
 Here you will find everything to-do with Citrus Cats. The project is open-source meaning you can view or edit the code as you so please. I'll post documentation every now and then on the various different libraries that I create to assist with Citrus cats' development. 
 ## <u>Index</u>
-## [[Gameplay]]
-
 ## <u>To-Do</u>
 
 ## Scenes
@@ -37,8 +35,15 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Easy tower instancing #WIP 
 - [ ] Tower logic refactor #WIP 
 - [ ] Mouse preview refactor
+- [ ] Completely refactor menu scenes to be organised and tidy
 - [x] Refactor tweening on EVERYTHING (Use dataclasses) 
-	- [ ] Improve interaction between buttons and tweens 
+	- [ ] Improve interaction between buttons and tweens #WIP 
+	- [x] Try to get tweens to stop checking once they are finished 
+	- [ ] Make a tween manager to render all tweens in a group.
+	- [ ] Try to make tweens easier to use.
 - [ ] ↑ Refactor buttons (specifically add group rendering, improve tweening) #WIP 
 	- [ ] Fix buttons holding down when pressed but not hovered.
 	- [ ] Make a variant to buttons which allows for surfaces to be passed directly
+
+## Other
+- [ ] Write proper documentation for tweens and scenes because confised
