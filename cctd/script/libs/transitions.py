@@ -66,13 +66,11 @@ class FadeTransition(Transition):
         
         self.timing = timing
 
-        loading_image = load_image(os.path.join(resources_dir, "loading", "loading_screen.png")).convert_alpha()
+        self.loading_image = load_image(os.path.join(resources_dir, "loading", "loading_screen.png")).convert_alpha()
         
         
-        self.FadeIn = TweenOpacity(
-            0, 255, loading_image, timing, pytweening.easeInOutQuad)
-        self.FadeOut = TweenOpacity(
-            255, 0, loading_image, timing, pytweening.easeInOutQuad)
+        self.FadeIn = Tween(opacity_fade_in_data, self.transition_director.tween_director)
+        self.FadeOut = Tween(opacity_fade_out_data, self.transition_director.tween_director)
 
         self.FadeIn.start()
 
@@ -83,9 +81,6 @@ class FadeTransition(Transition):
         return super().add_transition()
 
     def update(self):
-        self.FadeIn.update()
-        self.FadeOut.update()
-
         if self.curr_percentage == self.timing * 100:
             self.scene_director.set_scene(self.to_scene) # Change the scene while black
             self.FadeOut.start()
@@ -98,9 +93,12 @@ class FadeTransition(Transition):
 
 
     def draw(self):
-        self.FadeIn.draw(self.screen)
-        self.FadeOut.draw(self.screen)
-    
+        self.loading_image.set_alpha(self.FadeIn.get_output())
+
+        if self.FadeIn.check_finished():
+            self.loading_image.set_alpha(self.FadeOut.get_output())
+
+        self.screen.blit(self.loading_image, (0,0))
 
 
 

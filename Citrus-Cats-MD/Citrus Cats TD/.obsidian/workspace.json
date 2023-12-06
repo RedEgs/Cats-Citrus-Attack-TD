@@ -65,7 +65,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -146,7 +147,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "9a41970fee289974",
+  "active": "adf4d0b2cd40dc22",
   "lastOpenFiles": [
     "Documentation/Scenes/Menu.py.md",
     "Documentation/Towers.py.md",

@@ -61,7 +61,7 @@ class Menu(Scene):
         
         # play button: (self.center_x, self.center_y+500), (self.center_x, self.center_y)
         # options button: (self.center_x, self.center_y+500), (self.ceqnter_x, self.center_y+75)
-        # quit buttons: (self.center_x, self.center_y+500), (self.center_x, self.center_y+150)
+        # quit buttons: (self.center_x, self.center_y+500), (self.center_x, self.center_y+150)        
 
     def on_exit(self):
         pass

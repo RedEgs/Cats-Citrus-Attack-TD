@@ -26,7 +26,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 
 ## Backend
 - [x] Add vertical parameters for `calculate_index_spacing()` 
-	- [ ] Fix vertical parameters, past 5 elements.
+	- [x] Fix vertical parameters, past 5 elements.
 - [ ] Refactor scene classes to pass in extra data if needed, make it optional
 - [ ] Improve tower registry system #WIP
 - [ ] Improve rarity system 
@@ -36,12 +36,15 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Easy tower instancing #WIP 
 - [ ] Tower logic refactor #WIP 
 - [ ] Mouse preview refactor
-- [ ] Completely refactor menu scenes to be organised and tidy
+- [ ] Refactor all scenes with buttons and tweens to work properly
+- [ ] Add more parameters for tweens like, `self.start(reverse_on_finshed=bool)` `self.stop()`
+- [x] Add a `wait(secs)` to utils for delaying in pygame 
+- [x] Completely refactor menu scene to be organised and tidy
 - [x] Refactor tweening on EVERYTHING (Use dataclasses) 
-	- [ ] Improve interaction between buttons and tweens #WIP 
+	- [x] Improve interaction between buttons and tweens #COULD-BE-IMPROVED 
 	- [x] Try to get tweens to stop checking once they are finished 
-	- [ ] Make a tween manager to render all tweens in a group.
-	- [ ] Try to make tweens easier to use.
+	- [x] Make a tween manager to render all tweens in a group.
+	- [x] Try to make tweens easier to use. #COULD-BE-IMPROVED
 - [ ] ↑ Refactor buttons (specifically add group rendering, improve tweening) #WIP 
 	- [ ] Fix buttons holding down when pressed but not hovered.
 	- [ ] Make a variant to buttons which allows for surfaces to be passed directly

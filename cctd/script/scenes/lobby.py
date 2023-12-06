@@ -32,9 +32,7 @@ class LobbyScene(Scene):
         
         
         self.play_button = Button((self.center_pos[0], self.center_pos[1]), os.path.join(resources_dir, "lobby", "endless_button_off.png"), os.path.join(resources_dir, "lobby", "endless_button_on.png"), lambda:  self.scene_director.switch_scene("game_scene"), lambda: None)
-        self.play_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]-500), (self.center_pos[0], self.center_pos[1]-250), 2, 0, pytweening.easeInOutCubic), self.tween_director)
-        
-        
+        self.play_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]-500), (self.center_pos[0], self.center_pos[1]-250), 1, 0, pytweening.easeInOutCubic), self.tween_director)
         
         
 
@@ -60,10 +58,11 @@ class LobbyScene(Scene):
             cover_pos = cover.get_rect(center=(image.get_width()//2, image.get_height()//2))
             image.blit(cover, cover_pos)
             
-            center_pos_x, center_pos_y = calculate_index_spacing_out(towers_data.index(tower_data), 163, 177, image.get_width(), image.get_height(), 44, 9, 4)
+            center_pos = calculate_index_spacing(towers_data.index(tower_data), 163, 177, image.get_width(), image.get_height(), 44, 9, 4)
             corner_pos = calculate_index_spacing(towers_data.index(tower_data), 107, 110, image.get_width(), image.get_height(), 44, 9, 4)
             
-            button = Button(center_pos_x, center_pos_y, os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), lambda id=tower_data["id"]: self.select_tower(id))
+            button = Button((center_pos), os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), 
+                            os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), lambda id=tower_data["id"]: self.select_tower(id), lambda: print("Clicked"))
             
             self.tower_ids.append(tower_data["id"])
             self.tower_buttons.append(button)
@@ -76,6 +75,8 @@ class LobbyScene(Scene):
         #index = self.tower_ids.index(id)
         string = self.registry.get_tower_dir(id)
         list = self.registry.selected_towers
+
+        
           
         if len(list) <= self.towers_limit + self.hero_limit:    
             if is_in_list(string, list):
@@ -90,14 +91,14 @@ class LobbyScene(Scene):
                         print("selected hero")
                                             
                         if len(list) == self.towers_limit + self.hero_limit:
-                            self.playButton.tween_pos((self.center_x, self.center_y-250), 1 ,0, pytweening.easeInOutQuad) 
+                           self.play_button_tween.start()
                 
                         
                 elif self.amount_towers >= self.towers_limit:
                     print("Reached Normal Tower Limit")
                     
                     if len(list) == self.towers_limit + self.hero_limit:
-                        self.playButton.tween_pos((self.center_x, self.center_y-250), 1 ,0, pytweening.easeInOutQuad) 
+                        self.play_button_tween.start()
                 
                 else:
                     self.registry.add_to_selected_towers(self.registry.get_tower_dir(id))
@@ -105,7 +106,7 @@ class LobbyScene(Scene):
                     print("Selected Tower")
                     
                     if len(list) == self.towers_limit + self.hero_limit:
-                        self.playButton.tween_pos((self.center_x, self.center_y-250), 1 ,0, pytweening.easeInOutQuad) 
+                       self.play_button_tween.start()
         
         else:
               
@@ -122,6 +123,9 @@ class LobbyScene(Scene):
     
     def events(self, event):
         self.play_button.handle_event(event)
+
+        for button in self.tower_buttons:
+            button.handle_event(event)
     
 
     def update(self):
@@ -130,6 +134,10 @@ class LobbyScene(Scene):
     def draw(self):
         self.screen.fill(0)
         self.screen.blit(self.background_image, (0,0))
+
+        for item in self.tower_items:
+            self.screen.blit(item[0], item[1])
+
         self.tween_director.update([self.play_button.draw(self.screen, self.play_button_tween.get_output())])
                      
     def run(self, event):

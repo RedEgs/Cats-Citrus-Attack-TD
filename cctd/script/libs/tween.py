@@ -171,7 +171,7 @@ class Tween:
 
 #SECTION - Presets Data
 
-opacity_fade_in_data = TweenData(1, 255, 1, 0, pytweening.easeInOutQuad)
-
+opacity_fade_in_data = TweenData(0, 255, 1, 0, pytweening.easeInOutQuad)
+opacity_fade_out_data = TweenData(255, 0, 1, 0, pytweening.easeInOutQuad)
 
 #SECTION - Presets Functions

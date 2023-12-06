@@ -39,6 +39,20 @@ def get_center_pos(surface):
 def callback():
     print("Callbacked")
 
+def script_wait(seconds):
+    clock = pygame.time.Clock()
+    start_time = pygame.time.get_ticks()
+    seconds = seconds * 1000
+
+    while pygame.time.get_ticks() - start_time < seconds:
+        clock.tick(120)  # Adjust the frame rate as needed (e.g., 60 frames per second)
+        
+    return True
+    
+
+
+
+
 #!SECTION
 
 
@@ -48,34 +62,22 @@ def distance_squared(point1, point2):
 
 def calculate_index_spacing(i, starting_pos_x, starting_pos_y, image_width, image_height, h_spacing, v_spacing, v_limit):
     if v_limit <= i:
-        y = starting_pos_y + (image_height + v_spacing) * (i-v_limit + 1)
-        x = starting_pos_x+(image_width+h_spacing)*(i-v_limit)
-        
-        spacing = (x, y)
-        return spacing
-    else:
-        y = starting_pos_y
-        x = starting_pos_x+(image_width+h_spacing)*(i)
-        
-        
-        spacing = (x, y)
-        return spacing
-    
-def calculate_index_spacing_out(i, starting_pos_x, starting_pos_y, image_width, image_height, h_spacing, v_spacing, v_limit):
-    if v_limit <= i:
-        y = starting_pos_y + (image_height + v_spacing) * (i-v_limit + 1)
-        x = starting_pos_x+(image_width+h_spacing)*(i-v_limit)
-        
-        spacing = (x, y)
-        return spacing[0], spacing[1]
-    else:
-        y = starting_pos_y
-        x = starting_pos_x+(image_width+h_spacing)*(i)
-        
-        
-        spacing = (x, y)
-        return spacing[0], spacing[1]
+        if i-v_limit == 0:
+            y = starting_pos_y + (image_height + v_spacing) * (i-v_limit+1)
+        else:
+            y = starting_pos_y + (image_height + v_spacing) * (i-v_limit)
 
+        x = starting_pos_x+(image_width+h_spacing)*(i-v_limit)
+        
+        spacing = (x, y)
+        return spacing
+    else:
+        y = starting_pos_y
+        x = starting_pos_x+(image_width+h_spacing)*(i)
+        
+        
+        spacing = (x, y)
+        return spacing
 
 
 
