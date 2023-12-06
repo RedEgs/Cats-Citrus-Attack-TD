@@ -71,8 +71,6 @@ class GameOverlay(GUIElement):
         self.healthText = None
         self.roundCounter = None
 
-
-
     def draw(self, surface):
         return super().draw(surface)
     
@@ -103,22 +101,18 @@ class Button:
         self.scale(1.1)    
     
     def on_hover_exit(self):
-        self.scale(0.999)  
+        for tween in self.tween_director.get_tweens():
+            if not tween.check_finished():
+                tween.reverse()
 
-    
     def scale(self, scale_factor):
         # Calculate the new dimensions based on the original size
         new_size = int(self.original_image_off.get_width() * scale_factor), int(self.original_image_off.get_height() *  scale_factor)
         
-        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutElastic)
-        self.tween_size = TweenVector2(tween_size_data, self.tween_director) 
-        self.button_tweens.append(self.tween_size)
-        self.tween_size.start()
-        
-        # Update the button size
-        self.size = self.tween_size.get_output()
+        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutExpo)
+        tween_size = TweenVector2(tween_size_data, self.tween_director) 
+        tween_size.start(dont_finish_tween=True)
 
-        # Update the images based on the new size
 
     def handle_event(self, event):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
@@ -151,14 +145,13 @@ class Button:
                 self.on_left_click()
 
     def draw(self, screen, position):
-        for tween in self.button_tweens:
-            tween.update()
+        self.tween_director.update()
 
-            if tween.check_finished():
-                self.button_tweens.pop(self.button_tweens.index(tween))
-            else:
-                self.image_off = pygame.transform.scale(self.original_image_off, self.tween_size.get_output())
-                self.image_on = pygame.transform.scale(self.original_image_on, self.tween_size.get_output())
+        for tween in self.tween_director.get_tweens():
+            size = tween.get_output()
+
+            self.image_off = pygame.transform.scale(self.original_image_off, tween.get_output())
+            self.image_on = pygame.transform.scale(self.original_image_on, tween.get_output())
 
         if position == None:
             image = self.image_on if self.click_state == True else self.image_off
@@ -168,3 +161,81 @@ class Button:
             
             image = self.image_on if self.click_state == True else self.image_off
             screen.blit(image, self.rect)
+
+class SurfaceButton:
+    def __init__(self, position, surface_off, surface_on, on_left_click, on_right_click, alignment="center"):
+        self.tween_director = TweenDirector()
+
+        self.original_surface_off = surface_off
+        self.original_surface_on = surface_on
+
+        # Set the initial size of the button
+        self.size = self.original_surface_off.get_size()
+        self.surface_off = pygame.transform.smoothscale(self.original_surface_off, self.size)
+        self.surface_on = pygame.transform.smoothscale(self.original_surface_on, self.size)
+
+        self.on_left_click = on_left_click
+        self.on_right_click = on_right_click
+
+        self.click_state = False
+        self.hovered_state = False
+
+        self.set_alignment(position, alignment)
+
+    def set_alignment(self, position, alignment):
+        if alignment == "center":
+            self.rect = self.surface_off.get_rect(center=position)
+        elif alignment == "top-left":
+            self.rect = pygame.Rect(position, self.size)
+        # Add more alignment options as needed
+
+    def on_hover_enter(self):
+        self.scale(1.1)
+
+    def on_hover_exit(self):
+        for tween in self.tween_director.get_tweens():
+            if not tween.check_finished():
+                tween.reverse()
+
+    def scale(self, scale_factor):
+        # Calculate the new dimensions based on the original size
+        new_size = int(self.original_surface_off.get_width() * scale_factor), int(self.original_surface_off.get_height() * scale_factor)
+
+        tween_size_data = TweenDataVector2(self.size, new_size, 0.5, 0, pytweening.easeOutExpo)
+        tween_size = TweenVector2(tween_size_data, self.tween_director)
+        tween_size.start(dont_finish_tween=True)
+
+    def handle_event(self, event):
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if not self.hovered_state:
+                self.hovered_state = True
+                self.on_hover_enter()
+        elif self.hovered_state:
+            self.hovered_state = False
+            self.on_hover_exit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 3:  # Right Click
+                if self.rect.collidepoint(pygame.mouse.get_pos()):
+                    self.click_state = True
+                    self.on_right_click()
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 3 and self.click_state:
+                self.click_state = False
+
+            if event.button == 1 and self.click_state:
+                self.click_state = False
+                self.on_left_click()
+
+    def draw(self, screen):
+        self.tween_director.update()
+
+        for tween in self.tween_director.get_tweens():
+            if isinstance(tween, TweenVector2):
+                self.size = tween.get_output()
+                self.surface_off = pygame.transform.scale(self.original_surface_off, self.size)
+                self.surface_on = pygame.transform.scale(self.original_surface_on, self.size)
+
+        surface = self.surface_on if self.click_state else self.surface_off
+        screen.blit(surface, self.rect)

@@ -27,7 +27,7 @@ class Menu(Scene):
         # Background Image Tweening
         self.background_image = load_image(os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'background.png'))
         self.background_image.set_alpha(0)
-        self.background_image_tween = Tween(opacity_fade_in_data, self.tween_director)
+        self.background_image_tween = Tween(opacity_fade_data, self.tween_director)
         self.background_image_tween.start()
         
         # Logo Image Tweening

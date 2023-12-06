@@ -45,14 +45,6 @@ class TweenDataVector2():
     duration: float
     delay: float
     easing_function: Callable[[float], float] = pytweening.linear
-        
-class TweenDataVector2:
-    def __init__(self, start_value, end_value, duration, delay, easing_function):
-        self.start_value = start_value
-        self.end_value = end_value
-        self.duration = duration
-        self.delay = delay
-        self.easing_function = easing_function
 
 class TweenVector2:
     def __init__(self, tween_data: TweenDataVector2, tween_director):
@@ -68,14 +60,23 @@ class TweenVector2:
         self.start_time = None
         self.current_value = self.start_value
         self.is_finished = False  # Flag to track whether the tween has finished
+        self.reverse_on_finish = False  # Flag to determine whether to reverse on finish
 
         self.tween_director.get_tweens().append(self)
 
-    def start(self):
+    def start(self, reverse_on_finish=False, dont_finish_tween=False):
+        self.reverse_on_finish = reverse_on_finish
+        self.dont_finish_tween = dont_finish_tween
+
         if self.delay <= 0 or self.delay is None:
             self.start_time = pygame.time.get_ticks()
         else:
             self.start_time = pygame.time.get_ticks() + self.delay
+
+    def reverse(self):
+        if not self.is_finished:
+            # Reverse the animation manually
+            self.reverse_animation()
 
     def update(self):
         if not self.is_finished:  # Only update if the tween is not finished
@@ -94,8 +95,25 @@ class TweenVector2:
                         self.start_value[0] + self.easing_function(progress) * (self.end_value[0] - self.start_value[0]),
                         self.start_value[1] + self.easing_function(progress) * (self.end_value[1] - self.start_value[1]),
                     )
+
                     if progress >= 1.0:
-                        self.is_finished = True  # Mark the tween as finished
+                        if self.dont_finish_tween == True:
+                            pass
+                        else:
+                            self.is_finished = True  # Mark the tween as finished
+
+                        if self.reverse_on_finish:
+                            # Reverse the animation on finish
+                            self.reverse_animation()
+
+    def reverse_animation(self):
+        # Swap start and end values to reverse the animation
+        self.start_value, self.end_value = self.end_value, self.start_value
+        self.start_time = pygame.time.get_ticks()  # Reset start time for the reversed animation
+        self.is_finished = False  # Reset finished flag for the reversed animation
+
+    def is_reversed(self):
+        return self.start_value == self.end_value    
 
     def get_output(self):
         return self.current_value
@@ -105,7 +123,6 @@ class TweenVector2:
 
     def kill(self):
         del self
-
 @dataclass
 class TweenData():
     start_value: float
@@ -128,15 +145,23 @@ class Tween:
         self.start_time = None
         self.current_value = self.start_value
         self.is_finished = False  # Flag to track whether the tween has finished
-        self.delay_completed = False  # Flag to track whether the delay has been completed
+        self.reverse_on_finish = False  # Flag to determine whether to reverse on finish
 
         self.tween_director.get_tweens().append(self)
 
-    def start(self):
+    def start(self, reverse_on_finish=False, dont_finish_tween=False):
+        self.reverse_on_finish = reverse_on_finish
+        self.dont_finish_tween = dont_finish_tween
+
         if self.delay <= 0 or self.delay is None:
             self.start_time = pygame.time.get_ticks()
         else:
-            self.start_time = pygame.time.get_ticks()
+            self.start_time = pygame.time.get_ticks() + self.delay
+
+    def reverse(self, dont_finish_reverse=True):
+        if not self.is_finished:
+            # Reverse the animation manually
+            self.reverse_animation(dont_finish_reverse)
 
     def update(self):
         if not self.is_finished:  # Only update if the tween is not finished
@@ -147,18 +172,30 @@ class Tween:
 
                 elapsed_time = current_time - self.start_time
 
-                if elapsed_time >= self.delay and not self.delay_completed:
-                    self.delay_completed = True
-                    self.start_time = current_time
-
-                if self.delay_completed:
+                if elapsed_time >= self.delay:
                     progress = min((elapsed_time - self.delay) / self.duration, 1.0)
 
                     # Use the provided easing function to calculate the interpolated value
                     self.current_value = self.start_value + self.easing_function(progress) * (self.end_value - self.start_value)
 
                     if progress >= 1.0:
-                        self.is_finished = True  # Mark the tween as finished
+                        if self.dont_finish_tween == True:
+                            pass
+                        else:
+                            self.is_finished = True  # Mark the tween as finished
+
+                        if self.reverse_on_finish:
+                            # Reverse the animation on finish
+                            self.reverse_animation()
+
+    def reverse_animation(self, finish_reverse=True):
+        # Swap start and end values to reverse the animation
+        self.start_value, self.end_value = self.end_value, self.start_value
+        self.start_time = pygame.time.get_ticks()  # Reset start time for the reversed animation
+        self.is_finished = finish_reverse  # Reset finished flag for the reversed animation
+
+    def is_reversed(self):
+        return self.start_value == self.end_value    
 
     def get_output(self):
         return self.current_value
@@ -167,11 +204,11 @@ class Tween:
         return self.is_finished
 
     def kill(self):
+        print("deleted: " + str(self))
         del self
 
 #SECTION - Presets Data
 
-opacity_fade_in_data = TweenData(0, 255, 1, 0, pytweening.easeInOutQuad)
-opacity_fade_out_data = TweenData(255, 0, 1, 0, pytweening.easeInOutQuad)
+opacity_fade_data = TweenData(0, 255, 1, 0, pytweening.easeInOutQuad)
 
 #SECTION - Presets Functions

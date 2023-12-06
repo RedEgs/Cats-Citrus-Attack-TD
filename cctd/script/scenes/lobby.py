@@ -61,8 +61,7 @@ class LobbyScene(Scene):
             center_pos = calculate_index_spacing(towers_data.index(tower_data), 163, 177, image.get_width(), image.get_height(), 44, 9, 4)
             corner_pos = calculate_index_spacing(towers_data.index(tower_data), 107, 110, image.get_width(), image.get_height(), 44, 9, 4)
             
-            button = Button((center_pos), os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), 
-                            os.path.join(current_dir, '..', '..', 'resources', 'lobby',f'tower_select_{check_rarity_color(tower_data["base_rarity"])}.png'), lambda id=tower_data["id"]: self.select_tower(id), lambda: print("Clicked"))
+            button = SurfaceButton((center_pos), image, image, lambda id=tower_data["id"]: self.select_tower(id), lambda: print("Clicked"), "center")
             
             self.tower_ids.append(tower_data["id"])
             self.tower_buttons.append(button)
@@ -135,8 +134,9 @@ class LobbyScene(Scene):
         self.screen.fill(0)
         self.screen.blit(self.background_image, (0,0))
 
-        for item in self.tower_items:
-            self.screen.blit(item[0], item[1])
+            #self.screen.blit(item[0], item[1])
+        for button in self.tower_buttons:
+            button.draw(self.screen)    
 
         self.tween_director.update([self.play_button.draw(self.screen, self.play_button_tween.get_output())])
                      
