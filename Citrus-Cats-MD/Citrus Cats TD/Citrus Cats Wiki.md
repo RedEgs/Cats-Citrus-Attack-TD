@@ -22,6 +22,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Options 
 - [ ] Button hover size bounce animation #NEXT
 - [x] Text outlines and strokes (semi, due to broken thickness controls) #SEMI-FINISHED
+	- [ ] Refactor strokes to be internal to text
 
 ## Backend
 - [x] Add vertical parameters for `calculate_index_spacing()` 

@@ -37,7 +37,7 @@ class Main:
     
         game_scenes = []
         game_scenes.append(Menu(screen, self.SceneDirector, "main_menu"))
-        #game_scenes.append(LobbyScene(screen, self.game_registry, self.SceneDirector, "lobby_scene"))
+        game_scenes.append(LobbyScene(screen, self.game_registry, self.SceneDirector, "lobby_scene"))
         #game_scenes.append(ExampleScene(screen, self.SceneDirector, "example_scene"))
         #game_scenes.append(EndlessGameScene(screen, self.SceneDirector, "game_scene"))
 

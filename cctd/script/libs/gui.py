@@ -78,13 +78,15 @@ class GameOverlay(GUIElement):
     
 class Button:
     def __init__(self, position, image_off_path, image_on_path, on_left_click, on_right_click):
+        self.tween_director = TweenDirector()
+        
         self.original_image_off = pygame.image.load(image_off_path).convert_alpha()
         self.original_image_on = pygame.image.load(image_on_path).convert_alpha()
 
         # Set the initial size of the button
         self.size = self.original_image_off.get_size()
-        self.image_off = pygame.transform.scale(self.original_image_off, self.size)
-        self.image_on = pygame.transform.scale(self.original_image_on, self.size)
+        self.image_off = pygame.transform.smoothscale(self.original_image_off, self.size)
+        self.image_on = pygame.transform.smoothscale(self.original_image_on, self.size)
 
         self.on_left_click = on_left_click
         self.on_right_click = on_right_click
@@ -101,7 +103,7 @@ class Button:
         self.scale(1.1)    
     
     def on_hover_exit(self):
-        self.scale(0.9)  
+        self.scale(0.999)  
 
     
     def scale(self, scale_factor):
@@ -109,7 +111,7 @@ class Button:
         new_size = int(self.original_image_off.get_width() * scale_factor), int(self.original_image_off.get_height() *  scale_factor)
         
         tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutElastic)
-        self.tween_size = TweenVector2(tween_size_data) 
+        self.tween_size = TweenVector2(tween_size_data, self.tween_director) 
         self.button_tweens.append(self.tween_size)
         self.tween_size.start()
         

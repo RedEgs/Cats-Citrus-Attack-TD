@@ -12,22 +12,31 @@ from ..libs.map import *
 class LobbyScene(Scene):
     def __init__(self, screen, registry, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
+        self.tween_director = TweenDirector()
 
         self.screen = screen
-        self.registry = registry
         self.scene_director = scene_director
         self.scene_name = scene_name
+        
+        self.registry = registry
         
         self.map_director = MapDirector(screen)
 
         self.width, self.height = self.screen.get_size()
-        self.center_x = self.width // 2
-        self.center_y = self.height // 2
+        self.center_pos = (self.width //2, self.height // 2)  
         
-        self.playButton = Button(
-            self.center_x, self.center_y-500, os.path.join(resources_dir, "lobby", "endless_button_off.png"), os.path.join(resources_dir, "lobby", "endless_button_on.png"), self.playGame)
-        self.background = pygame.image.load(
-            os.path.join(resources_dir, "lobby", "background.png")).convert_alpha()
+        
+        # Play Button Parameters: (self.center_x, self.center_y-500), (self.center_x, self.center_y-250)
+        self.background_image = load_image(os.path.join(resources_dir, "lobby", "background.png"))
+        
+        
+        
+        self.play_button = Button((self.center_pos[0], self.center_pos[1]), os.path.join(resources_dir, "lobby", "endless_button_off.png"), os.path.join(resources_dir, "lobby", "endless_button_on.png"), lambda:  self.scene_director.switch_scene("game_scene"), lambda: None)
+        self.play_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]-500), (self.center_pos[0], self.center_pos[1]-250), 2, 0, pytweening.easeInOutCubic), self.tween_director)
+        
+        
+        
+        
 
         self.towers_limit = 4
         self.hero_limit = 1
@@ -105,12 +114,6 @@ class LobbyScene(Scene):
         print("Heroes: " + str(self.amount_heros))
         print("Towers: " + str(self.amount_towers))
         
-       
-
-
-    def playGame(self):
-        self.scene_director.switch_scene("game_scene")
-
     def on_exit(self):
         return super().on_exit()
 
@@ -118,25 +121,16 @@ class LobbyScene(Scene):
         self.towers, self.tower_buttons, self.tower_ids = self.load_select_towers()
     
     def events(self, event):
-        self.playButton.handle_event(event)
-        
-        for button in self.tower_buttons:
-            button.handle_event(event)
+        self.play_button.handle_event(event)
+    
 
     def update(self):
-        self.playButton.update()
-        
-        for button in self.tower_buttons:
-            button.update()
+        self.tween_director.update()
 
     def draw(self):
         self.screen.fill(0)
-        
-        self.screen.blit(self.background, (0,0))
-        self.playButton.draw(self.screen)
-        
-        for tower in self.towers:
-            self.screen.blit(tower[0], tower[1]) 
+        self.screen.blit(self.background_image, (0,0))
+        self.tween_director.update([self.play_button.draw(self.screen, self.play_button_tween.get_output())])
                      
     def run(self, event):
         self.events(event)

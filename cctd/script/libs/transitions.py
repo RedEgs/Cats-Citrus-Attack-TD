@@ -4,10 +4,12 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 
 from ..libs.utils import *
+from ..libs.tween import *
 from ..libs.scenes import *
 
 class TransitionDirector:
     def __init__(self, screen):
+        self.tween_director = TweenDirector()
         self.transitions = []
 
         self.isTransitioning = len(self.transitions) == 1
@@ -21,6 +23,8 @@ class TransitionDirector:
         self.transitions.clear()
 
     def update(self):
+        self.tween_director.update()
+        
         for transition in self.transitions:
             transition.update()
             transition.draw()
@@ -28,7 +32,7 @@ class TransitionDirector:
 class Transition:
     def __init__(self, screen, scene_director, transition_director, from_scene, to_scene):
         self.transition_director = transition_director
-        self.sceneDirector = scene_director
+        self.scene_director = scene_director
         self.screen = screen
         self.from_scene = from_scene
         self.to_scene = to_scene
@@ -62,14 +66,13 @@ class FadeTransition(Transition):
         
         self.timing = timing
 
-        loadingImage = pygame.image.load(
-            os.path.join(resources_dir, "loading", "loading_screen.png")).convert_alpha()
+        loading_image = load_image(os.path.join(resources_dir, "loading", "loading_screen.png")).convert_alpha()
         
         
         self.FadeIn = TweenOpacity(
-            0, 255, loadingImage, timing, pytweening.easeInOutQuad)
+            0, 255, loading_image, timing, pytweening.easeInOutQuad)
         self.FadeOut = TweenOpacity(
-            255, 0, loadingImage, timing, pytweening.easeInOutQuad)
+            255, 0, loading_image, timing, pytweening.easeInOutQuad)
 
         self.FadeIn.start()
 
@@ -84,7 +87,7 @@ class FadeTransition(Transition):
         self.FadeOut.update()
 
         if self.curr_percentage == self.timing * 100:
-            self.sceneDirector.set_scene(self.to_scene) # Change the scene while black
+            self.scene_director.set_scene(self.to_scene) # Change the scene while black
             self.FadeOut.start()
                 
         if self.curr_percentage == self.timing * 200:
