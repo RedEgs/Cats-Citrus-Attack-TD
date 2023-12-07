@@ -23,8 +23,8 @@ def get_item_list(item, list):
 def get_last_index(list):
     try:
         return len(list)-1
-    except ValueError:
-        return False
+    except IndexError:
+        return None
         
         
     

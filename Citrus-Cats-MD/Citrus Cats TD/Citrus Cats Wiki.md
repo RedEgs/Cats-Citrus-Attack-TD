@@ -7,7 +7,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 
 
 
-## <u>Index</u>
+
 ## <u>To-Do</u>
 
 ## Scenes
@@ -28,7 +28,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 ## GUI
 - [ ] Shop #WIP 
 - [ ] Options 
-- [ ] Button hover size bounce animation #NEXT
+- [x] Button hover size bounce animation
 - [x] Text outlines and strokes (semi, due to broken thickness controls) #SEMI-FINISHED
 	- [ ] Refactor strokes to be internal to text #NEEDS-TESTING
 
@@ -39,6 +39,8 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Refactor scene classes to pass in extra data if needed, make it optional
 - [ ] Improve tower registry system #WIP
 - [ ] Improve rarity system 
+- [ ] Make element system
+- [ ] Make upgrades system
 - [x] Refactor utils to make misc features 
 - [ ] Make lib for damage calculations #NEXT
 - [ ] Add tower and enemy loading at game startup #WIP #SEMI-FINISHED 

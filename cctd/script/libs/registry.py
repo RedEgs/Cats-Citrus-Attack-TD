@@ -32,6 +32,9 @@ class Registry:
             return print("Reached Selected Tower Limit")
         else:
             self.selected_towers.append(tower)
+            
+    def remove_selected_towers(self, tower):
+        self.selected_towers.remove(tower)
     
     def get_selected_towers_registry(self):
         return self.selected_towers

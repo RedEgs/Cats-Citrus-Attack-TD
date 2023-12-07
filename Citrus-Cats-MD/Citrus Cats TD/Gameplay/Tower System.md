@@ -28,6 +28,9 @@ Attack types are way simpler to understand as attack types is just the way the d
 #### <u>Citrus Curses</u>
 During your gameplay you will be able to make a "Citrus Curse" on any cat which will sacrifice something to allow your cat the be stronger in some aspect. As an example, I could make a citrus curse to decrease a cats effective range to 3m instead of 15m to increase the cats firing speed by 500%. These curses cannot be removed during your run at all. Selling the tower, or replacing the tower will not remove the curse. Bear in mind only 1 curse can be put on single tower.
 
+### <u> Selecting your first towers. </u>
+- Talk about rarity/element colour
+
 ### <u>Placing your first towers.</u>
 *Let this part act more as a guide as apposed to a wiki, so you may want to bookmark this part or whatever.*
 

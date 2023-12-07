@@ -210,6 +210,7 @@ class SurfaceButton:
         self.click_state = False
         self.hovered_state = False
 
+        self.current_tween = self.tween_director.get_tweens()
         self.hovered_buttons = gui_director.hovered_buttons
 
         self.rect = self.surface_off.get_rect(center=position)

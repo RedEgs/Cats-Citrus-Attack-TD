@@ -7,10 +7,11 @@ from ..libs.gui import *
 from ..libs.utils import *
 from ..libs.scenes import *
 from ..libs.map import *
+from ..libs.registry import *
 
 
 class LobbyScene(Scene):
-    def __init__(self, screen, registry, scene_director, scene_name):
+    def __init__(self, screen, registry : Registry, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
         self.tween_director = TweenDirector()
         self.gui_director = GUIDirector()
@@ -60,7 +61,7 @@ class LobbyScene(Scene):
             center_pos = calculate_index_spacing(towers_data.index(tower_data), 163, 177, image.get_width(), image.get_height(), 44, 9, 4)
             corner_pos = calculate_index_spacing(towers_data.index(tower_data), 107, 110, image.get_width(), image.get_height(), 44, 9, 4)
             
-            button = SurfaceButton(self.gui_director, (center_pos), image, image, lambda id=tower_data["id"]: self.select_tower(id), lambda: print("Clicked"))
+            button = SurfaceButton(self.gui_director, (center_pos), image, image, lambda id=tower_data["id"]: self.select_tower(id),lambda id=tower_data["id"]: self.remove_tower(id))
             
             self.tower_ids.append(tower_data["id"])
             self.tower_buttons.append(button)
@@ -75,7 +76,8 @@ class LobbyScene(Scene):
         index = get_item_list(tower_dir, dir_list)
         
         clicked_button = self.gui_director.hovered_buttons[get_last_index(self.gui_director.hovered_buttons)]
-        print(self.gui_director.hovered_buttons) #.scale(1.1)
+        #print(self.gui_director.hovered_buttons) #.scale(1.1)
+        #.scale(1.1)
        
 
 
@@ -115,15 +117,29 @@ class LobbyScene(Scene):
                     
                     if len(dir_list) == self.towers_limit + self.hero_limit:
                        self.play_button_tween.start()
+                       
+            print(dir_list)
         
         else:
             print("Reached Max Towers")
             
-
+    def remove_tower(self, id):
+        tower_dir = self.registry.get_tower_dir(id)
+        dir_list = self.registry.get_selected_towers_registry()
+        index = get_item_list(tower_dir, dir_list)
         
-        #print("Heroes: " + str(self.amount_heros))
-        #print("Towers: " + str(self.amount_towers))
- 
+        
+        
+        clicked_button = self.gui_director.hovered_buttons[-1]
+        print(self.gui_director.hovered_buttons) #.scale(1.1)
+       
+
+        if is_in_list(tower_dir, dir_list):
+            self.registry.remove_selected_towers(self.registry.get_tower_dir(id))
+            print(dir_list) 
+            print(clicked_button.current_tween)
+            clicked_button.current_tween.reverse()
+        
         
 
         
