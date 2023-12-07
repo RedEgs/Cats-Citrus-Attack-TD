@@ -28,7 +28,10 @@ class Registry:
         pass
     
     def add_to_selected_towers(self, tower):
-        self.selected_towers.append(tower)
+        if len(self.selected_towers) >= 5:
+            return print("Reached Selected Tower Limit")
+        else:
+            self.selected_towers.append(tower)
     
     def get_selected_towers_registry(self):
         return self.selected_towers

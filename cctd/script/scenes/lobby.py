@@ -13,6 +13,7 @@ class LobbyScene(Scene):
     def __init__(self, screen, registry, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
         self.tween_director = TweenDirector()
+        self.gui_director = GUIDirector()
 
         self.screen = screen
         self.scene_director = scene_director
@@ -29,9 +30,7 @@ class LobbyScene(Scene):
         # Play Button Parameters: (self.center_x, self.center_y-500), (self.center_x, self.center_y-250)
         self.background_image = load_image(os.path.join(resources_dir, "lobby", "background.png"))
         
-        
-        
-        self.play_button = Button((self.center_pos[0], self.center_pos[1]), os.path.join(resources_dir, "lobby", "endless_button_off.png"), os.path.join(resources_dir, "lobby", "endless_button_on.png"), lambda:  self.scene_director.switch_scene("game_scene"), lambda: None)
+        self.play_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]), os.path.join(resources_dir, "lobby", "endless_button_off.png"), os.path.join(resources_dir, "lobby", "endless_button_on.png"), lambda:  self.scene_director.switch_scene("game_scene"), lambda: None)
         self.play_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]-500), (self.center_pos[0], self.center_pos[1]-250), 1, 0, pytweening.easeInOutCubic), self.tween_director)
         
         
@@ -61,7 +60,7 @@ class LobbyScene(Scene):
             center_pos = calculate_index_spacing(towers_data.index(tower_data), 163, 177, image.get_width(), image.get_height(), 44, 9, 4)
             corner_pos = calculate_index_spacing(towers_data.index(tower_data), 107, 110, image.get_width(), image.get_height(), 44, 9, 4)
             
-            button = SurfaceButton((center_pos), image, image, lambda id=tower_data["id"]: self.select_tower(id), lambda: print("Clicked"), "center")
+            button = SurfaceButton(self.gui_director, (center_pos), image, image, lambda id=tower_data["id"]: self.select_tower(id), lambda: print("Clicked"))
             
             self.tower_ids.append(tower_data["id"])
             self.tower_buttons.append(button)
@@ -71,48 +70,62 @@ class LobbyScene(Scene):
             
 
     def select_tower(self, id):
-        #index = self.tower_ids.index(id)
-        string = self.registry.get_tower_dir(id)
-        list = self.registry.selected_towers
-
+        tower_dir = self.registry.get_tower_dir(id)
+        dir_list = self.registry.get_selected_towers_registry()
+        index = get_item_list(tower_dir, dir_list)
         
-          
-        if len(list) <= self.towers_limit + self.hero_limit:    
-            if is_in_list(string, list):
-                print("Item already in list")
+        clicked_button = self.gui_director.hovered_buttons[get_last_index(self.gui_director.hovered_buttons)]
+        print(self.gui_director.hovered_buttons) #.scale(1.1)
+       
+
+
+        if len(dir_list) <= self.towers_limit + self.hero_limit:    
+            if is_in_list(tower_dir, dir_list):
+                pass
             else:
                 if self.registry.get_tower_data(id)["base_rarity"] >= 4: # If card is a hero
                     if self.amount_heros >= self.hero_limit:
-                        print("Hero already selected")
+                        #clicked_button.scale(1.1)
+                        #print("Hero already selected")
+                        pass
+
                     else:
                         self.registry.add_to_selected_towers(self.registry.get_tower_dir(id))
                         self.amount_heros += 1
-                        print("selected hero")
+                        clicked_button.scale(1.1)
+                        #print("selected hero")
                                             
-                        if len(list) == self.towers_limit + self.hero_limit:
+                        if len(dir_list) == self.towers_limit + self.hero_limit:
                            self.play_button_tween.start()
                 
                         
                 elif self.amount_towers >= self.towers_limit:
-                    print("Reached Normal Tower Limit")
+                    #print("Reached Normal Tower Limit")
                     
-                    if len(list) == self.towers_limit + self.hero_limit:
+                    if len(dir_list) == self.towers_limit + self.hero_limit:
                         self.play_button_tween.start()
                 
                 else:
                     self.registry.add_to_selected_towers(self.registry.get_tower_dir(id))
                     self.amount_towers += 1
-                    print("Selected Tower")
+                    clicked_button.scale(1.1)
+
+
+                    #print("Selected Tower")
                     
-                    if len(list) == self.towers_limit + self.hero_limit:
+                    if len(dir_list) == self.towers_limit + self.hero_limit:
                        self.play_button_tween.start()
         
         else:
-              
             print("Reached Max Towers")
             
-        print("Heroes: " + str(self.amount_heros))
-        print("Towers: " + str(self.amount_towers))
+
+        
+        #print("Heroes: " + str(self.amount_heros))
+        #print("Towers: " + str(self.amount_towers))
+ 
+        
+
         
     def on_exit(self):
         return super().on_exit()
@@ -120,15 +133,16 @@ class LobbyScene(Scene):
     def on_enter(self):
         self.towers, self.tower_buttons, self.tower_ids = self.load_select_towers()
     
-    def events(self, event):
-        self.play_button.handle_event(event)
-
+    def events(self, event): 
         for button in self.tower_buttons:
             button.handle_event(event)
+        
+        self.play_button.handle_event(event)
     
 
     def update(self):
         self.tween_director.update()
+        self.gui_director.update()
 
     def draw(self):
         self.screen.fill(0)

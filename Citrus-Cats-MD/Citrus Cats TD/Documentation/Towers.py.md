@@ -11,8 +11,7 @@ class TowerData(BaseModel):
     # Base tower values
     base_damage: float
     base_cooldown: float
-    base_damage: float
-    base_crit_multiplier:sfloat
+    base_crit_multiplier:float
     base_crit_chance: float
     base_fire_rate: float
     base_cooldown: float

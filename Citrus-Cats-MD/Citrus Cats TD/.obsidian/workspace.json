@@ -65,8 +65,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -147,14 +146,15 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "adf4d0b2cd40dc22",
+  "active": "9a41970fee289974",
   "lastOpenFiles": [
     "Documentation/Scenes/Menu.py.md",
     "Documentation/Towers.py.md",
     "Citrus Cats Wiki.md",
+    "Documentation/General rules & convention to follow.md",
+    "Gameplay/Tower System.md",
     "Documentation/Scenes",
     "Gameplay.md",
-    "Gameplay/Tower System.md",
     "Untitled.md",
     "Documentation"
   ]

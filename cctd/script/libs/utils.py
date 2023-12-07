@@ -13,6 +13,19 @@ def is_in_list(item, list):
         return True
     except ValueError:
         return False
+    
+def get_item_list(item, list):
+    try:
+        return list.index(item)
+    except ValueError:
+        return False
+
+def get_last_index(list):
+    try:
+        return len(list)-1
+    except ValueError:
+        return False
+        
         
     
     

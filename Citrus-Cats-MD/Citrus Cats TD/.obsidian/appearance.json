@@ -4,5 +4,6 @@
   "interfaceFontFamily": "",
   "textFontFamily": "",
   "nativeMenus": false,
-  "translucency": true
+  "translucency": true,
+  "baseFontSize": 15
 }
