@@ -139,7 +139,7 @@ class Button:
         # Calculate the new dimensions based on the original size
         new_size = int(self.original_image_off.get_width() * scale_factor), int(self.original_image_off.get_height() *  scale_factor)
         
-        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutElastic)
+        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutExpo)
         tween_size = TweenVector2(tween_size_data, self.tween_director) 
         tween_size.start(dont_finish_tween=True)
 

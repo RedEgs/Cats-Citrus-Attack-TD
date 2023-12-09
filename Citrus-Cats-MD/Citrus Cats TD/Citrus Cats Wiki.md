@@ -11,7 +11,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 ## <u>To-Do</u>
 
 ## Scenes
-- [x] Tower selection screen  #WIP #NEEDS-POLISHING #UI-REDESIGN
+- [x] Tower selection screen  #WIP #NEEDS-POLISHING 
 - [ ] Map selection scene
 - [ ] Options
 
@@ -26,6 +26,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 #WIP 
 
 ## GUI
+- [ ] Do a whole redesign on EVERYTHING. #UI-REDESIGN
 - [ ] Shop #WIP 
 - [ ] Options 
 - [ ] Button hover size bounce animation #NEXT
@@ -33,6 +34,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 	- [ ] Refactor strokes to be internal to text #NEEDS-TESTING
 
 ## Backend
+- [ ] Implement cards system.
 - [x] Fix tower data classes
 - [x] Add vertical parameters for `calculate_index_spacing()` 
 	- [x] Fix vertical parameters, past 5 elements.
