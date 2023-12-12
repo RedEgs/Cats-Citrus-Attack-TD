@@ -1,19 +1,19 @@
 {
   "main": {
-    "id": "00bf4fcf847dcb4a",
+    "id": "e60f38d1e29f0c16",
     "type": "split",
     "children": [
       {
-        "id": "b884012d51e1832b",
+        "id": "791784a56d2f76f6",
         "type": "tabs",
         "children": [
           {
-            "id": "9a41970fee289974",
+            "id": "02afde0fe0aaaa7e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Learning resources/Learning resources.md",
                 "mode": "source",
                 "source": false
               }
@@ -25,15 +25,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "decaaab60164eb38",
+    "id": "f7b9bd73739da131",
     "type": "split",
     "children": [
       {
-        "id": "62aca59b9100386b",
+        "id": "73c95fabfe093c3b",
         "type": "tabs",
         "children": [
           {
-            "id": "3d1d616d24a98b39",
+            "id": "0cf753231dae36dc",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -43,7 +43,7 @@
             }
           },
           {
-            "id": "adf4d0b2cd40dc22",
+            "id": "13a486b63a51544f",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -58,7 +58,7 @@
             }
           },
           {
-            "id": "df7501d821aa8d69",
+            "id": "a25fab55d0d53679",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -72,20 +72,20 @@
     "width": 300
   },
   "right": {
-    "id": "8262cf70f6b2245c",
+    "id": "a3d819412e88d714",
     "type": "split",
     "children": [
       {
-        "id": "fe45029e49c5ec67",
+        "id": "f51a07bab61cea0c",
         "type": "tabs",
         "children": [
           {
-            "id": "b23e76891d74a7fc",
+            "id": "adb9cf394755ffc7",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Learning resources/Learning resources.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,19 +97,19 @@
             }
           },
           {
-            "id": "15165490c7db2e14",
+            "id": "f602c0febd817abb",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Learning resources/Learning resources.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "919769d5efcce83f",
+            "id": "e81d2d227f507c41",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -120,12 +120,12 @@
             }
           },
           {
-            "id": "b12561037624513b",
+            "id": "d6fb8122f61f3354",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "Citrus Cats Wiki.md"
+                "file": "Learning resources/Learning resources.md"
               }
             }
           }
@@ -146,16 +146,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "9a41970fee289974",
+  "active": "02afde0fe0aaaa7e",
   "lastOpenFiles": [
-    "Gameplay/Tower System.md",
-    "Citrus Cats Wiki.md",
-    "Documentation/Scenes/Menu.py.md",
-    "Documentation/Towers.py.md",
-    "Documentation/General rules & convention to follow.md",
-    "Documentation/Scenes",
-    "Gameplay.md",
-    "Untitled.md",
-    "Documentation"
+    "Learning resources/Learning resources.md",
+    "Learning resources"
   ]
 }

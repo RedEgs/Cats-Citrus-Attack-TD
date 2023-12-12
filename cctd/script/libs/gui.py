@@ -135,11 +135,11 @@ class Button:
             if not tween.check_finished():
                 tween.reverse()
 
-    def scale(self, scale_factor):
+    def scale(self, scale_factor, easing_mode=pytweening.easeOutExpo):
         # Calculate the new dimensions based on the original size
         new_size = int(self.original_image_off.get_width() * scale_factor), int(self.original_image_off.get_height() *  scale_factor)
         
-        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutElastic)
+        tween_size_data = TweenDataVector2(self.size, new_size, .5, 0, pytweening.easeOutExpo)
         tween_size = TweenVector2(tween_size_data, self.tween_director) 
         tween_size.start(dont_finish_tween=True)
 
@@ -169,10 +169,16 @@ class Button:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
             if self.rect.collidepoint(pygame.mouse.get_pos()):
                 self.click_state = True
+                self.scale(1.3, pytweening.easeInElastic)
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.click_state == True:
                 self.click_state = False
                 self.on_left_click()
+                
+                for tween in self.tween_director.get_clicked_tweens():
+                    if not tween.check_finished():
+                        tween.reverse()
+                
 
     def draw(self, screen, position):
         self.tween_director.update()

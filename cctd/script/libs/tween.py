@@ -13,6 +13,7 @@ from ..libs.transitions import *
 class TweenDirector():
     def __init__(self):
         self.tweens = []
+        self.clicked_tweens = []
 
     def update(self, callbacks=None):
         self.callbacks = callbacks if callbacks is not None else []
@@ -31,6 +32,9 @@ class TweenDirector():
 
     def get_tweens(self):
         return self.tweens
+    
+    def get_clicked_tweens(self):
+        return self.clicked_tweens
 
 
 
