@@ -3,49 +3,62 @@
 TowerData is the BaseModel for every and all towers within Citrus Cats. It contains all possible variables that any single tower can use. This includes technical variables like, `id` and "runtime" variables like `base_damage` and `damage_multiplier`.
 
 ```python
-class TowerData(BaseModel):
+@dataclass
+
+class TowerData():
+
     # Technical tower data
-    id: str
-    name: str
+
+    id: str # The "technical" name for the tower, not instance specific (should be same as variable name for convention and ease of access).
+
+    name: str # The "pretty" name for the tower. For example, id = example_tower | name = "Example Tower"
+
+    base_rarity: int
 
     # Base tower values
+
     base_damage: float
+
     base_cooldown: float
-    base_crit_multiplier:float
+
+    base_crit_multiplier: float
+
     base_crit_chance: float
+
     base_fire_rate: float
+
     base_cooldown: float
+
     base_projectile_speed: float
 
     # Variables values
+
     damage_multiplier: float
+
     crit_multiplier: float
+
     crit_chance_multiplier: float
+
     fire_rate_multiplier: float
+
     cooldown_reduction_multiplier: float
+
     projectile_speed_multiplier: float
+
+  
+
     global_positive_multiplier: float
+
     global_negative_multiplier: float
 
+  
+
     # Runtime values
+
     current_buffs: list
+
     current_debuffs: list
 ```
-
-
-> [!note]- Pydantic BaseModel
->The TowerData method uses pydantic for its "BaseModel" inherited class.
-
-
-
-
-
-
-
-
-
-
-
 
 ## <u>Variables</u>
 

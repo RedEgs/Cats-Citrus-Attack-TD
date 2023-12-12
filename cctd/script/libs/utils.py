@@ -1,4 +1,4 @@
-import pytweening, pygame, sys, os
+import pytweening, pygame, random, sys, os
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
@@ -25,10 +25,17 @@ def get_last_index(list):
         return len(list)-1
     except IndexError:
         return None
-        
-        
     
-    
+def get_random_index(list):
+    try:
+        return random.randint(0, get_last_index(list))
+    except IndexError:
+        return None
+
+def get_list(list):
+    print("List")
+        
+
     
 
 

@@ -1,5 +1,6 @@
 ## Generally useful
 https://interfaceingame.com/games/?genres=card-game
+https://readme.so/editor
 
 ## Main Menus
 https://www.gdcvault.com/play/1015541/How-I-Got-My-Mom

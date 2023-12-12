@@ -23,7 +23,10 @@ class GUIDirector:
             self.hovered_buttons.pop(0)
 
     def draw(self):
-        self.ui_elements.draw()
+        if not self.ui_elements:
+            pass
+        else:
+            self.ui_elements.draw()
 
 
 

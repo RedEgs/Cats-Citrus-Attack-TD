@@ -2,7 +2,7 @@
 In Citrus Cats, cards a critical building block to how the game works. Basically any mechanic that can be "played" is a card. There are 3 main types of cards, these include: Tower cards (Cats and Citrus cats), Support cards (Boost certain attributes of towers) and Attack cards (Use specific one time abilities and attacks).  
 
 #### <u>Tower cards</u>
-*All the mechanics of towers can be found on and explained more in-depth in the [[Tower System]] page, if you want further details on the information relayed here.*
+*All the mechanics of towers can be found in and explained more in-depth in the [[Tower System]] page, if you want further details on the information relayed here.*
 
 To elaborate further on what a tower card is, they are the main foundation of the game. When start your first run, you will be greeted with a screen that has a range of tower cards and lots of information on those tower cards. 
 

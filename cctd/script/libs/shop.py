@@ -4,31 +4,23 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 resources_dir = os.path.join(current_dir, '..', '..', 'resources')
 
 from ..libs.utils import *
+from ..libs.registry import *
 from ..libs.scenes import *
 from ..libs.transitions import *
 from ..libs.gui import *
 from ..libs.towers import *
 
-example_tower = TowerData(
-    id="example_tower",
-    name="Example",
-    base_rarity=1,
-    base_damage=1.0, base_cooldown=2.0, base_crit_chance=1.25, 
-    base_crit_multiplier=5.0, base_fire_rate=2.0, base_projectile_speed=10.0,
-    damage_multiplier=0.0, crit_multiplier=0.0, crit_chance_multiplier=0.0, 
-    fire_rate_multiplier=0.0, cooldown_reduction_multiplier=0.0, projectile_speed_multiplier=0.0, 
-    global_positive_multiplier=0.0, global_negative_multiplier=0.0, current_buffs=[], current_debuffs=[]
-)
-
-
 class Shop():
-    def __init__(self):
-        self.last_added = pygame.time.get_ticks()
+    def __init__(self, registry : Registry, gui_director : GUIDirector):
+        self.gui_director = gui_director
+        self.registry = registry
+
+        self.selected_cards = self.registry.get_selected_towers_registry()
         
-        
-        
+
         
         self.all_items = []
+        self.last_added = pygame.time.get_ticks()
         
         
 
@@ -38,9 +30,9 @@ class Shop():
         current_tick = pygame.time.get_ticks()
         
         if current_tick - self.last_added >= shop_cooldown:
-            print("Added item at " + str(current_tick))
+            #print("Added item at " + str(current_tick))
             self.last_added = current_tick
-            item = shop_item(self.all_items, example_tower, random.randint(1, 3), example_tower.id, example_tower.name, 20, 0, 0)
+            item = shop_item(self.gui_director, self.all_items, self.registry.get_towers_data(self.selected_cards)[get_random_index(self.selected_cards)], self.registry)
         
     
         
@@ -65,21 +57,21 @@ class Shop():
     
 
 class shop_item():
-    def __init__(self, list, tower_data, rarity, item_name, item_text, cost, xp_cost, required_round):
+    def __init__(self,  gui_director, list, tower_data, registry : Registry):
+        self.gui_director = gui_director
+        self.registry = registry
+
         list.append(self)
         self.shop_item_index = list.index(self)
         self.tower_data = tower_data
-        self.rarity = rarity
-        self.item_name = item_name
-        self.item_text = item_text
-        self.cost = cost 
-        self.xp_cost = cost
-        self.required_round = required_round
+        self.rarity = tower_data["base_rarity"]
+        self.item_name = tower_data["id"]
+        self.item_text = "None"
+        self.cost = 0
+        self.xp_cost = 0
+        self.required_round = 0
         
         self.pos = (622, 75 + 50*self.shop_item_index)
-        
-        
-        
         
         if self.rarity == "uncommon" or self.rarity == 1:
             self.img_path = os.path.join(current_dir, '..', '..', 'resources', 'game_overlay', 'tower_shop_green.png')
@@ -96,26 +88,29 @@ class shop_item():
         else:
             pass    
         
-        self.button = Button(self.pos[0]+77, self.pos[1]+22, self.img_path, self.img_path, self.print_details )
+        self.button = Button(self.gui_director, (self.pos[0]+77, self.pos[1]+22), self.img_path, self.img_path, lambda: self.select_tower(), lambda: None)
         
-    def print_details(self):
-        print(f"id: {self.tower_data.id} | index: {self.shop_item_index}")
-        
+    def select_tower(self):
+        print("selected")
+        self.registry.selected_tower = self.tower_data
+
     def get_shop_item(self):
         img = pygame.image.load(self.img_path)
         
         text_object = GUIText(14, (255,255,255), (10 , 10))
-        text_object.outline_text(self.item_text, self.outline_color)
+        text = text_object.normal_text(self.item_name)
         
         text_object.draw(img)
         
         return img
         
     def handle_event(self, event):  
-        self.button.handle_event(event)   
+        self.button.handle_event(event)
         
     def update(self):
-        self.button.update()
+        #self.button.update()
+        pass
+        
         
     def draw(self, screen):
         screen.blit(self.get_shop_item(), self.pos)    

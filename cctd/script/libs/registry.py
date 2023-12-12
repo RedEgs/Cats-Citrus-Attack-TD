@@ -14,8 +14,9 @@ class Registry:
         self.tower_registry = []
         self.enemy_registry = []
 
+        self.towers_limit = 5
         self.selected_towers = []
-
+        self.selected_tower = None
 
     def load_tower_registry(self):
         tower_dir = "cctd/towers"
@@ -28,7 +29,7 @@ class Registry:
         pass
     
     def add_to_selected_towers(self, tower):
-        if len(self.selected_towers) >= 5:
+        if len(self.selected_towers) >= self.towers_limit:
             return print("Reached Selected Tower Limit")
         else:
             self.selected_towers.append(tower)
@@ -42,10 +43,14 @@ class Registry:
     def get_tower_registry(self):
         return self.tower_registry
     
-    def get_towers_data(self):
+    def get_towers_data(self, list=None):
         towers_data = []
     
-        for tower in self.get_tower_registry():
+        if list == None:
+            list = self.get_tower_registry()
+
+        print(list)
+        for tower in list:
             tower_data_file = open(os.path.join(current_dir, '..', '..', 'towers', tower, "tower_data.json"), "r")
             tower_json = tower_data_file.read()
             tower_data_file.close()

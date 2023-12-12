@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Gameplay/Card dealer.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Gameplay/Card dealer.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Gameplay/Card dealer.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Citrus Cats Wiki.md"
+                "file": "Gameplay/Card dealer.md"
               }
             }
           }
@@ -148,10 +148,14 @@
   },
   "active": "02afde0fe0aaaa7e",
   "lastOpenFiles": [
-    "Documentation/Scenes/Menu.py.md",
-    "Documentation/Towers.py.md",
+    "Gameplay/Card System.md",
     "Gameplay/Card dealer.md",
     "Learning resources/Learning resources.md",
+    "Documentation/Scenes/Menu.py.md",
+    "Documentation/Towers.py.md",
+    "Gameplay/Tower System.md",
+    "Citrus Cats Wiki.md",
+    "Gameplay/Wave system.md",
     "Learning resources"
   ]
 }
