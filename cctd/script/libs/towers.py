@@ -11,7 +11,7 @@ from ..libs.gui import *
 from ..libs.utils import *
 from ..libs.registry import *
 class TowerDirector:
-    def __init__(self, registry : Registry, preview_tower, map : Map):
+    def __init__(self, registry : Registry, map : Map):
         self.registry = registry
         self.map = map
 
@@ -19,49 +19,53 @@ class TowerDirector:
         self.towers_amount = len(self.towers)
         self.towers_limit = self.registry.towers_limit
 
-        self.preview_tower = preview_tower
-
         self.tower_group = pygame.sprite.Group()
     
         self.click_state = False
 
-    def place(self, mask):
+
+    def place(self, mask, preview_overlay):
         max_size = (600,600)
 
         new_tower = Tower(self.registry.selected_tower)
 
         # Check collision with other towers
-        if self.preview_tower:
-            if not pygame.sprite.spritecollideany(self.preview_tower, self.tower_group):
+        if preview_overlay:
+            if not pygame.sprite.spritecollideany(preview_overlay, self.tower_group):
 
                 # Get the rect of the preview tower
-                preview_rect = self.preview_tower.get_rect()
+                preview_rect = preview_overlay.get_rect()
 
                 # Create a mask for the preview tower
-                preview_mask = pygame.mask.from_surface(self.preview_tower.image)
+                preview_mask = pygame.mask.from_surface(preview_overlay.get_sprite())
 
-                # Check collision with the mask
+                # Check collision with the maskum 
                 if mask.overlap(preview_mask, (int(preview_rect.x), int(preview_rect.y))) is None:
                     # Check if the tower position exceeds the specified limits
                     if pygame.mouse.get_pos() <= max_size:
-                        new_tower.place_tower(pygame.mouse.get_pos())
-                        return new_tower  # Return the placed tower
+                        new_tower.instance_tower(pygame.mouse.get_pos())
+                        
+                        self.towers.append(new_tower)
+                        self.tower_group.add(new_tower)
+                        
+                        
+                        
                     else:
                         print("Tower placed outside of the 600x600 limits.")
+
     
-    def handle_event(self, event):
+    def handle_event(self, event, preview_overlay):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
             self.click_state = True
 
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.click_state == True:
                 self.click_state = False
-                if self.registry.selected_tower:
-                    if self.preview_tower.check_conditions:
-                        self.place(self.map.get_mask())
+                if self.registry.selected_tower is not None:
+                    if check_bounds((600,600)) == True:
+                        self.place(self.map.get_mask(), preview_overlay)
                     else:
-                        print("Cant place here")
-                    
+                        pass
                 else:
                     print("No tower selected")
 
@@ -73,9 +77,8 @@ class TowerDirector:
         for tower in self.towers:
             tower.update()
             
-    def draw(self):
-        for tower in self.towers:
-            tower.draw() 
+    def draw(self, screen):
+        self.tower_group.draw(screen)
 
     def get_tower_group(self):
         return self.tower_group
@@ -113,38 +116,57 @@ class TowerData():
     current_debuffs: list
 
 class Tower(pygame.sprite.Sprite):
-    def __init__(self, tower_data : TowerData):
-        self.tower_data = tower_data
+    def __init__(self, tower_data: TowerData):
+        super().__init__()  # Call the superclass constructor
+        self.tower_data = tower_data    
         self.file_path = f"cctd/towers/{tower_data['id']}"
         self.sprite_path = f"{self.file_path}/sprite.png"
-        
-        self.sprite = pygame.image.load(self.sprite_path)  
-        self.tower_rect = self.sprite.get_rect()
-        
+
+        self.image = load_image(self.sprite_path)  # Use 'image' instead of 'sprite' for clarity
+        self.rect = self.image.get_rect()
+
+    def instance_tower(self, pos):
+        self.rect.center = pos
+
     def update(self):
         pass
-    
+
     def draw(self, screen):
-        pygame.draw(screen, (0, 0, 0), self.tower_rect())
-        
+        screen.blit(self.image, self.rect)  # Use 'blit' to draw the image on the screen
+
     def get_sprite(self):
-        return self.sprite
-    
+        return self.image  # Use 'image' instead of 'sprite' for consistency
+
     def get_rect(self):
-        return self.tower_rect
+        return self.rect
 
 class MousePreviewOverlay(pygame.sprite.Sprite):
     def __init__(self, registry : Registry):
         pygame.sprite.Sprite.__init__(self)
         self.registry = registry
         self.placing_tower = False
-  
+
+        self.s_path = None
+        self.sprite_path = None
+        self.sprite = None
+
+        self.width, self.height = [None, None]
+        self.alpha = None
+
+        # Create a rect attribute
+        self.rect = None
+        self.rect_x, self.rect_y = [None, None]
+
+        # Load the image
+        self.sprite = None
+
+
     def update(self):
-        self.selected_tower = self.registry.selected_tower
-        
-        if self.selected_tower != None:
+        #print("u")
+        if self.registry.selected_tower != None:
+            #print("got tower")
             self.placing_tower = True
-            self.s_path = f"cctd/towers/{self.selected_tower['id']}"
+            self.s_path = f"cctd/towers/{self.registry.selected_tower['id']}"
             self.sprite_path = f"{self.s_path}/sprite.png"
             self.sprite = load_image(self.sprite_path)
 
@@ -163,8 +185,6 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
             self.rect.topleft = (self.rect_x, self.rect_y)
 
             self.update_position()
-        else:
-            pass
 
         
 
@@ -221,6 +241,12 @@ class MousePreviewOverlay(pygame.sprite.Sprite):
     def get_rect(self):
         return self.rect
 
+    def get_sprite(self):
+        if self.sprite == None:
+            print("NO SPRITE FOUND")
+            print(self.sprite_path)
+        else:    
+            return self.sprite
 
 
 

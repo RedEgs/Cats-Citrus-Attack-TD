@@ -137,6 +137,13 @@ def check_rarity_color(rarity):
         #img_path = os.path.join(current_dir, '..', '..', 'resources', 'lobby', 'tower_select_red.png')
     else:
         return False
+    
+def check_bounds(play_area_size):
+    if pygame.mouse.get_pos() <= play_area_size:
+        return True
+
+    return False
+ 
  
 def quitGame():
         pygame.quit()

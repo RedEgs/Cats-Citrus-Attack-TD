@@ -12,7 +12,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Implement actual towers not placeholder ones #WIP 
 - [ ] Tower shop with placing #WIP 
 - [ ] Damage types relative to towers #NEXT 
-- [ ] Mouse preview actually working with selected tower etc.
+- [x] Mouse preview actually working with selected tower etc.
 
 ## Enemy 
 #WIP 
@@ -38,7 +38,8 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [x] Refactor utils to make misc features 
 - [ ] Make lib for damage calculations #NEXT
 - [ ] Add tower and enemy loading at game startup #WIP #SEMI-FINISHED 
-- [ ] Easy tower instancing #WIP 
+- [x] Easy tower instancing #WIP 
+- [ ] Make easy tower instancing easier #WIP 
 - [ ] Tower logic refactor #WIP 
 - [ ] Mouse preview refactor #UI-REDESIGN 
 - [x] Fix clicking issues with tower selection cards
@@ -55,6 +56,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 	- [x] Try to make tweens easier to use. #COULD-BE-IMPROVED
 - [ ] ↑ Refactor buttons (specifically add group rendering, improve tweening) #WIP 
 	- [ ] Fix buttons holding down when pressed but not hovered. #NEEDS-TESTING 
+	- [ ] Fix surface buttons collision
 	- [x] Fix buttons not tweening back when they reach max progress
 	- [x] Make a variant to buttons which allows for surfaces to be passed #SEMI-FINISHED 
 ## Other

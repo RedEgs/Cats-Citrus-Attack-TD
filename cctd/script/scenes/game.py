@@ -29,7 +29,7 @@ class EndlessGameScene(Scene):
     
 
         self.placement_preview = MousePreviewOverlay(self.registry)    
-        self.tower_director = TowerDirector(self.registry, self.placement_preview, self.map)
+        self.tower_director = TowerDirector(self.registry, self.map)
         
      
 
@@ -46,7 +46,7 @@ class EndlessGameScene(Scene):
 
     def events(self, event):
         self.shop.handle_event(event)
-        self.tower_director.handle_event(event)
+        self.tower_director.handle_event(event, self.placement_preview)
         
 
     def update(self):
@@ -60,6 +60,7 @@ class EndlessGameScene(Scene):
         self.game_overlay.draw(self.screen)
         self.shop.draw(self.screen)
         self.gui_director.draw()
+        self.tower_director.draw(self.screen)
         self.placement_preview.draw(self.screen, self.tower_group, self.map.get_mask())
         
 

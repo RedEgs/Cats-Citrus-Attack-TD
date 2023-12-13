@@ -118,7 +118,6 @@ class LobbyScene(Scene):
                     if len(dir_list) == self.towers_limit + self.hero_limit:
                        self.play_button_tween.start()
                        
-            print(dir_list)
         
         else:
             print("Reached Max Towers")
