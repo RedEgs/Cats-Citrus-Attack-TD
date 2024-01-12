@@ -8,6 +8,7 @@ from ..libs.map import *
 from ..libs.gui import *
 from ..libs.towers import *
 from ..libs.shop import *
+
 class EndlessGameScene(Scene):
     def __init__(self, screen, registry : Registry, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)

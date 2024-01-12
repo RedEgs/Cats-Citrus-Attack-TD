@@ -7,8 +7,6 @@ from ..libs.gui import *
 from ..libs.utils import *
 from ..libs.scenes import *
 
-
-
 class Menu(Scene):
     def __init__(self, screen, scene_director, scene_name):
         super().__init__(screen, scene_director, scene_name)
@@ -39,21 +37,19 @@ class Menu(Scene):
         #!SECTION
         
         #SECTION - Buttons
-        self.play_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]+500), os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'play_button_off.png'), 
-                                  os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'play_button_on.png'), lambda: self.scene_director.switch_scene("lobby_scene"), lambda: None)
+        self.play_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]+500), os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'play_button_off.png'),  lambda: self.scene_director.switch_scene("lobby_scene"), lambda: None)
+        
         self.play_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]+500), (self.center_pos[0], 330), 2, .5, pytweening.easeInOutCubic), self.tween_director)
         self.play_button_tween.start()
         
         
-        self.options_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]+500), os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'options_button_off.png'), 
-                                  os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'options_button_on.png'), lambda: print("Left Clicked"), lambda: None)
+        self.options_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]+500), os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'options_button_off.png'), lambda: print("Left Clicked"), lambda: None)
         self.options_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]+500), (self.center_pos[0], 400), 2, .75, pytweening.easeInOutCubic), self.tween_director)
         self.options_button_tween.start()
         
-        #self.quit_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]+500), os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'quit_button_off.png'), 
-        #                          os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'quit_button_on.png'), quitGame, lambda: None)
-        #self.quit_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]+500), (self.center_pos[0],  472), 2, 1, pytweening.easeInOutCubic), self.tween_director)
-        #self.quit_button_tween.start()
+        self.quit_button = Button(self.gui_director, (self.center_pos[0], self.center_pos[1]+500), os.path.join(current_dir, '..', '..', 'resources', 'main_menu', 'quit_button_off.png'), quitGame, lambda: None)
+        self.quit_button_tween = TweenVector2(TweenData((self.center_pos[0], self.center_pos[1]+500), (self.center_pos[0],  472), 2, 1, pytweening.easeInOutCubic), self.tween_director)
+        self.quit_button_tween.start()
         
         #!SECTION
         
@@ -90,13 +86,5 @@ class Menu(Scene):
         self.screen.fill(0)
 
         self.screen.blit(self.background_image, (0,0))
-        self.tween_director.update([self.background_image.set_alpha(self.background_image_tween.get_output()),
-                                   self.screen.blit(self.logo_image, self.logo_image_tween.get_output()),
-                                   
-                                   self.play_button.draw(self.screen, self.play_button_tween.get_output()),
-                                   self.options_button.draw(self.screen, self.options_button_tween.get_output())])
-                                   #self.quit_button.draw(self.screen, self.quit_button_tween.get_output())])
-                                   
-        
 
 

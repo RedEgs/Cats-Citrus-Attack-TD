@@ -25,7 +25,8 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [x] Button hover size bounce animation
 - [x] Text outlines and strokes (semi, due to broken thickness controls) #SEMI-FINISHED
 	- [ ] Refactor strokes to be internal to text #NEEDS-TESTING
-- [ ] Make tween director use a queue or stack, find out whats best #WIP
+- [ ] Make tween director use a queue or stack, find out whats best #WIP#
+- [ ] Add support for CSS and HTML
 
 ## Backend
 - [ ] Implement cards system.

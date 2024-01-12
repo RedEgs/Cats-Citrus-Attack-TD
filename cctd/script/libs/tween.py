@@ -11,6 +11,9 @@ from ..libs.scenes import *
 from ..libs.transitions import *
 
 class TweenDirector():
+    """
+    Called at the beginning of a script to aid with tweening
+    """
     def __init__(self):
         self.tweens = []
         self.clicked_tweens = []

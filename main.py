@@ -6,6 +6,7 @@ from cctd.script.libs.scenes import *
 from cctd.script.libs.utils import *
 from cctd.script.libs.transitions import *
 from cctd.script.libs.registry import *
+from cctd.script.libs.tween import *
 
 from cctd.script.scenes.example import ExampleScene
 from cctd.script.scenes.menu import Menu
@@ -32,17 +33,19 @@ class Main:
         self.game_registry = Registry()
         
         self.transitionDirector = TransitionDirector(screen)
-        self.SceneDirector = SceneDirector("main_menu", screen, self.transitionDirector)
+        self.sceneDirector = SceneDirector("main_menu", screen, self.transitionDirector)
+        self.tweenDirector = TweenDirector()
+
 
     
         game_scenes = []
-        game_scenes.append(Menu(screen, self.SceneDirector, "main_menu"))
-        game_scenes.append(LobbyScene(screen, self.game_registry, self.SceneDirector, "lobby_scene"))
-        #game_scenes.append(ExampleScene(screen, self.SceneDirector, "example_scene"))
-        game_scenes.append(EndlessGameScene(screen, self.game_registry, self.SceneDirector, "game_scene"))
+        game_scenes.append(Menu(screen, self.sceneDirector, "main_menu"))
+        game_scenes.append(LobbyScene(screen, self.game_registry, self.sceneDirector, "lobby_scene"))
+        #game_scenes.append(ExampleScene(screen, self.sceneDirector, "example_scene"))
+        game_scenes.append(EndlessGameScene(screen, self.game_registry, self.sceneDirector, "game_scene"))
 
-        # Game(self.SCREEN, self.SceneDirector, "debug_scene")
-        self.SceneDirector.load_scenes(game_scenes)
+        # Game(self.SCREEN, self.sceneDirector, "debug_scene")
+        self.sceneDirector.load_scenes(game_scenes)
    
 
     def run(self):
@@ -64,7 +67,8 @@ class Main:
             self.event_queue = event
 
     def update(self):
-        self.SceneDirector.run_scene(self.eventQueue)
+        self.sceneDirector.run_scene(self.eventQueue)
+        self.tweenDirector.update()
         self.transitionDirector.update()
 
     def draw(self):
