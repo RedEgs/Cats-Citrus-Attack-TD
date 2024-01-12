@@ -1,23 +1,7 @@
 Here you will find everything to-do with Citrus Cats. The project is open-source meaning you can view or edit the code as you so please. I'll post documentation every now and then on the various different libraries that I create to assist with Citrus cats' development. 
 
-## <u>To-Do</u>
 
-## Scenes
-- [x] Tower selection screen  #WIP #NEEDS-POLISHING 
-- [ ] Map selection scene
-- [ ] Options
-
-## Tower-system
-
-- [ ] Implement actual towers not placeholder ones #WIP 
-- [ ] Tower shop with placing #WIP 
-- [ ] Damage types relative to towers #NEXT 
-- [x] Mouse preview actually working with selected tower etc.
-
-## Enemy 
-- [ ] Make enemies usable, fix enemies basically #WIP
-#WIP 
-
+## <u>To-Do  (Engine</u>
 ## GUI
 - [ ] Do a whole redesign on EVERYTHING. #UI-REDESIGN
 - [ ] Shop #WIP 
@@ -29,6 +13,10 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 - [ ] Add support for CSS and HTML
 
 ## Backend
+- [ ] Make game loops less repetive ( Make use of globals)
+- [ ] 
+
+
 - [ ] Implement cards system.
 - [x] Fix tower data classes
 - [x] Add vertical parameters for `calculate_index_spacing()` 
@@ -62,6 +50,26 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 	- [ ] Fix surface buttons collision
 	- [x] Fix buttons not tweening back when they reach max progress
 	- [x] Make a variant to buttons which allows for surfaces to be passed #SEMI-FINISHED 
-## Other
+
+
+## <u>To-Do (In-Game) </u>
+
+## Scenes
+- [x] Tower selection screen  #WIP #NEEDS-POLISHING 
+- [ ] Map selection scene
+- [ ] Options
+
+## Tower-system
+
+- [ ] Implement actual towers not placeholder ones #WIP 
+- [ ] Tower shop with placing #WIP 
+- [ ] Damage types relative to towers #NEXT 
+- [x] Mouse preview actually working with selected tower etc.
+
+## Enemy 
+- [ ] Make enemies usable, fix enemies basically #WIP
+#WIP 
+
+# Other
 - [ ] Write proper documentation for tweens and scenes because confised
 - [ ] Finish writing the "programmers guide to citrus cats"

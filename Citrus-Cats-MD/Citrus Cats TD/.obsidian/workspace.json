@@ -48,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#SEMI-FINISHED",
+                "query": "tag:#WIP",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -149,10 +149,11 @@
   },
   "active": "02afde0fe0aaaa7e",
   "lastOpenFiles": [
+    "Untitled.canvas",
+    "Citrus Cats Wiki.md",
     "Documentation/Scenes/Menu.py.md",
     "Documentation/Towers.py.md",
     "Learning resources/Learning resources.md",
-    "Citrus Cats Wiki.md",
     "Gameplay/Card dealer.md",
     "Gameplay/Tower System.md",
     "Gameplay/Card System.md",
