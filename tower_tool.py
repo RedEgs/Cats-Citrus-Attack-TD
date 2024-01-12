@@ -1,10 +1,30 @@
-import pytweening, pydantic, pygame, json, sys, os
-from pydantic import BaseModel, DirectoryPath
-
-# Imported global libs
-
+import pygame, json, sys, os
 from cctd.script.libs.towers import *
 
+from textual.app import App, ComposeResult
+from textual.containers import Container, Horizontal, VerticalScroll
+from textual.widgets import Header, Footer, Tabs, Placeholder, TabbedContent, TabPane
+# Imported global libs
+
+
+
+
+class Main(App):
+    CSS_PATH = "style.tcss"
+    
+    def compose(self) -> ComposeResult:
+        """Create child widgets for the app."""
+        yield Header()
+
+        yield Placeholder("Background")
+        yield Placeholder("Small Menu", id="Menu")
+        
+
+if __name__ == "__main__":
+    app = Main()
+    app.run()
+    
+"""
 example_tower = TowerData(
     id="example_tower",
     name="Example",
@@ -28,3 +48,4 @@ def write_to_json(tower_data):
     f.close
     
 write_to_json(example_tower)
+"""

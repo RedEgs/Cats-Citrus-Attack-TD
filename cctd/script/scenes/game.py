@@ -62,6 +62,7 @@ class EndlessGameScene(Scene):
         self.gui_director.draw()
         self.tower_director.draw(self.screen)
         self.placement_preview.draw(self.screen, self.tower_group, self.map.get_mask())
+
         
 
     def run(self, event):

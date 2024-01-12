@@ -61,7 +61,7 @@ class Main:
                 pygame.quit()
                 sys.exit()
 
-            self.eventQueue = event
+            self.event_queue = event
 
     def update(self):
         self.SceneDirector.run_scene(self.eventQueue)

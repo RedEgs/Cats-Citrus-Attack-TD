@@ -48,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#SEMI-FINISHED",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -65,7 +65,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -148,13 +149,13 @@
   },
   "active": "02afde0fe0aaaa7e",
   "lastOpenFiles": [
+    "Documentation/Scenes/Menu.py.md",
+    "Documentation/Towers.py.md",
+    "Learning resources/Learning resources.md",
+    "Citrus Cats Wiki.md",
     "Gameplay/Card dealer.md",
     "Gameplay/Tower System.md",
     "Gameplay/Card System.md",
-    "Learning resources/Learning resources.md",
-    "Documentation/Scenes/Menu.py.md",
-    "Documentation/Towers.py.md",
-    "Citrus Cats Wiki.md",
     "Gameplay/Wave system.md",
     "Learning resources"
   ]
