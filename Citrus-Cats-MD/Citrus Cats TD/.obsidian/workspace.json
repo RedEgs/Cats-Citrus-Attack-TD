@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "791784a56d2f76f6",
+        "id": "0172df3ccb77a8d7",
         "type": "tabs",
         "children": [
           {
-            "id": "02afde0fe0aaaa7e",
+            "id": "5d22f8995a7e5d54",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Documentation/PyRed Engine/Object Types.md",
                 "mode": "source",
                 "source": false
               }
@@ -65,8 +65,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -86,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Documentation/PyRed Engine/Object Types.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Documentation/PyRed Engine/Object Types.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Citrus Cats Wiki.md"
+                "file": "Documentation/PyRed Engine/Object Types.md"
               }
             }
           }
@@ -147,10 +146,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "02afde0fe0aaaa7e",
+  "active": "5d22f8995a7e5d54",
   "lastOpenFiles": [
-    "Untitled.canvas",
+    "Documentation/PyRed Engine/App Options.md",
+    "Documentation/PyRed Engine/Object Types.md",
     "Citrus Cats Wiki.md",
+    "Documentation/PyRed Engine",
+    "2024-01-12.md",
+    "Untitled.canvas",
     "Documentation/Scenes/Menu.py.md",
     "Documentation/Towers.py.md",
     "Learning resources/Learning resources.md",

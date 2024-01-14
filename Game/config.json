@@ -1,0 +1,12 @@
+{
+    "app": {
+        "settings": {
+            "resolution": "1280x720",
+            "v-sync": 0,
+            "max-fps": 60,
+            "window-title-name": "Test App",
+            "window-icon-path": "None",
+            "start-scene": "main_menu"
+        }
+    }
+}

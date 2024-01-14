@@ -14,7 +14,7 @@ Here you will find everything to-do with Citrus Cats. The project is open-source
 
 ## Backend
 - [ ] Make game loops less repetive ( Make use of globals)
-- [ ] 
+- [ ] Create app options, see []
 
 
 - [ ] Implement cards system.
