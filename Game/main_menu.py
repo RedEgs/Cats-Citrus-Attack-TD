@@ -1,12 +1,12 @@
 import pytweening, pygame, sys, os
 import random
 
-import engine.libs.formatter as formatter
-import engine.libs.utils as utils
+import engine.libs.Formatter as formatter
+import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
 import engine.libs.GuiService as GuiService 
-
+import engine.libs.TweenService as TweenService
 
 class Debugger(EntityService.Entity):
     def __init_subclass__(cls) -> None:
@@ -21,18 +21,21 @@ class Debugger(EntityService.Entity):
 class Menu(SceneService.Scene):
     def __init__(self, scene_name, app):
         super().__init__(scene_name, app)
-        self.debugger = Debugger()
         
         self.app = app
         self.guis = app.guis
+
+        self.tweens = app.tweens
         
-        self.entities, self.scenes, self.guis = self.app.start_services()
         self.testimg = GuiService.Element((200, 200), "test.png")
-            
-            
+        self.tween_data = TweenService.TweenDataVector2((500,500), (800,800), 10, 0)
+        self.tween = TweenService.TweenVector2(self.tween_data)
+        self.text = GuiService.TextElement((500,500), "testicles", 24, (0))
+        self.tween.start()
+        
             
     def update(self):
-        pass
+        self.tweens.update()
         #self.debugger.update() 
           
     def draw(self):

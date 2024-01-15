@@ -1,6 +1,6 @@
 import pygame, json, os, sys
 
-import engine.libs.utils as utils
+import engine.libs.Utils as utils
 
 
 

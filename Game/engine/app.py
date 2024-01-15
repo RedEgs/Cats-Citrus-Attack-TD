@@ -1,10 +1,11 @@
 import pygame, json, os, sys
 
-import engine.libs.formatter as formatter
-import engine.libs.utils as utils
+import engine.libs.Formatter as formatter
+import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
 import engine.libs.GuiService as GuiService 
+import engine.libs.TweenService as TweenService
 
 import main_menu
 
@@ -20,14 +21,12 @@ class App():
         pygame.font.init()
         
         global screen, clock, settings
-        self.entities, self.scenes, self.guis = self.start_services()
+        self.entities, self.scenes, self.guis , self.tweens = self.start_services()
 
   
         
         screen, clock, settings = self.start_game()
         self.event_queue = None
-        
-        self.entities, self.scenes, self.guis = self.start_services()
         self.load_scenes()
        
     
@@ -60,8 +59,9 @@ class App():
         entities = EntityService.EntityService()
         scenes = SceneService.SceneService() 
         guis = GuiService.GuiService()
+        tweens = TweenService.TweenService()
 
-        return entities, scenes, guis
+        return entities, scenes, guis, tweens
          
 
     def load_scenes(self):

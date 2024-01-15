@@ -22,7 +22,23 @@ class Element:
 
         GuiService.add_element(self)
 
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
 
+class TextElement():
+    def __init__(self, position, text, size, color):
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        self.position = position
+        self.text = text
+        self.size = size
+        self.color = color
+        self.default_font = pygame.font.Font("font.ttf", size)
+
+        self.image = self.default_font.render(self.text, True, self.color)
+
+        GuiService.add_element(self)
 
     def draw(self, screen):
+        self.rect = self.image.get_rect(center=self.position)
+
         screen.blit(self.image, self.rect)
