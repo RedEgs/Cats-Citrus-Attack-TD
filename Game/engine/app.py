@@ -65,8 +65,8 @@ class App():
          
 
     def load_scenes(self):
-        self.scenes.load_scenes([main_menu.Menu("main_menu", self),
-                            main_menu.Options("options", self)])
+        self.scenes.load_scenes([main_menu.Options("options", self),
+                                 main_menu.Menu("main_menu", self)])
         self.scenes.set_scene(settings["start-scene"])
          
     def load_config(self):
@@ -88,9 +88,6 @@ class App():
                 icon = None    
             return res, fps, caption, icon, settings
            
-
-    
-    
     def run(self):
         fps = settings["max-fps"]
         
@@ -98,6 +95,7 @@ class App():
             clock.tick(fps)
             delta_time = clock.tick(fps) / 1000.0
             
+           
             self.events()
             self.update()
             self.draw()
@@ -109,13 +107,16 @@ class App():
                     sys.exit()
             
                 self.event_queue = event
+                self.guis.handle_event(event)
                 
     def update(self):
-        self.scenes.run_scene(self.event_queue)
+        self.scenes.run_scene(self.event_queue) 
         self.entities.update()
 
     def draw(self):
-        pygame.display.flip()        
+        self.guis.draw(screen)
+        pygame.display.flip()  
+         
           
     def get_screen(self):
         return screen

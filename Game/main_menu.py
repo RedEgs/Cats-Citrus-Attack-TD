@@ -21,38 +21,36 @@ class Debugger(EntityService.Entity):
 class Menu(SceneService.Scene):
     def __init__(self, scene_name, app):
         super().__init__(scene_name, app)
+        print("Loaded")
         
-        self.app = app
-        self.guis = app.guis
+        #self.testimg = GuiService.Element((200, 200), "test.png")
+        self.testbutton = GuiService.ButtonElement((600, 200), "test2.png", "test2.png", self.testbtn, self.testbtn)
+    
+    def testbtn(self):
+        print("clicked")
+        self.app.scenes.set_scene("options")
 
-        self.tweens = app.tweens
-        
-        self.testimg = GuiService.Element((200, 200), "test.png")
-        self.tween_data = TweenService.TweenDataVector2((500,500), (800,800), 10, 0)
-        self.tween = TweenService.TweenVector2(self.tween_data)
-        self.text = GuiService.TextElement((500,500), "testicles", 24, (0))
-        self.tween.start()
-        
-            
+    def on_enter(self):
+        return super().on_enter()
+     
     def update(self):
-        self.tweens.update()
-        #self.debugger.update() 
+        pass
           
     def draw(self):
-        self.app.get_screen().fill((255))
-        
-        
-        self.guis.draw(self.app.get_screen())
-        
-        
+        self.app.get_screen().fill((255))  
+      
 class Options(SceneService.Scene):
     def __init__(self, scene_name, app):
         super().__init__(scene_name, app)
-     
-    def update(self):
-        print("PRITING ENTITY IN OPTIONS")
+        print("Loaded")
         
+        self.testimg2 = GuiService.Element((800, 200), "test.png")
+     
+    def on_enter(self):
+        return super().on_enter() 
+    
+    def update(self):
+        pass
         
     def draw(self):
-
         self.app.get_screen().fill((0, 255, 0))
