@@ -85,9 +85,7 @@ class App():
         
         while True:
             clock.tick(fps)
-            delta_time = clock.tick(fps) / 1000.0
             
-           
             self.events()
             self.update()
             self.draw()
@@ -107,9 +105,9 @@ class App():
         self.entities.update()
         self.tweens.update()
 
-        print(self.get_clock().get_fps())
     def draw(self):
         self.guis.draw(screen)
+        self.transitions.draw(screen)
         pygame.display.flip()  
           
     def get_screen(self):

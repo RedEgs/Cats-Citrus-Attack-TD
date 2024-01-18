@@ -50,7 +50,7 @@ class SceneService():
         TransitionService.TransitionService.canTransition = False
         TransitionService.TransitionService.isTransitioning = True
 
-        TransitionService.FadeTransition(self.get_previous_scene(), scene, self.app, .5)
+        TransitionService.FadeTransition(self.get_previous_scene(), scene, self.app, 1)
         
         TransitionService.TransitionService.canTransition = True
         TransitionService.TransitionService.isTransitioning = False

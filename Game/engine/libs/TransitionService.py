@@ -16,14 +16,19 @@ class TransitionService():
             cls.transitions.append(transition)
 
     @classmethod
-    def remove_transition(cls):
+    def remove_transition(cls, transition):
         cls.transitions.clear()
+        del transition
 
     @classmethod
     def update(cls):
         for transition in cls.transitions:
             transition.update()
-            transition.draw()
+            
+    @classmethod
+    def draw(cls, screen):
+        for transition in cls.transitions:
+            transition.draw(screen)
 
 
 class Transition:
@@ -38,7 +43,7 @@ class Transition:
         TransitionService.add_transition(self)
     
     def kill_transition(self):
-        TransitionService.remove_transition()
+        TransitionService.remove_transition(self)
     
     def update(self):
         pass
@@ -52,9 +57,9 @@ class FadeTransition(Transition):
         self.app = app
        
         self.timing = timing
-        self.loading_image = GuiService.LoadingScreen(Utils.get_center(1280, 720), "cctd/resources/loading/loading_screen.png")
+        self.loading_image = GuiService.ImageElement(Utils.get_center(1280, 720), "cctd/resources/loading/loading_screen.png")
 
-        fade_data = TweenService.TweenData(0, 255, 1, 0)
+        fade_data = TweenService.TweenData(0, 255, timing, 0)
         self.fade = TweenService.Tween(fade_data)
         self.fade.start(False, True)
 
@@ -64,15 +69,18 @@ class FadeTransition(Transition):
             self.app.scenes.set_scene(self.to_scene) # Change the scene while black
                 
         if self.curr_percentage == self.timing * 200:
-            self.kill_transition()
-            self.fade.kill()
             self.completed = True
-    
+            
         self.curr_percentage += 1
+        
+        if self.completed:
+            self.kill_transition()
 
 
-    def draw(self):
+    def draw(self, screen):
+        #print("drawing")
         self.loading_image.update_opacity(self.fade.get_output())
+        self.loading_image.draw(screen)
         #Make sure that the image isnt scene specific.
 
 

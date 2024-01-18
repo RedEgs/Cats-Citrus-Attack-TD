@@ -1,5 +1,4 @@
 import pytweening, pygame, sys, os
-import random
 
 import engine.libs.Formatter as formatter
 import engine.libs.Utils as utils
@@ -18,12 +17,18 @@ class Menu(SceneService.Scene):
         GuiService.ImageElement((243, 189), "cctd/resources/main_menu/logo.png")
 
         mod_button = GuiService.ButtonElement((48,48), ["cctd/resources/main_menu/mod_button.png"], [self.play_button])
-        self.play_button = GuiService.ButtonElement((204, 396), ["cctd/resources/main_menu/play_button.png"], [self.play_button])
         option_button = GuiService.ButtonElement((166, 526), ["cctd/resources/main_menu/options_button.png"], [self.play_button])
-        quit_button = GuiService.ButtonElement((159, 641), ["cctd/resources/main_menu/quit_button.png"], [self.play_button])
+        quit_button = GuiService.ButtonElement((159, 641), ["cctd/resources/main_menu/quit_button.png"], [self.quit_button])
+
+        self.play_button = GuiService.ButtonElement((204, 396), ["cctd/resources/main_menu/play_button.png"], [self.play_button])
 
     def play_button(self):
-        self.app.scenes.switch_scene("options")
+        self.app.scenes.switch_scene("difficulty_select")
+    
+    def quit_button(self):
+        pygame.quit()
+        sys.exit()
+    
     
     def on_enter(self):
         super().on_enter()

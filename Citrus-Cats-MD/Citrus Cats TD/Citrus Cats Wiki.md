@@ -12,14 +12,14 @@ esesf
 - [ ] Add dropdown menus
 ## Backend
 - [ ] Always figure out ways to optimise
-- [ ] Make game loops less repetive ( Make use of globals) #WIP
+- [ ] Make game loops less repetive ( Make use of globals & class methods) #WIP
 - [ ] Create app options, see [[App Options]]
 - [ ] Add vertical parameters for `calculate_index_spacing()` 
 	- [ ] Fix vertical parameters, past 5 elements.
 - [ ] Refactor scene classes to pass in extra data if needed, make it optional
 - [x] Refactor utils to make misc features 
-- [ ] Make dedicated gui element and sprite group #WIP 
-- [ ] Refactor all scenes with buttons and tweens to work properly
+- [x] Make dedicated gui element and sprite group 
+- [x] Refactor all scenes with buttons and tweens to work properly
 - [x] Add more parameters for tweens like, `self.start(reverse_on_finshed=bool)` #WIP  
 - [x] Add a `wait(secs)` to utils for delaying in pygame 
 - [x] Refactor tweening on EVERYTHING (Use dataclasses) 
@@ -53,6 +53,8 @@ esesf
 ## Enemy 
 - [ ] Make enemies usable, fix enemies basically #WIP
 ## Backend
+- [ ] Make debug info
+- [ ] Make difficulty selecting
 - [ ] Implement cards system.
 - [ ] Fix tower data classes
 - [ ] Improve tower registry system #WIP

@@ -63,7 +63,7 @@ class GuiService():
             
     @classmethod 
     def handle_event(cls, event):
-        if cls.active_scene.cached == False:
+        if cls.active_scene.cached_button == False:
             for key, element in cls.button_elements.items():
                 obj = element["button_element"]
                 obj_scene = element["scene"]
@@ -71,8 +71,7 @@ class GuiService():
                 
                 if cls.active_scene == obj_scene:
                     if cls.active_scene.cached_button == False:
-                        cls.cache_button(obj)
-                        
+                        cls.cache_button(obj)   
                 else:
                     pass
 
@@ -124,7 +123,7 @@ class Element:
 class ImageElement(Element):
     def __init__(self, position, image_path, target_size=None):
         super().__init__(position)
-        self.image = pygame.image.load(image_path)
+        self.image = pygame.image.load(image_path).convert_alpha()
         self.size = self.image.get_size()
         aspect_ratio = self.size[0] / self.size[1]
         
@@ -145,25 +144,29 @@ class ImageElement(Element):
     def get_element_data(self):
         return self
     
-class LoadingScreen(ImageElement):
-    def __init__(self, position, image_path, target_size=None):
-        super().__init__(position, image_path, target_size)
-        self.is_exception = True
+class SurfaceElement(Element):
+    def __init__(self, position, surface, target_size=None):
+        super().__init__(position)
+        self.surface = surface
+        self.size = self.surface.get_size()
+        aspect_ratio = self.size[0] / self.size[1]
+        
+        if target_size:
+            self.surface = utils.scale_surface(self.surface, target_size[0], target_size[1], aspect_ratio) 
+        self.rect = self.surface.get_rect(center=position)
 
     def update_opacity(self, opacity):
-        return super().update_opacity(opacity)
-    
+        self.surface.set_alpha(opacity)
+
     def update_position(self, position):
-        return super().update_position(position)
-    
+        super().update_position(position)
+        self.rect = self.surface.get_rect(center=position)
+
     def draw(self, screen):
-        return super().draw(screen)
-
-    def get_element_exception(self):
-        return True
-
+        screen.blit(self.surface, self.rect)
+       
     def get_element_data(self):
-        return super().get_element_data()
+        return self
 
 
 
@@ -199,7 +202,7 @@ class ButtonState(Enum):
 
 
 class ButtonElement(Element):
-    def __init__(self, position, image_pair, function_pair):
+    def __init__(self, position, image_pair, function_pair, ):
         super().__init__(position)
         GuiService.add_button_element(self)
 
@@ -222,8 +225,8 @@ class ButtonElement(Element):
         self.size = self.original_image_default.get_size()
         self.new_size = 1
 
-        self.image_default = pygame.transform.smoothscale(self.original_image_default, self.size)
-        self.image_activated = pygame.transform.smoothscale(self.original_image_activated, self.size)
+        self.image_default = pygame.transform.scale(self.original_image_default, self.size)
+        self.image_activated = pygame.transform.scale(self.original_image_activated, self.size)
 
         self.rect = self.image_default.get_rect(center=position)
         self.state = ButtonState.DEFAULT
