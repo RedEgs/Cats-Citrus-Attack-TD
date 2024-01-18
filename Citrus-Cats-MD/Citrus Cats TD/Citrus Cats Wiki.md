@@ -1,6 +1,6 @@
-Here you will find everything to-do with Citrus Cats. The project is open-source meaning you can view or edit the code as you so please. I'll post documentation every now and then on the various different libraries that I create to assist with Citrus cats' development. 
+Here you will find everything to-do with Citrus Cats. The project is open-source meaning you can view or edit the code as you so please. I'll post documentation every now and then on the various different libraries that I create to assist with Citrus cats' development.  
 
-
+esesf
 # <u>To-Do  (Engine</u>)
 
 - [ ] Make the engine independent of citrus cats
