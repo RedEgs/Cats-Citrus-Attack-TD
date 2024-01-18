@@ -1,6 +1,8 @@
 import pygame, json, os, sys
 
 import engine.libs.GuiService as GuiService 
+import engine.libs.TweenService as TweenService
+import engine.libs.TransitionService as TransitionService
 
 class SceneService():
     """
@@ -8,7 +10,9 @@ class SceneService():
     """
     all_scenes = []
 
-    def __init__(self):
+    def __init__(self, app):
+        self.app = app
+
         self.active_scene = None
         self.previous_scene = None
         self.scenes = {}
@@ -42,6 +46,16 @@ class SceneService():
         except KeyError:
             pass        
         
+    def switch_scene(self, scene):
+        TransitionService.TransitionService.canTransition = False
+        TransitionService.TransitionService.isTransitioning = True
+
+        TransitionService.FadeTransition(self.get_previous_scene(), scene, self.app, .5)
+        
+        TransitionService.TransitionService.canTransition = True
+        TransitionService.TransitionService.isTransitioning = False
+
+
 
 
     def get_previous_scene(self):
@@ -61,16 +75,19 @@ class Scene():
         
         self.app = app
         self.guis = app.guis
-        self.guis.set_active_scene(self.get_scene_info())
+        self.guis.set_active_scene(self)
+
+        self.element_cache = []
+        self.button_cache = []
         
+        self.cached = False
+        self.cached_button = False
 
     def on_exit(self):
-        #for element in self.active_ui_elements:
-            #element.pop()
         pass
 
     def on_enter(self):
-        self.guis.set_active_scene(self.get_scene_info())
+        self.guis.set_active_scene(self)
         print("CHhanged scene")
 
     def events(self, event):
@@ -89,3 +106,4 @@ class Scene():
 
     def get_scene_info(self):
         return self.scene_name
+        

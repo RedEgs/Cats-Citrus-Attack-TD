@@ -1,75 +1,72 @@
 Here you will find everything to-do with Citrus Cats. The project is open-source meaning you can view or edit the code as you so please. I'll post documentation every now and then on the various different libraries that I create to assist with Citrus cats' development. 
 
 
-## <u>To-Do  (Engine</u>
+# <u>To-Do  (Engine</u>)
+
+- [ ] Make the engine independent of citrus cats
 ## GUI
-- [ ] Do a whole redesign on EVERYTHING. #UI-REDESIGN
-- [ ] Shop #WIP 
-- [ ] Options 
 - [x] Button hover size bounce animation
-- [x] Text outlines and strokes (semi, due to broken thickness controls) #SEMI-FINISHED
-	- [ ] Refactor strokes to be internal to text #NEEDS-TESTING
-- [ ] Make tween director use a queue or stack, find out whats best #WIP#
+- [ ] Text outlines and strokes (semi, due to broken thickness controls) 
+	- [ ] Refactor strokes to be internal to text
 - [ ] Add support for CSS and HTML
-
+- [ ] Add dropdown menus
 ## Backend
-- [ ] Make game loops less repetive ( Make use of globals)
-- [ ] Create app options, see []
-
-
-- [ ] Implement cards system.
-- [x] Fix tower data classes
-- [x] Add vertical parameters for `calculate_index_spacing()` 
-	- [x] Fix vertical parameters, past 5 elements.
+- [ ] Always figure out ways to optimise
+- [ ] Make game loops less repetive ( Make use of globals) #WIP
+- [ ] Create app options, see [[App Options]]
+- [ ] Add vertical parameters for `calculate_index_spacing()` 
+	- [ ] Fix vertical parameters, past 5 elements.
 - [ ] Refactor scene classes to pass in extra data if needed, make it optional
-- [ ] Improve tower registry system #WIP
-- [ ] Improve rarity system 
-- [ ] Make element system
-- [ ] Make upgrades system
 - [x] Refactor utils to make misc features 
-- [ ] Make lib for damage calculations #NEXT
-- [ ] Add tower and enemy loading at game startup #WIP #SEMI-FINISHED 
-- [x] Easy tower instancing #WIP 
-- [ ] Make easy tower instancing easier #WIP 
-- [ ] Tower logic refactor #WIP 
-- [ ] Mouse preview refactor #UI-REDESIGN 
-- [x] Fix clicking issues with tower selection cards
-	- [x] Fix hovering in the list index too
 - [ ] Make dedicated gui element and sprite group #WIP 
 - [ ] Refactor all scenes with buttons and tweens to work properly
 - [x] Add more parameters for tweens like, `self.start(reverse_on_finshed=bool)` #WIP  
 - [x] Add a `wait(secs)` to utils for delaying in pygame 
-- [x] Completely refactor menu scene to be organised and tidy
 - [x] Refactor tweening on EVERYTHING (Use dataclasses) 
 	- [x] Improve interaction between buttons and tweens #COULD-BE-IMPROVED 
 	- [x] Try to get tweens to stop checking once they are finished 
 	- [x] Make a tween manager to render all tweens in a group.
 	- [x] Try to make tweens easier to use. #COULD-BE-IMPROVED
-- [ ] ↑ Refactor buttons (specifically add group rendering, improve tweening) #WIP 
-	- [ ] Fix buttons holding down when pressed but not hovered. #NEEDS-TESTING 
-	- [ ] Fix surface buttons collision
+- [x] ↑ Refactor buttons (specifically add group rendering, improve tweening) #WIP 
+	- [x] Fix buttons holding down when pressed but not hovered. #NEEDS-TESTING 
+	- [x] Fix surface buttons collision
 	- [x] Fix buttons not tweening back when they reach max progress
 	- [x] Make a variant to buttons which allows for surfaces to be passed #SEMI-FINISHED 
+	- [ ] Try to remove the input delay
+# <u>To-Do (In-Game) </u>
 
 
-## <u>To-Do (In-Game) </u>
-
+- [ ] Restart and Transition the game into the engine. 
 ## Scenes
-- [x] Tower selection screen  #WIP #NEEDS-POLISHING 
-- [ ] Map selection scene
-- [ ] Options
-
+- [ ] Implement all scenes #WIP
+	- [ ] Tower selection screen  #WIP
+	- [ ] Map selection scene #WIP
+	- [ ] Options #WIP
+	- [ ] Shop #WIP 
+## GUI
+- [ ] Do a whole redesign on EVERYTHING. #UI-REDESIGN #WIP
 ## Tower-system
-
 - [ ] Implement actual towers not placeholder ones #WIP 
 - [ ] Tower shop with placing #WIP 
 - [ ] Damage types relative to towers #NEXT 
 - [x] Mouse preview actually working with selected tower etc.
-
 ## Enemy 
 - [ ] Make enemies usable, fix enemies basically #WIP
-#WIP 
-
-# Other
+## Backend
+- [ ] Implement cards system.
+- [ ] Fix tower data classes
+- [ ] Improve tower registry system #WIP
+- [ ] Improve rarity system 
+- [ ] Make element system
+- [ ] Make upgrades system
+- [ ] Make lib for damage calculations #NEXT
+- [ ] Add tower and enemy loading at game startup 
+- [ ] Easy tower instancing #WIP 
+- [ ] Make easy tower instancing easier #WIP 
+- [ ] Tower logic refactor #WIP 
+- [ ] Mouse preview refactor #UI-REDESIGN 
+- [ ] Fix clicking issues with tower selection cards
+	- [ ] Fix hovering in the list index too
+## Other
 - [ ] Write proper documentation for tweens and scenes because confised
 - [ ] Finish writing the "programmers guide to citrus cats"

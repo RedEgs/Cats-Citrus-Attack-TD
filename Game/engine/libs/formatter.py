@@ -8,3 +8,6 @@ def get_dimensions(dimensions):
     width, height = str(dimensions).split("x")
     
     return int(width), int(height)
+
+def get_center(x, y):
+    return x // 2, y // 2

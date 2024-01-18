@@ -6,8 +6,7 @@ import engine.libs.EntityService as EntityService
 import engine.libs.SceneService as SceneService 
 import engine.libs.GuiService as GuiService 
 import engine.libs.TweenService as TweenService
-
-import main_menu
+import engine.libs.TransitionService as TransitionService
 
 class App():
     """
@@ -21,19 +20,17 @@ class App():
         pygame.font.init()
         
         global screen, clock, settings
-        self.entities, self.scenes, self.guis , self.tweens = self.start_services()
+        self.entities, self.scenes, self.guis , self.tweens, self.transitions = self.start_services()
 
-  
-        
         screen, clock, settings = self.start_game()
         self.event_queue = None
         self.load_scenes()
-       
     
-    
-
-        
-        
+    """
+    def load_scenes(self):
+        self.scenes.load_scenes()
+        self.scenes.set_scene(settings["start-scene"])  
+    """
        
     def start_game(self):
         """
@@ -57,17 +54,12 @@ class App():
         return screen, clock, settings
     def start_services(self):
         entities = EntityService.EntityService()
-        scenes = SceneService.SceneService() 
+        scenes = SceneService.SceneService(self) 
         guis = GuiService.GuiService()
         tweens = TweenService.TweenService()
+        transitions = TransitionService.TransitionService()
 
-        return entities, scenes, guis, tweens
-         
-
-    def load_scenes(self):
-        self.scenes.load_scenes([main_menu.Options("options", self),
-                                 main_menu.Menu("main_menu", self)])
-        self.scenes.set_scene(settings["start-scene"])
+        return entities, scenes, guis, tweens, transitions
          
     def load_config(self):
         """
@@ -110,17 +102,21 @@ class App():
                 self.guis.handle_event(event)
                 
     def update(self):
+        self.transitions.update()
         self.scenes.run_scene(self.event_queue) 
         self.entities.update()
+        self.tweens.update()
 
+        print(self.get_clock().get_fps())
     def draw(self):
         self.guis.draw(screen)
         pygame.display.flip()  
-         
           
     def get_screen(self):
         return screen
 
+    def get_clock(self):
+        return clock
 
         
         
