@@ -16,7 +16,8 @@ esesf
 - [ ] Create app options, see [[App Options]]
 - [ ] Add vertical parameters for `calculate_index_spacing()` 
 	- [ ] Fix vertical parameters, past 5 elements.
-- [ ] Refactor scene classes to pass in extra data if needed, make it optional
+- [x] Refactor scene classes to pass in extra data if needed, make it optional
+	- [ ] Document it cuz its kinda complicated to figure out
 - [x] Refactor utils to make misc features 
 - [x] Make dedicated gui element and sprite group 
 - [x] Refactor all scenes with buttons and tweens to work properly
@@ -53,7 +54,8 @@ esesf
 ## Enemy 
 - [ ] Make enemies usable, fix enemies basically #WIP
 ## Backend
-- [ ] Make debug info
+- [ ] Make map editor
+- [x] Make debug info
 - [ ] Make difficulty selecting
 - [ ] Implement cards system.
 - [ ] Fix tower data classes

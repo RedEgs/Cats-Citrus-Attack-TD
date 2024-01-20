@@ -7,6 +7,7 @@ import engine.libs.SceneService as SceneService
 import engine.libs.GuiService as GuiService 
 import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
+import engine.libs.DebugService as DebugService
 
 class App():
     """
@@ -20,9 +21,10 @@ class App():
         pygame.font.init()
         
         global screen, clock, settings
-        self.entities, self.scenes, self.guis , self.tweens, self.transitions = self.start_services()
 
         screen, clock, settings = self.start_game()
+        self.entities, self.scenes, self.guis , self.tweens, self.transitions, self.debugs = self.start_services()
+
         self.event_queue = None
         self.load_scenes()
     
@@ -58,8 +60,9 @@ class App():
         guis = GuiService.GuiService()
         tweens = TweenService.TweenService()
         transitions = TransitionService.TransitionService()
+        debugs = DebugService.DebugService(self, clock)
 
-        return entities, scenes, guis, tweens, transitions
+        return entities, scenes, guis, tweens, transitions, debugs
          
     def load_config(self):
         """
@@ -104,17 +107,19 @@ class App():
         self.scenes.run_scene(self.event_queue) 
         self.entities.update()
         self.tweens.update()
+        self.debugs.update()
 
     def draw(self):
+        #self.scenes.get_scene_obj().draw()
         self.guis.draw(screen)
         self.transitions.draw(screen)
+        self.debugs.draw(screen)
+        
+        
         pygame.display.flip()  
           
     def get_screen(self):
         return screen
-
-    def get_clock(self):
-        return clock
 
         
         

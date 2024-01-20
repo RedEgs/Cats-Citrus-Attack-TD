@@ -123,6 +123,11 @@ class Element:
 class ImageElement(Element):
     def __init__(self, position, image_path, target_size=None):
         super().__init__(position)
+        self.position = position
+        self.image_path = image_path
+        self.target_size = target_size
+        
+        
         self.image = pygame.image.load(image_path).convert_alpha()
         self.size = self.image.get_size()
         aspect_ratio = self.size[0] / self.size[1]
@@ -130,6 +135,15 @@ class ImageElement(Element):
         if target_size:
             self.image = utils.scale_image(self.image, target_size[0], target_size[1], aspect_ratio) 
         self.rect = self.image.get_rect(center=position)
+
+    def update_image(self, image):
+        self.image = pygame.image.load(self.image_path).convert_alpha()
+        self.size = self.image.get_size()
+        aspect_ratio = self.size[0] / self.size[1]
+        
+        if self.target_size:
+            self.image = utils.scale_image(self.image, self.target_size[0], self.target_size[1], aspect_ratio) 
+        self.rect = self.image.get_rect(center=self.position)
 
     def update_opacity(self, opacity):
         self.image.set_alpha(opacity)
@@ -147,13 +161,25 @@ class ImageElement(Element):
 class SurfaceElement(Element):
     def __init__(self, position, surface, target_size=None):
         super().__init__(position)
+        self.position = position
         self.surface = surface
+        self.target_size = target_size
+
         self.size = self.surface.get_size()
         aspect_ratio = self.size[0] / self.size[1]
         
         if target_size:
-            self.surface = utils.scale_surface(self.surface, target_size[0], target_size[1], aspect_ratio) 
+            self.surface = utils.scale_image_by_res(self.surface, target_size[0], target_size[1], aspect_ratio) 
         self.rect = self.surface.get_rect(center=position)
+
+    def update_surface(self, surface):
+        self.surface = surface
+        self.size = self.surface.get_size()
+        aspect_ratio = self.size[0] / self.size[1]
+        
+        if self.target_size:
+            self.surface = utils.scale_image_by_res(self.surface, self.target_size[0], self.target_size[1], aspect_ratio) 
+        self.rect = self.surface.get_rect(center=self.position)
 
     def update_opacity(self, opacity):
         self.surface.set_alpha(opacity)

@@ -14,10 +14,14 @@ class Map_Loader:
         self.all_maps = self.get_available_maps()
         self.loaded_map = None
 
-    def load_map(self, folder_path):
-        print("LOADING MAP")
+        self.max_maps = len(self.all_maps)
+        self.map_index = 1
+
+        print(self.max_maps)
+
+    def load_map(self):
+        folder_path = self.all_maps[self.map_index-1]
         self.loaded_map = Map(folder_path)
-        print("LOADED MAP")
 
         return self.loaded_map
         
@@ -33,20 +37,37 @@ class Map_Loader:
 class Map:
     def __init__(self, map_folder):
         self.map_folder = map_folder
+        self.waypoint_data = self.load_waypoint_data()
         self.map_image, self.map_mask = self.load_map()
-        self.waypoints = []
+    
+       
 
+  
     def load_map(self):
         map_path = os.path.join(self.map_folder, 'map.png')
         mask_path = os.path.join(self.map_folder, 'mask.png')
 
         map_image = pygame.image.load(map_path).convert_alpha()
+        
         map_mask_image = pygame.image.load(mask_path).convert_alpha()
 
         map_mask_rect = map_mask_image.get_rect()
         map_mask = pygame.mask.from_surface(map_mask_image)
 
         return map_image, map_mask
+
+    def load_waypoint_data(self):
+        import json
+
+        # Read data from the JSON file
+        with open(f"{self.map_folder}/map_data.json", "r") as json_file:
+            data = json.load(json_file)
+
+        # Access the waypoints data
+        waypoints = data["waypoints"]
+
+        #print(waypoints)
+        return waypoints
 
     
 

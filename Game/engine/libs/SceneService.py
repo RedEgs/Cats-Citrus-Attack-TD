@@ -1,5 +1,6 @@
 import pygame, json, os, sys
 
+import engine.libs.Utils as utils
 import engine.libs.GuiService as GuiService 
 import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
@@ -29,6 +30,12 @@ class SceneService():
             self.scenes.update({str(name): scene})
             self.all_scenes.append(scene)
 
+    def get_scene_by_name(self, name):
+        if name in self.scenes:
+            return self.scenes.get(name)
+        else:
+            return False
+
     def run_scene(self, event):   
         try:
             self.scenes[self.get_scene()].run(event)
@@ -46,17 +53,24 @@ class SceneService():
         except KeyError:
             pass        
         
-    def switch_scene(self, scene):
+    def switch_scene(self, scene, *extra_data):
         TransitionService.TransitionService.canTransition = False
         TransitionService.TransitionService.isTransitioning = True
 
         TransitionService.FadeTransition(self.get_previous_scene(), scene, self.app, 1)
+        self.get_scene_by_name(scene).set_extra_data(extra_data)
         
+        #.set_extra_data(*extra_data)
+
         TransitionService.TransitionService.canTransition = True
         TransitionService.TransitionService.isTransitioning = False
 
-
-
+    def get_scene_obj(self):
+        name = self.get_scene()
+        if name in self.scenes:
+            return self.scenes.get(name)
+        else:
+            return False
 
     def get_previous_scene(self):
         return self.previous_scene
@@ -76,6 +90,8 @@ class Scene():
         self.app = app
         self.guis = app.guis
         self.guis.set_active_scene(self)
+
+        self.extra_data = None
 
         self.element_cache = []
         self.button_cache = []
@@ -106,4 +122,7 @@ class Scene():
 
     def get_scene_info(self):
         return self.scene_name
+    
+    def set_extra_data(self, extra_data):
+        self.extra_data = extra_data
         

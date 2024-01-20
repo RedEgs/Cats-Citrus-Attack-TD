@@ -4,8 +4,8 @@
             "resolution": "1280x720",
             "v-sync": 0,
             "max-fps": 60,
-            "window-title-name": "Test App",
-            "window-icon-path": "None",
+            "window-title-name": "Citrus Cats TD",
+            "window-icon-path": "ico.png",
             "start-scene": "main_menu"
         }
     }
