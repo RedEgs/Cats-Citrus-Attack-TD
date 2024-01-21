@@ -53,6 +53,7 @@ esesf
 - [x] Mouse preview actually working with selected tower etc.
 ## Enemy 
 - [ ] Make enemies usable, fix enemies basically #WIP
+- [ ] Fix enemies rendering underneath the map
 ## Backend
 - [ ] Make map editor
 - [x] Make debug info

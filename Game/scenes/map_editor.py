@@ -1,5 +1,6 @@
 
 import pytweening, pygame, sys, os
+from pygame.locals import *
 
 import engine.libs.Formatter as formatter
 import engine.libs.Utils as utils
@@ -15,22 +16,23 @@ class Map_Editor(SceneService.Scene):
         super().__init__(scene_name, app)
         self.app = app
         
-    
-    def on_enter(self):
-        super().on_enter()    
-        self.map = self.extra_data[0]
-
-        GuiService.SurfaceElement((formatter.get_center(1280, 720)), self.map.map_image) # Background
-
-    
+        self.clicked = False
+        
+        
     def plotlines(self):
         pygame.draw.lines(self.map.map_image, (255,0,0), False, self.map.waypoint_data)
 
         for waypoint in self.map.waypoint_data:
             pygame.draw.circle(self.map.map_image, (0, 255, 0), waypoint, 5, 5)
 
-        
+    def on_enter(self):
+        super().on_enter()    
+        self.map = self.extra_data[0]
 
+        GuiService.SurfaceElement((formatter.get_center(1280, 720)), self.map.map_image) # Background
+    
+    def events(self, event):
+        pass
         
         
       

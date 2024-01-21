@@ -87,20 +87,20 @@ class App():
         fps = settings["max-fps"]
         
         while True:
-            clock.tick(fps)
-            
             self.events()
             self.update()
             self.draw()
             
+            clock.tick(fps)            
     def events(self):
         for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-            
-                self.event_queue = event
-                self.guis.handle_event(event)
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        
+            self.event_queue = event
+            self.guis.handle_event(event)   
+                
                 
     def update(self):
         self.transitions.update()

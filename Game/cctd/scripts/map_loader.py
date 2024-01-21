@@ -65,9 +65,12 @@ class Map:
 
         # Access the waypoints data
         waypoints = data["waypoints"]
-
+        
         #print(waypoints)
-        return waypoints
+        new_waypoints = [tuple(point) for point in waypoints]
+        print(new_waypoints)
+        
+        return new_waypoints
 
     
 

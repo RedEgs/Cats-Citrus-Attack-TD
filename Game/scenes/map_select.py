@@ -60,7 +60,7 @@ class Map_Select(SceneService.Scene):
         self.app.scenes.switch_scene("main_menu")
     
     def continue_button(self):
-        self.app.scenes.switch_scene("map_editor", self.map)
+        self.app.scenes.switch_scene("main_game", self.map_handler.map_index)
     
     
     def on_enter(self):
