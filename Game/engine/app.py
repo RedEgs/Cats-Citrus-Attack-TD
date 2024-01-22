@@ -68,6 +68,8 @@ class App():
         """
         Loads game settings from a "config.json" file.
         """
+        
+        pygame.key.set_repeat(500, 10)
         with open("config.json", "r") as conf:
             data_raw = json.load(conf)
             settings = data_raw["app"]["settings"]

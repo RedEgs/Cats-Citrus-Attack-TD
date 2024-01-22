@@ -94,10 +94,10 @@ class Scene():
         self.extra_data = None
 
         self.element_cache = []
-        self.button_cache = []
+        self.event_element_cache = []
         
         self.cached = False
-        self.cached_button = False
+        self.cached_event_element = False
 
     def on_exit(self):
         pass

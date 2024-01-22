@@ -1,6 +1,4 @@
 import pytweening, pygame, sys, os
-import pygame_textinput as pyinput 
-
 from enum import Enum
 
 
@@ -12,8 +10,9 @@ import engine.libs.TweenService as TweenService
 class GuiService():
     
     element_index = 0
+    event_element_index = 0
     ui_elements = {}
-    button_elements = {}
+    event_elements = {}
     active_scene = None
 
 
@@ -23,19 +22,28 @@ class GuiService():
         
         memory_location = element.get_element_data()
         key = cls.element_index
+        element.element_index = cls.element_index
         
         cls.ui_elements[key] = {"element": memory_location , "scene": cls.active_scene, "is_exception": element.get_element_exception()}
         cls.element_index += 1  # Increment the index for the next element
+        
     
     @classmethod
-    def add_button_element(cls, element):
+    def add_event_element(cls, element):
         import engine.libs.SceneService as SceneService
         
         memory_location = element.get_element_data()
         key = cls.element_index
+        element.event_element_index = cls.event_element_index
         
-        cls.button_elements[key] = {"button_element": memory_location , "scene": cls.active_scene}
-        cls.element_index += 1  # Increment the index for the next element
+        cls.event_elements[key] = {"event_element": memory_location , "scene": cls.active_scene}
+        cls.event_element_index += 1  # Increment the index for the next element
+        
+
+        
+        
+        
+        
 
     @classmethod 
     def draw(cls, screen):
@@ -67,22 +75,22 @@ class GuiService():
             
     @classmethod 
     def handle_event(cls, event):
-        if cls.active_scene.cached_button == False:
-            for key, element in cls.button_elements.items():
-                obj = element["button_element"]
+        if cls.active_scene.cached_event_element == False:
+            for key, element in cls.event_elements.items():
+                obj = element["event_element"]
                 obj_scene = element["scene"]
 
                 
                 if cls.active_scene == obj_scene:
-                    if cls.active_scene.cached_button == False:
-                        cls.cache_button(obj)   
+                    if cls.active_scene.cached_event_element == False:
+                        cls.cache_event_element(obj)   
                 else:
                     pass
 
-            cls.active_scene.cached_button = True
+            cls.active_scene.cached_event_element = True
 
         else:
-            for element in cls.active_scene.button_cache:
+            for element in cls.active_scene.event_element_cache:
                 element.handle_event(event)
 
         
@@ -95,21 +103,78 @@ class GuiService():
         element_cache = cls.active_scene.element_cache
         element_cache.append(object)
 
+    def uncache(cls, object):
+        element_cache = cls.active_scene.element_cache
+        element_cache.pop(object)
+        
+        print("uncached" + str(object))
+
     @classmethod
-    def cache_button(cls, object):
-        button_cache = cls.active_scene.button_cache
-        button_cache.append(object)
+    def cache_event_element(cls, object):
+        event_element_cache = cls.active_scene.event_element_cache
+        event_element_cache.append(object)
+        
+    @classmethod
+    def uncache_event_element(cls, object):
+        event_element_cache = cls.active_scene.event_element_cache
+        event_element_cache.pop(object)
+
+                
+    @classmethod
+    def remove_element(cls, element, index):
+        current_item = None
+        if index in cls.ui_elements:
+            current_item = cls.ui_elements[index]
+            #del cls.ui_elements[index]
+            
+        event_element_cache = cls.active_scene.event_element_cache
+        event_element_cache.append(element)
+        
+        event_element_cache = cls.active_scene.event_element_cache
+        event_element_cache.remove(element)
+
+  
+        
+        cls.active_scene.element_cache.pop(utils.is_in_list(current_item, cls.active_scene.element_cache))
+        del cls.ui_elements[index]
+        
 
 
 class Element:
     def __init__(self, position):
         self.position = position
+        self.element_index = None
         #self.rect = self.image.get_rect(center=position)
 
         GuiService.add_element(self)
 
     def update_position(self, position):
         self.position = position
+
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        pass
+
+    def get_element_data(self):
+        return self
+    
+    def get_element_exception(self):
+        return False
+
+class EventElement(Element):
+    def __init__(self, position):
+        super().__init__(position)
+        self.event_element_index = None
+        GuiService.add_event_element(self)
+        
+
+    def update_position(self, position):
+        self.position = position
+
+    def handle_event(self, event):
+        pass
 
     def update(self):
         pass
@@ -220,58 +285,150 @@ class TextElement(Element):
         self.rect = self.image.get_rect(center=self.position)
         screen.blit(self.image, self.rect)
 
-
-class TextArea:
-    def __init__(self, position, text, size, image_path):
-        super().__init__(position, text, size)
-        self.text = text
-
-        #self.background_image = ImageElement(self.position, image_path, None)
-
-        GuiService.add_button_element(self)
-
-    def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                if len(self.text)>0:
-                    self.text = self.text[:-1]
-            else:
-                self.text += event.unicode
-    
-        self.update_text(self.text)
-
-    def draw(self, screen):
-        return super().draw(screen)
-
-"""
-class TextArea(TextElement):
-    def __init__(self, position, image_path):
+class TextArea(EventElement):
+    def __init__(self, position, init_text, image_path):
         super().__init__(position)  
         self.position = position
 
         #self.background = ImageElement(self.position, image_path, None)
 
-        self.text = ""
+        self.has_focus = False
+        self.first_time = True
+
+        self.text = init_text
+        self.submitted_text = ""
         self.font = pygame.font.SysFont(None, 24)
         self.image = self.font.render(self.text, True, (255,255,255))
-        self.rect = self.image.get_rect(center = position)
+        
+        self.rect = self.image.get_rect(center = self.position)
     
-        GuiService.add_button_element(self)
+        GuiService.add_event_element(self)
         #self.cursor = pygame.Rect(topright = )
 
     def handle_event(self, event):
+        
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                self.has_focus = True
+                
+            elif self.has_focus:
+                self.has_focus = False
+
+        
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                if len(self.text)>0:
-                    self.text = self.text[:-1]
-            else:
-                self.text += event.unicode
+            if self.has_focus:
+                
+                if self.first_time == True:
+                    self.text = ""
+                    self.first_time = False
+                
+                if event.key == pygame.K_BACKSPACE:
+                    if len(self.text)>0:
+                        self.text = self.text[:-1]
+                
+                elif event.key == pygame.K_RETURN:
+                    self.submitted_text = self.text
+                else:
+                    self.text += event.unicode
+        
+        
+        
+        
+                self.image = self.font.render(self.text, True, (255,255,255))
+                self.rect = self.image.get_rect(center = self.position)
     
-            self.image = self.font.render(self.text, True, (255,255,255))
+        elif event.type == pygame.KEYUP:
+            pass
+    
 
     def draw(self, screen):
+        #self.bounding_box = pygame.draw.rect(screen, (255,0,0), self.rect.scale_by(1.2), 10)
         screen.blit(self.image, self.rect)
-"""
+        
+    def get_submitted_text(self):
+        return self.submitted_text
+
+class SubWindow(EventElement): # Figure out how to delete windows and elements
+    def __init__(self, position, window_title, window_size, window_color = (40,40,40)):
+        super().__init__(position)
+        self.position = position
+        self.window_size = window_size
+        self.window_title = window_title
+        
+        self.window_color = window_color
+        
+        
+        
+        self.window_rect = pygame.Rect(self.position, self.window_size)
+        
+        self.header_rect = pygame.Rect((self.position[0]+10, self.position[1]), (self.window_size[0]-10, 10))
+        self.resizer_rect = pygame.Rect(self.position, (10, 10))
+        self.close_rect = pygame.Rect((self.position[0]+self.window_size[0]-10, self.position[1]), (10, 10))
+ 
+        self.header_text = TextElement(self.header_rect.center, self.window_title, 8, (255,255,255))
+        
+        self.has_focus = False
+        self.dragging_window = False
+        self.resizing_window = False
+
+    def handle_event(self, event):
+        # Header
+        # Resizer
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+            if self.close_rect.collidepoint(pygame.mouse.get_pos()): # Dragging Header
+                self.close_window()
+      
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+            if self.header_rect.collidepoint(pygame.mouse.get_pos()): # Dragging Header
+                self.dragging_window = True
+            
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
+            self.dragging_window = False
+                
+                
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+            if self.resizer_rect.collidepoint(pygame.mouse.get_pos()): # Dragging Header
+                self.resizing_window = True
+            
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
+            self.resizing_window = False
+                
+            
+        if self.dragging_window:
+            if event.type == pygame.MOUSEMOTION: # Controls the movement of the WHOLE window 
+                self.window_rect.move_ip(event.rel)
+                
+                self.header_rect.move_ip(event.rel)
+                self.resizer_rect.move_ip(event.rel)
+                self.close_rect.move_ip(event.rel)
+        
+        if self.resizing_window:
+            if event.type == pygame.MOUSEMOTION:
+                self.window_rect.width += event.rel[0]
+                self.window_rect.height += event.rel[1]
+            
+                self.header_rect.width += event.rel[0]
+            
+                if self.window_rect.width <= 35:  # Check minimum size and position
+                    self.window_rect.width = 30
+                    self.header_rect.width = 20
+                
+                if self.window_rect.height <= 20:  # Check minimum size and position
+                    self.window_rect.height = 20        
+    
+    def draw(self, screen):
+        self.window = pygame.draw.rect(screen, self.window_color, self.window_rect)
+        self.header_text.update_position(self.header_rect.center)
+        pygame.draw.rect(screen, (18,18,18), self.header_rect) # Sort out tile opacity
+        pygame.draw.rect(screen, (18,18,18), self.resizer_rect)
+        pygame.draw.rect(screen, (255,0,0), self.close_rect)
+
+    def close_window(self):
+        GuiService.remove_element(self, self.element_index)
+        
+        
+        
+
 
 class ButtonState(Enum):
     DEFAULT = "default"
@@ -279,12 +436,10 @@ class ButtonState(Enum):
     HOVERED = "hovered" 
     DISABLED = "disabled"
 
-
-class ButtonElement(Element):
+class ButtonElement(EventElement):
     def __init__(self, position, image_pair, function_pair, ):
         super().__init__(position)
-        GuiService.add_button_element(self)
-
+        
         self.original_image_default = pygame.image.load(image_pair[0]).convert_alpha()
         
         try:

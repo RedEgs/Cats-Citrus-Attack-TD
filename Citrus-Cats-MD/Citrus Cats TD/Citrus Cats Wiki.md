@@ -11,6 +11,10 @@ esesf
 - [ ] Add support for CSS and HTML
 - [ ] Add dropdown menus
 ## Backend
+- [ ] Add Text inputs
+- [ ] Add Dropdowns 
+- [ ] Add Windows 
+- [ ] Add Subwindows
 - [ ] Always figure out ways to optimise
 - [ ] Make game loops less repetive ( Make use of globals & class methods) #WIP
 - [ ] Create app options, see [[App Options]]
