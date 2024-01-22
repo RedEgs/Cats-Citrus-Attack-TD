@@ -13,8 +13,10 @@ class Menu(SceneService.Scene):
         super().__init__(scene_name, app)
         self.app = app
 
-        GuiService.ImageElement((formatter.get_center(1280, 720)), "cctd/resources/main_menu/background.png") # Background
-        GuiService.ImageElement((243, 189), "cctd/resources/main_menu/logo.png")
+        #GuiService.ImageElement((formatter.get_center(1280, 720)), "cctd/resources/main_menu/background.png") # Background
+        #GuiService.ImageElement((243, 189), "cctd/resources/main_menu/logo.png")
+
+        text_input = GuiService.TextArea((243, 189), 24, (255,255,255), "cctd/resources/difficulty_select/easy_button.png")
 
         mod_button = GuiService.ButtonElement((48,48), ["cctd/resources/main_menu/mod_button.png"], [self.play_button])
         option_button = GuiService.ButtonElement((166, 526), ["cctd/resources/main_menu/options_button.png"], [self.play_button])

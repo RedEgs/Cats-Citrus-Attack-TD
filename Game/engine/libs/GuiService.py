@@ -1,5 +1,9 @@
 import pytweening, pygame, sys, os
+import pygame_textinput as pyinput 
+
 from enum import Enum
+
+
 
 import engine.libs.Utils as utils
 import engine.libs.TweenService as TweenService
@@ -100,7 +104,6 @@ class GuiService():
 class Element:
     def __init__(self, position):
         self.position = position
-        self.is_exception = False
         #self.rect = self.image.get_rect(center=position)
 
         GuiService.add_element(self)
@@ -194,8 +197,6 @@ class SurfaceElement(Element):
     def get_element_data(self):
         return self
 
-
-
 class TextElement(Element):
     def __init__(self, position, text, size, color):
         super().__init__(position)
@@ -218,7 +219,59 @@ class TextElement(Element):
     def draw(self, screen):
         self.rect = self.image.get_rect(center=self.position)
         screen.blit(self.image, self.rect)
-         
+
+
+class TextArea:
+    def __init__(self, position, text, size, image_path):
+        super().__init__(position, text, size)
+        self.text = text
+
+        #self.background_image = ImageElement(self.position, image_path, None)
+
+        GuiService.add_button_element(self)
+
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                if len(self.text)>0:
+                    self.text = self.text[:-1]
+            else:
+                self.text += event.unicode
+    
+        self.update_text(self.text)
+
+    def draw(self, screen):
+        return super().draw(screen)
+
+"""
+class TextArea(TextElement):
+    def __init__(self, position, image_path):
+        super().__init__(position)  
+        self.position = position
+
+        #self.background = ImageElement(self.position, image_path, None)
+
+        self.text = ""
+        self.font = pygame.font.SysFont(None, 24)
+        self.image = self.font.render(self.text, True, (255,255,255))
+        self.rect = self.image.get_rect(center = position)
+    
+        GuiService.add_button_element(self)
+        #self.cursor = pygame.Rect(topright = )
+
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                if len(self.text)>0:
+                    self.text = self.text[:-1]
+            else:
+                self.text += event.unicode
+    
+            self.image = self.font.render(self.text, True, (255,255,255))
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+"""
 
 class ButtonState(Enum):
     DEFAULT = "default"
