@@ -276,7 +276,7 @@ class TextElement(Element):
         self.size = size
         self.color = color
 
-        self.default_font = pygame.font.Font("font.ttf", size)
+        self.default_font = pygame.font.Font("virgil.ttf", size)
         self.image = self.default_font.render(self.text, True, self.color)
 
         GuiService.add_element(self)
@@ -293,9 +293,12 @@ class TextElement(Element):
         screen.blit(self.image, self.rect)
 
 class TextArea(EventElement):
-    def __init__(self, position, init_text, image_path):
+    def __init__(self, position, init_text, image_path, text_color = (0,0,0), cursor_color = (0,0,0)):
         super().__init__(position)  
         self.position = position
+
+        self.text_color = text_color
+        self.cursor_color = cursor_color
 
         self.background = ImageElement(self.position, image_path, None)
         self.back_rect = self.background.get_rect(self.position)
@@ -305,11 +308,14 @@ class TextArea(EventElement):
 
         self.text = init_text
         self.submitted_text = ""
-        self.font = pygame.font.SysFont(None, 24)
-        self.image = self.font.render(self.text, True, (0))
+        self.font = pygame.font.Font("virgil.ttf", 24)
+        self.image = self.font.render(self.text, True, self.text_color)
         
         self.rect = self.image.get_rect(center = self.position)
-        self.cursor = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]-2)).topright, (2, 20))
+        
+        self.cursor_rect= pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+4)).topright, (2, 20))
+        
+
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
@@ -340,15 +346,24 @@ class TextArea(EventElement):
     
                 self.image = self.font.render(self.text, True, (0))
                 self.rect = self.image.get_rect(center = self.position)
-                self.cursor = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]-2)).topright, (2, 20))
-
+                self.cursor_rect = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+3)).topright, (2, 20))
+                
 
     def draw(self, screen):
+        if self.has_focus:
+            screen.blit(self.image, self.rect)
+        else:
+            self.image.set_alpha(80)
+            screen.blit(self.image, self.rect)
+        
         if time.time() % 1 > 0.5:
-            if self.has_focus:    
-                self.bounding_box = pygame.draw.rect(screen, (40,40,40), self.cursor, 10)
+            if self.has_focus:
+                # Set the cursor color with alpha channel for opacity
+                cursor_surface = pygame.Surface((2, 20), pygame.SRCALPHA)
+                cursor_surface.fill((self.cursor_color[0], self.cursor_color[1], self.cursor_color[2], 128))  # Adjust alpha as needed
+                screen.blit(cursor_surface, self.cursor_rect.topleft)
 
-        screen.blit(self.image, self.rect)
+        
         
     def get_submitted_text(self):
         return self.submitted_text

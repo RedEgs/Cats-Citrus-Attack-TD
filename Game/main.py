@@ -26,8 +26,8 @@ class Main(App):
                                  t_select.Tower_Select("tower_select", self),
                                  m_select.Map_Select("map_select", self),
                                  d_select.Difficulty_Select("difficulty_select", self),
-                                 main_menu.Menu("main_menu", self)])
-                                 #user_login.User_Login("user_login", self)])
+                                 main_menu.Menu("main_menu", self),
+                                 user_login.User_Login("user_login", self)])
         self.scenes.set_scene("main_menu")  
          
         

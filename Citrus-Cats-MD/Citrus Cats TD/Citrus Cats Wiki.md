@@ -5,16 +5,27 @@ esesf
 
 - [ ] Make the engine independent of citrus cats
 ## GUI
-- [x] Button hover size bounce animation
-- [ ] Text outlines and strokes (semi, due to broken thickness controls) 
-	- [ ] Refactor strokes to be internal to text
-- [ ] Add support for CSS and HTML
-- [ ] Add dropdown menus
-## Backend
 - [ ] Add Text inputs
 - [ ] Add Dropdowns 
 - [ ] Add Windows 
-- [ ] Add Subwindows
+	- [ ] Allow for passing data between windows etc
+- [x] Add Subwindows
+	- [ ] Fix resizing issues so they scale to the corner
+	- [ ] figure out how to close them
+- [ ] Add support for undrawing and drawing widgets 
+- [ ] Fix subwindows
+- [ ] Add support for tinkinter pop ups
+- [ ] Fix triple input in scene events
+- [ ] Add Dropdowns
+- [ ] Add Sliders
+- [x] Add Text Input
+	- [ ] Tween unfocused text smoothly
+- [x] Button hover size bounce animation
+- [ ] Text outlines and strokes (semi, due to broken thickness controls) 
+	- [ ] Refactor strokes to be internal to text
+- [ ] Add support for CSS and HTML #SCRAPPED
+## Backend
+- [ ] Basic networking
 - [ ] Always figure out ways to optimise
 - [ ] Make game loops less repetive ( Make use of globals & class methods) #WIP
 - [ ] Create app options, see [[App Options]]
@@ -59,6 +70,8 @@ esesf
 - [ ] Make enemies usable, fix enemies basically #WIP
 - [ ] Fix enemies rendering underneath the map
 ## Backend
+- [ ] Figure out server logging and exchanging info for logging in
+- [ ] Fix the fps counter
 - [ ] Make map editor
 - [x] Make debug info
 - [ ] Make difficulty selecting
