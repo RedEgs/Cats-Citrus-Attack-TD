@@ -6,7 +6,7 @@
             "max-fps": 60,
             "window-title-name": "Citrus Cats TD",
             "window-icon-path": "ico.png",
-            "start-scene": "main_menu"
+            "start-scene": "user_login"
         }
     }
 }

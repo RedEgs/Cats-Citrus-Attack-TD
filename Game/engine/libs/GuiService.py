@@ -1,4 +1,5 @@
 import pytweening, pygame, sys, os
+import time
 from enum import Enum
 
 
@@ -226,6 +227,12 @@ class ImageElement(Element):
     def get_element_data(self):
         return self
     
+    def get_rect(self, position = None):
+        if position:
+            return self.image.get_rect(center = position)
+        else:
+            return self.image.get_rect()
+    
 class SurfaceElement(Element):
     def __init__(self, position, surface, target_size=None):
         super().__init__(position)
@@ -290,7 +297,8 @@ class TextArea(EventElement):
         super().__init__(position)  
         self.position = position
 
-        #self.background = ImageElement(self.position, image_path, None)
+        self.background = ImageElement(self.position, image_path, None)
+        self.back_rect = self.background.get_rect(self.position)
 
         self.has_focus = False
         self.first_time = True
@@ -298,17 +306,14 @@ class TextArea(EventElement):
         self.text = init_text
         self.submitted_text = ""
         self.font = pygame.font.SysFont(None, 24)
-        self.image = self.font.render(self.text, True, (255,255,255))
+        self.image = self.font.render(self.text, True, (0))
         
         self.rect = self.image.get_rect(center = self.position)
-    
-        GuiService.add_event_element(self)
-        #self.cursor = pygame.Rect(topright = )
+        self.cursor = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]-2)).topright, (2, 20))
 
     def handle_event(self, event):
-        
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.back_rect.collidepoint(pygame.mouse.get_pos()):
                 self.has_focus = True
                 
             elif self.has_focus:
@@ -328,27 +333,27 @@ class TextArea(EventElement):
                 
                 elif event.key == pygame.K_RETURN:
                     self.submitted_text = self.text
+                
                 else:
                     self.text += event.unicode
-        
-        
-        
-        
-                self.image = self.font.render(self.text, True, (255,255,255))
+
+    
+                self.image = self.font.render(self.text, True, (0))
                 self.rect = self.image.get_rect(center = self.position)
-    
-        elif event.type == pygame.KEYUP:
-            pass
-    
+                self.cursor = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]-2)).topright, (2, 20))
+
 
     def draw(self, screen):
-        #self.bounding_box = pygame.draw.rect(screen, (255,0,0), self.rect.scale_by(1.2), 10)
+        if time.time() % 1 > 0.5:
+            if self.has_focus:    
+                self.bounding_box = pygame.draw.rect(screen, (40,40,40), self.cursor, 10)
+
         screen.blit(self.image, self.rect)
         
     def get_submitted_text(self):
         return self.submitted_text
-
 class SubWindow(EventElement): # Figure out how to delete windows and elements
+
     def __init__(self, position, window_title, window_size, window_color = (40,40,40)):
         super().__init__(position)
         self.position = position
@@ -425,10 +430,7 @@ class SubWindow(EventElement): # Figure out how to delete windows and elements
 
     def close_window(self):
         GuiService.remove_element(self, self.element_index)
-        
-        
-        
-
+    
 
 class ButtonState(Enum):
     DEFAULT = "default"

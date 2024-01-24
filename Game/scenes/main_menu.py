@@ -22,8 +22,8 @@ class Menu(SceneService.Scene):
 
         self.play_button = GuiService.ButtonElement((204, 396), ["cctd/resources/main_menu/play_button.png"], [self.play_button])
 
-        self.test_window = GuiService.SubWindow(formatter.get_center(1280, 720), "example", (80,80))
-        del self.test_window
+       # self.test_window = GuiService.SubWindow(formatter.get_center(1280, 720), "example", (80,80))
+       # del self.test_window
 
 
     def play_button(self):
@@ -40,6 +40,3 @@ class Menu(SceneService.Scene):
     def update(self):
         pass
         
-    def draw(self):
-        self.app.get_screen().fill((0))  
-      
