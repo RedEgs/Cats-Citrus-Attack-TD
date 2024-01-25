@@ -279,14 +279,16 @@ class TextElement(Element):
         self.default_font = pygame.font.Font("virgil.ttf", size)
         self.image = self.default_font.render(self.text, True, self.color)
 
-        GuiService.add_element(self)
-
     def update_position(self, position):
         super().update_position(position)
         self.rect = self.image.get_rect(center=position)
 
     def update_text(self, text):
         self.text = text
+        self.image = self.default_font.render(self.text, True, self.color)
+
+    def update_color(self, color):
+        self.image = self.default_font.render(self.text, True, color)
 
     def draw(self, screen):
         self.rect = self.image.get_rect(center=self.position)
@@ -306,28 +308,45 @@ class TextArea(EventElement):
         self.has_focus = False
         self.first_time = True
 
+        self.init_text = init_text
         self.text = init_text
+        self.display_text = self.text
         self.submitted_text = ""
+        
         self.font = pygame.font.Font("virgil.ttf", 24)
-        self.image = self.font.render(self.text, True, self.text_color)
-        
+        self.image = self.font.render(self.display_text, True, self.text_color)
         self.rect = self.image.get_rect(center = self.position)
-        
         self.cursor_rect= pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+4)).topright, (2, 20))
-        
+        self.unfocused_alpha = 80
+
+
+    def update_text(self):
+        self.display_text = self.text
+        self.image = self.font.render(self.display_text, True, (0))
+        self.rect = self.image.get_rect(center = self.position)
+        self.cursor_rect = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+3)).topright, (2, 20))
 
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
             if self.back_rect.collidepoint(pygame.mouse.get_pos()):
                 self.has_focus = True
+               
+                if not self.first_time:
+                    self.image.set_alpha(255)
                 
             elif self.has_focus:
                 self.has_focus = False
+                
+                if self.text == "":
+                    self.text = self.init_text
+                    self.first_time = True
+                    self.update_text()
 
         
         if event.type == pygame.KEYDOWN:
             if self.has_focus:
+                
                 
                 if self.first_time == True:
                     self.text = ""
@@ -343,30 +362,59 @@ class TextArea(EventElement):
                 else:
                     self.text += event.unicode
 
-    
-                self.image = self.font.render(self.text, True, (0))
-                self.rect = self.image.get_rect(center = self.position)
-                self.cursor_rect = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+3)).topright, (2, 20))
-                
+                self.update_text()
 
     def draw(self, screen):
         if self.has_focus:
             screen.blit(self.image, self.rect)
         else:
-            self.image.set_alpha(80)
+            self.image.set_alpha(self.unfocused_alpha)
             screen.blit(self.image, self.rect)
         
         if time.time() % 1 > 0.5:
             if self.has_focus:
                 # Set the cursor color with alpha channel for opacity
                 cursor_surface = pygame.Surface((2, 20), pygame.SRCALPHA)
-                cursor_surface.fill((self.cursor_color[0], self.cursor_color[1], self.cursor_color[2], 128))  # Adjust alpha as needed
+                cursor_surface.fill((self.cursor_color[0], self.cursor_color[1], self.cursor_color[2], self.unfocused_alpha))  # Adjust alpha as needed
                 screen.blit(cursor_surface, self.cursor_rect.topleft)
 
         
         
     def get_submitted_text(self):
+        self.submitted_text = self.text
         return self.submitted_text
+
+class TextAreaPassword(TextArea):
+    def __init__(self, position, init_text, image_path, text_color=(0, 0, 0), cursor_color=(0, 0, 0)):
+        super().__init__(position, init_text, image_path, text_color, cursor_color)
+        
+    def update_text(self):
+        if not self.first_time:
+            self.display_text = self.text
+            self.display_text = '*' * len(self.text)
+            self.image = self.font.render(self.display_text, True, (0))
+            self.rect = self.image.get_rect(center = self.position)
+            self.cursor_rect = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+3)).topright, (2, 20))
+        else:
+            self.display_text = self.text
+            self.image = self.font.render(self.display_text, True, (0))
+            self.rect = self.image.get_rect(center = self.position)
+            self.cursor_rect = pygame.Rect(self.image.get_rect(center = (self.position[0]+5, self.position[1]+3)).topright, (2, 20))
+
+
+    
+    def handle_event(self, event):
+        return super().handle_event(event)
+    
+    def draw(self, screen):
+        return super().draw(screen)
+    
+    def get_submitted_text(self):
+        return super().get_submitted_text()
+
+
+
+
 class SubWindow(EventElement): # Figure out how to delete windows and elements
 
     def __init__(self, position, window_title, window_size, window_color = (40,40,40)):

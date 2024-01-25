@@ -5,7 +5,9 @@ esesf
 
 - [ ] Make the engine independent of citrus cats
 ## GUI
-- [ ] Add Text inputs
+- [x] Add Text inputs
+	- [x] Add a password input option to hide passwords
+	- [ ] Text align
 - [ ] Add Dropdowns 
 - [ ] Add Windows 
 	- [ ] Allow for passing data between windows etc
@@ -16,7 +18,6 @@ esesf
 - [ ] Fix subwindows
 - [ ] Add support for tinkinter pop ups
 - [ ] Fix triple input in scene events
-- [ ] Add Dropdowns
 - [ ] Add Sliders
 - [x] Add Text Input
 	- [ ] Tween unfocused text smoothly
@@ -59,6 +60,9 @@ esesf
 	- [ ] Map selection scene #WIP
 	- [ ] Options #WIP
 	- [ ] Shop #WIP 
+	- [ ] User-Login
+		- [ ] Change backend to use sqlite3 or mysql to connect to database
+		- [ ] Figure out local credential encryption
 ## GUI
 - [ ] Do a whole redesign on EVERYTHING. #UI-REDESIGN #WIP
 ## Tower-system
