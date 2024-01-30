@@ -8,6 +8,7 @@ import engine.libs.GuiService as GuiService
 import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
+import engine.libs.NetworkService as NetworkService
 
 class App():
     """
@@ -112,8 +113,8 @@ class App():
         self.debugs.update()
 
     def draw(self):
-        #self.scenes.get_scene_obj().draw()
         self.guis.draw(screen)
+        self.scenes.draw_scene()
         self.transitions.draw(screen)
         self.debugs.draw(screen)
         

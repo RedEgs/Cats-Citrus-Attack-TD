@@ -10,6 +10,7 @@ import engine.libs.TweenService as TweenService
 
 import cctd.scripts.map_loader as map_loader
 import cctd.scripts.enemy_handler as enemy_handler
+import cctd.scripts.tower_handler as tower_handler
 
 class GameState(Enum):
     PREROUND = "preround"
@@ -34,9 +35,7 @@ class Main_Game(SceneService.Scene):
         self.start_button = None
         
         self.enemy_handler = enemy_handler.EnemyHandler()
-        
-    
-    
+        self.tower_handler = tower_handler.TowerHandler(app, self.map)
       
 
     def on_enter(self):
@@ -49,23 +48,21 @@ class Main_Game(SceneService.Scene):
         self.start_button = GuiService.ButtonElement((300, 300), ["cctd/resources/main_menu/play_button.png"], [self.start_game])
         
         
-     
+    def events(self, event):
+        self.tower_handler.handle_event(event)
+
     def update(self):
         self.enemy_handler.update()
+        self.tower_handler.update()
         
         if self.game_state == GameState.MIDROUND:
             pass
 
-            
-            
-            
   
     def draw(self):
-        self.app.get_screen().fill((0))  
         self.enemy_handler.draw(self.app.get_screen())
-       
-       
-      
+        self.tower_handler.draw(self.app.get_screen())
+
     def start_game(self):
         self.game_state = GameState.MIDROUND
         

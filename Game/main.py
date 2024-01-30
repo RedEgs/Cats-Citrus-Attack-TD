@@ -12,16 +12,22 @@ import scenes.tower_select as t_select
 import scenes.main_game as main_game
 import scenes.map_editor as map_editor
 import scenes.user_login as user_login
-
+import scenes.network_test as network_test
 
 
 
 class Main(App):
     def __init__(self):
         super().__init__()
+    
+    def set_user(self, user):
+        self.user = user
+
+
 
     def load_scenes(self):
-        self.scenes.load_scenes([map_editor.Map_Editor("map_editor", self),
+        self.scenes.load_scenes([network_test.Network_Test("network_test", self),
+                                 map_editor.Map_Editor("map_editor", self),
                                  main_game.Main_Game("main_game", self),
                                  t_select.Tower_Select("tower_select", self),
                                  m_select.Map_Select("map_select", self),

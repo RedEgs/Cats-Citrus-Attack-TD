@@ -16,7 +16,7 @@ class Menu(SceneService.Scene):
         GuiService.ImageElement((formatter.get_center(1280, 720)), "cctd/resources/main_menu/background.png") # Background
         GuiService.ImageElement((243, 189), "cctd/resources/main_menu/logo.png")
         
-        mod_button = GuiService.ButtonElement((48,48), ["cctd/resources/main_menu/mod_button.png"], [self.play_button])
+        mod_button = GuiService.ButtonElement((48,48), ["cctd/resources/main_menu/mod_button.png"], [self.dev_button])
         option_button = GuiService.ButtonElement((166, 526), ["cctd/resources/main_menu/options_button.png"], [self.play_button])
         quit_button = GuiService.ButtonElement((159, 641), ["cctd/resources/main_menu/quit_button.png"], [self.quit_button])
 
@@ -25,6 +25,9 @@ class Menu(SceneService.Scene):
        # self.test_window = GuiService.SubWindow(formatter.get_center(1280, 720), "example", (80,80))
        # del self.test_window
 
+
+    def dev_button(self):
+        self.app.scenes.switch_scene("network_test") 
 
     def play_button(self):
         self.app.scenes.switch_scene("difficulty_select")

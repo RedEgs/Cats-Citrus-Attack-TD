@@ -29,7 +29,7 @@ esesf
 - [ ] Basic networking
 - [ ] Always figure out ways to optimise
 - [ ] Make game loops less repetive ( Make use of globals & class methods) #WIP
-- [ ] Create app options, see [[App Options]]
+- [x] Create app options, see [[App Options]]
 - [ ] Add vertical parameters for `calculate_index_spacing()` 
 	- [ ] Fix vertical parameters, past 5 elements.
 - [x] Refactor scene classes to pass in extra data if needed, make it optional

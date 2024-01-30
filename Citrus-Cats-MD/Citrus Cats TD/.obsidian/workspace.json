@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Gameplay/Tower System.md",
                 "mode": "source",
                 "source": false
               }
@@ -48,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#WIP",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -65,8 +65,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -86,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Gameplay/Tower System.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Citrus Cats Wiki.md",
+                "file": "Gameplay/Tower System.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Citrus Cats Wiki.md"
+                "file": "Gameplay/Tower System.md"
               }
             }
           }
@@ -150,11 +149,11 @@
   "active": "5d22f8995a7e5d54",
   "lastOpenFiles": [
     "Documentation/Towers.py.md",
+    "Citrus Cats Wiki.md",
     "Gameplay/Wave system.md",
     "Documentation/PyRed Engine/SceneService.md",
     "Documentation/PyRed Engine/Object Types.md",
     "Documentation/PyRed Engine/App Options.md",
-    "Citrus Cats Wiki.md",
     "Learning resources/Learning resources.md",
     "Gameplay/Card dealer.md",
     "Documentation/Scenes/Menu.py.md",

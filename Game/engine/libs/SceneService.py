@@ -42,6 +42,13 @@ class SceneService():
         except KeyError:  
             print("No scene found")
 
+    def draw_scene(self):   
+        try:
+            self.scenes[self.get_scene()].draw()
+        except KeyError:  
+            print("No scene found")
+
+
     def set_scene(self, scene):
         self.previous_scene = self.active_scene
         self.active_scene = scene
@@ -118,7 +125,7 @@ class Scene():
     def run(self, event):
         self.events(event)
         self.update()
-        self.draw()
+        #self.draw()
 
     def get_scene_info(self):
         return self.scene_name

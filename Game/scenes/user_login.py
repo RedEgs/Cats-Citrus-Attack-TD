@@ -1,4 +1,5 @@
 import pytweening, pygame, sys, os
+import sqlite3
 from enum import Enum
 
 import engine.libs.Formatter as formatter
@@ -23,6 +24,9 @@ class User_Login(SceneService.Scene):
 
         self.login_status = GuiService.TextElement((246, 440), "", 24, (255,0,0))
 
+        self.db_filename = 'credentials.db'
+        self.init_database()
+
     def draw(self):
         self.app.get_screen().fill((0))  
     
@@ -39,50 +43,70 @@ class User_Login(SceneService.Scene):
         elif login_data == None:
             self.login_status.update_text("Login details not found, please signup")
         
-          
+    def init_database(self):
+        # Create a connection to the SQLite database
+        conn = sqlite3.connect(self.db_filename)
+        cursor = conn.cursor()
+
+        # Create a table for user credentials if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                username TEXT PRIMARY KEY,
+                password TEXT
+            )
+        ''')
+
+        conn.commit()
+        conn.close()
      
         
     def sign_up(self):
-        import json 
-        
         new_username = self.username_entry.get_submitted_text()
         new_password = self.password_entry.get_submitted_text()
-        
+
         try:
-            with open('credentials.json', 'r') as file:
-                data = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            data = {}
+            # Insert new user into the 'users' table
+            conn = sqlite3.connect(self.db_filename)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                INSERT INTO users (username, password) VALUES (?, ?)
+            ''', (new_username, new_password))
+            
+            conn.commit()
+            conn.close()
 
-        data[new_username] = new_password
-
-        with open('credentials.json', 'w') as file:
-            json.dump(data, file)
             self.login_status.update_text("Sign-up Successful!")
-            self.login_status.update_color((30,230,0))
+            self.login_status.update_color((30, 230, 0))
+        except sqlite3.Error as e:
+            print(f"Error during sign-up: {e}")
+            self.login_status.update_text("Error during sign-up")
+
         
     def login(self):
-        import json 
-        
         username = self.username_entry.get_submitted_text()
         password = self.password_entry.get_submitted_text()
-        
-        status = None
-        
-        try:
-            with open('credentials.json', 'r') as file:
-                data = json.load(file)
 
-            if data.get(username) == password:
+        status = None
+
+        try:
+            # Check credentials in the 'users' table
+            conn = sqlite3.connect(self.db_filename)
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+            user = cursor.fetchone()
+            conn.close()
+
+            if user:
                 print("Login successful!")
                 status = True
             else:
                 print("Invalid credentials. Please try again.")
                 status = False
-        except (FileNotFoundError, json.JSONDecodeError):
-            print("No credentials found. Please sign up.")
+        except sqlite3.Error as e:
+            print(f"Error during login: {e}")
             status = None
-            
+
         return status
             
         

@@ -31,5 +31,5 @@ class Tower_Select(SceneService.Scene):
         pass
         
     def draw(self):
-        self.app.get_screen().fill((0))  
+        pass
       

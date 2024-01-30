@@ -40,6 +40,5 @@ class Map_Editor(SceneService.Scene):
         pass
         
     def draw(self):
-        self.app.get_screen().fill((0))
         self.plotlines()
       
