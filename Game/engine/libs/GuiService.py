@@ -94,6 +94,7 @@ class GuiService():
             for element in cls.active_scene.event_element_cache:
                 element.handle_event(event)
 
+
         
     @classmethod
     def set_active_scene(cls, scene):
@@ -104,41 +105,21 @@ class GuiService():
         element_cache = cls.active_scene.element_cache
         element_cache.append(object)
 
-    def uncache(cls, object):
-        element_cache = cls.active_scene.element_cache
-        element_cache.pop(object)
+    @classmethod
+    def uncache(cls, element):
+        element_cache =  cls.active_scene.element_cache
+        element_cache.remove(element)
         
-        print("uncached" + str(object))
+        event_element_cache = cls.active_scene.event_element_cache
+        event_element_cache.remove(element)
+
+        del element  
 
     @classmethod
     def cache_event_element(cls, object):
         event_element_cache = cls.active_scene.event_element_cache
         event_element_cache.append(object)
-        
-    @classmethod
-    def uncache_event_element(cls, object):
-        event_element_cache = cls.active_scene.event_element_cache
-        event_element_cache.pop(object)
-
-                
-    @classmethod
-    def remove_element(cls, element, index):
-        current_item = None
-        if index in cls.ui_elements:
-            current_item = cls.ui_elements[index]
-            #del cls.ui_elements[index]
-            
-        event_element_cache = cls.active_scene.event_element_cache
-        event_element_cache.append(element)
-        
-        event_element_cache = cls.active_scene.event_element_cache
-        event_element_cache.remove(element)
-
   
-        
-        cls.active_scene.element_cache.pop(utils.is_in_list(current_item, cls.active_scene.element_cache))
-        del cls.ui_elements[index]
-        
 
 
 class Element:
@@ -492,7 +473,8 @@ class SubWindow(EventElement): # Figure out how to delete windows and elements
         pygame.draw.rect(screen, (255,0,0), self.close_rect)
 
     def close_window(self):
-        GuiService.remove_element(self, self.element_index)
+        GuiService.uncache(self)
+        #GuiService.remove_element(self, self.element_index)
     
 
 class ButtonState(Enum):

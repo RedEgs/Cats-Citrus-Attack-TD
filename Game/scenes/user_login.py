@@ -15,6 +15,9 @@ class User_Login(SceneService.Scene):
         GuiService.ImageElement((formatter.get_center(1280, 720)), "cctd/resources/user_login/background.png") # Background
         GuiService.ImageElement((246, 163), "cctd/resources/user_login/logo.png")
 
+        test_window = GuiService.SubWindow((500,500), "test", (40, 40))
+
+
         self.username_entry = GuiService.TextArea((246, 279), "Username", "cctd/resources/user_login/text_enter.png")
         self.password_entry = GuiService.TextAreaPassword((246, 366), "Password", "cctd/resources/user_login/text_enter.png")
 
