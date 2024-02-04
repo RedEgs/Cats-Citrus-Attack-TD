@@ -405,9 +405,6 @@ class SubWindow(EventElement): # Figure out how to delete windows and elements
         self.window_title = window_title
         
         self.window_color = window_color
-        
-        
-        
         self.window_rect = pygame.Rect(self.position, self.window_size)
         
         self.header_rect = pygame.Rect((self.position[0]+10, self.position[1]), (self.window_size[0]-10, 10))
@@ -457,7 +454,8 @@ class SubWindow(EventElement): # Figure out how to delete windows and elements
                 self.window_rect.height += event.rel[1]
             
                 self.header_rect.width += event.rel[0]
-            
+                self.close_rect.width += event.rel[0]
+
                 if self.window_rect.width <= 35:  # Check minimum size and position
                     self.window_rect.width = 30
                     self.header_rect.width = 20

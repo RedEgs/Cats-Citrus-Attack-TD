@@ -45,6 +45,7 @@ class TweenVector2:
         self.duration = self.TweenData.duration * 1000
         self.delay = self.TweenData.delay * 1000
         self.easing_function = self.TweenData.easing_function
+        self.reversed = False
 
         self.start_time = None
         self.current_value = self.start_value
@@ -66,9 +67,12 @@ class TweenVector2:
             TweenService.activate_tween(self)
 
     def reverse(self):
+        self.reversed = True
         if not self.is_finished:
-            # Reverse the animation manually
-            self.reverse_animation()
+            if not self.reversed:
+
+                # Reverse the animation manually
+                self.reverse_animation()
 
     def update(self):
         if not self.is_finished:  # Only update if the tween is not finished
@@ -139,6 +143,7 @@ class Tween:
         self.current_value = self.start_value
         self.is_finished = False  # Flag to track whether the tween has finished
         self.reverse_on_finish = False  # Flag to determine whether to reverse on finish
+        self.reversed = False
 
         TweenService.add_tween(self)
 
@@ -155,9 +160,11 @@ class Tween:
             TweenService.activate_tween(self)
 
     def reverse(self, dont_finish_reverse=True):
+        self.reversed = True
         if not self.is_finished:
             # Reverse the animation manually
-            self.reverse_animation(dont_finish_reverse)
+            #if not self.reversed:
+                self.reverse_animation(dont_finish_reverse)
 
     def update(self):
         if not self.is_finished:  # Only update if the tween is not finished

@@ -23,7 +23,8 @@ class TowerHandler:
 
     def place(self):
         max_size = (1920,1080)
-        new_tower = Tower(pygame.mouse.get_pos())
+
+
 
         self.towers.add(new_tower)
     
@@ -59,6 +60,9 @@ class Tower(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
 
+        self.mask = pygame.mask.Mask((self.rect.width, self.rect.height))
+        self.mask.fill()
+
     def update(self):
         pass
 
@@ -67,6 +71,9 @@ class Tower(pygame.sprite.Sprite):
 
     def get_sprite(self):
         return self.image  # Use 'image' instead of 'sprite' for consistency
+
+    def get_mask(self):
+        return self.mask
 
     def get_rect(self):
         return self.rect
