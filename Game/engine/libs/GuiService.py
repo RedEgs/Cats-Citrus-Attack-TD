@@ -1,21 +1,16 @@
-import pytweening, pygame, sys, os
-import time
+import pytweening, pygame, time, sys, os
 from enum import Enum
-
-
 
 import engine.libs.Utils as utils
 import engine.libs.TweenService as TweenService
 
 
 class GuiService():
-    
     element_index = 0
     event_element_index = 0
     ui_elements = {}
     event_elements = {}
     active_scene = None
-
 
     @classmethod    
     def add_element(cls, element):
@@ -119,8 +114,6 @@ class GuiService():
     def cache_event_element(cls, object):
         event_element_cache = cls.active_scene.event_element_cache
         event_element_cache.append(object)
-  
-
 
 class Element:
     def __init__(self, position):
@@ -139,6 +132,9 @@ class Element:
     def draw(self, screen):
         pass
 
+    def destroy(self):
+        GuiService.uncache(self)
+
     def get_element_data(self):
         return self
     
@@ -150,6 +146,9 @@ class EventElement(Element):
         super().__init__(position)
         self.event_element_index = None
         GuiService.add_event_element(self)
+        
+        self.has_focus = False
+        
         
 
     def update_position(self, position):
@@ -163,6 +162,9 @@ class EventElement(Element):
 
     def draw(self, screen):
         pass
+   
+    def destroy(self):
+        GuiService.uncache(self)
 
     def get_element_data(self):
         return self
@@ -274,7 +276,6 @@ class TextElement(Element):
     def draw(self, screen):
         self.rect = self.image.get_rect(center=self.position)
         screen.blit(self.image, self.rect)
-
 class TextArea(EventElement):
     def __init__(self, position, init_text, image_path, text_color = (0,0,0), cursor_color = (0,0,0)):
         super().__init__(position)  
@@ -285,8 +286,7 @@ class TextArea(EventElement):
 
         self.background = ImageElement(self.position, image_path, None)
         self.back_rect = self.background.get_rect(self.position)
-
-        self.has_focus = False
+        
         self.first_time = True
 
         self.init_text = init_text
@@ -364,7 +364,6 @@ class TextArea(EventElement):
     def get_submitted_text(self):
         self.submitted_text = self.text
         return self.submitted_text
-
 class TextAreaPassword(TextArea):
     def __init__(self, position, init_text, image_path, text_color=(0, 0, 0), cursor_color=(0, 0, 0)):
         super().__init__(position, init_text, image_path, text_color, cursor_color)
@@ -394,6 +393,196 @@ class TextAreaPassword(TextArea):
         return super().get_submitted_text()
 
 
+    
+    
+    
+    
+    
+class DraggableRect(EventElement):
+    def __init__(self, position, color, size):
+        super().__init__(position)
+        self.color = color
+        self.size = size
+        self.rect = pygame.Rect(self.position, self.size)
+        self.resizable = False
+    
+    
+        self.resizing_rect = False
+        self.dragging_rect = False
+                
+    
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+            if self.rect.collidepoint(pygame.mouse.get_pos()): # Dragging Header
+                self.dragging_rect = True
+            
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
+            self.dragging_rect = False
+            
+        if self.dragging_rect:
+            if event.type == pygame.MOUSEMOTION: # Controls the movement of the WHOLE window 
+                self.rect.move_ip(event.rel)    
+            
+        """
+        if self.resizable:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+                if self.resizer_rect.collidepoint(pygame.mouse.get_pos()): # Dragging Header
+                    self.resizing_rect = False
+                
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
+                self.resizing_rect = False
+                    
+                
+            if self.resizing_window:
+                if event.type == pygame.MOUSEMOTION:
+                    self.rect.width += event.rel[0]
+                    self.rect.height += event.rel[1]
+
+                    if self.rect.width <= 35:  # Check minimum size and position
+                        self.rect.width = 30
+                        self.rect.width = 20
+                    
+                    if self.rect.height <= 20:  # Check minimum size and position
+                        self.rect.height = 20  
+        """ 
+                              
+    def draw(self, screen):
+        self.draggable_rect = pygame.draw.rect(screen, self.color, self.rect)
+
+class StatusBar(Element): # Image Support
+    def __init__(self, position, size, color = (255,0,0), range_value = (0, 100), initial_value = 1):
+        super().__init__(position)
+        self.position = position
+        self.size = size
+        self.color = color
+        self.range_value = range_value
+        
+        self.bar_left_pos = self.position[0]
+        self.bar_right_pos = self.position[0]+self.size[0]
+        self.bar_center_pos = self.bar_right_pos - self.bar_left_pos
+
+        self.value_ratio = self.range_value[1] / self.size[0]
+                
+        self.bg_rect = pygame.Rect(self.position, self.size)
+        self.rect = pygame.Rect(self.position, (initial_value / self.value_ratio, self.size[1]))
+
+    def set_value(self, percentage):
+        if 0 <= percentage <= 100:
+            self.rect.width = percentage * self.value_ratio * (self.size[0] / 100)**2
+        else:
+            print("Invalid percentage. Percentage should be between 0 and 100.")
+        
+    def get_value(self):
+        return self.rect.width / (self.value_ratio * (self.size[0] / 100)**2)
+    
+        
+        
+    def draw(self, screen):
+        self.bg_rect = pygame.draw.rect(screen, (180, 180, 180), self.bg_rect)
+        self.rect = pygame.draw.rect(screen, self.color, self.rect)
+
+        
+
+class Slider(EventElement): # Finish with images etc
+    def __init__(self, position, size = (200, 300), range_value = (0, 100), initial_value = None):
+        super().__init__(position)
+        self.size = size
+        self.range_value = range_value
+        
+        self.dragging_rect = False
+    
+        self.slider_left_pos = self.position[0]
+        self.slider_right_pos = self.position[0]+self.size[0]
+        self.slider_center_pos = self.slider_right_pos - self.slider_left_pos
+  
+        self.bg_rect = pygame.Rect(self.position, self.size)
+        self.sliding_point_rect = pygame.Rect(self.position, (self.size[0]//15, self.size[1]*1.3))
+        
+        self.sliding_point_rect.centery = self.bg_rect.centery
+        
+        if initial_value == None:
+            self.sliding_point_rect.centerx = self.slider_center_pos
+        else:
+            self.initial_value = (self.slider_right_pos - self.slider_left_pos)*initial_value
+            self.sliding_point_rect.centerx = self.slider_left_pos + (initial_value/range_value[1] * 100) * 2
+        
+    def get_value(self):
+        value_range = self.slider_right_pos - self.slider_left_pos
+        slide_range = self.sliding_point_rect.centerx - self.slider_left_pos
+        
+        return (slide_range/value_range)*(self.range_value[1]-self.range_value[0])+self.range_value[0]
+                
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+            if self.sliding_point_rect.collidepoint(pygame.mouse.get_pos()):
+                self.dragging_rect = True
+
+                
+                
+            if self.bg_rect.collidepoint(pygame.mouse.get_pos()):
+                self.sliding_point_rect.centerx = pygame.mouse.get_pos()[0]
+                self.has_focus = True  
+                
+            else:
+                self.has_focus = False
+                          
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
+            self.dragging_rect = False
+            
+        if self.dragging_rect:
+            if event.type == pygame.MOUSEMOTION: # Controls the movement of the WHOLE window 
+                if self.bg_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.sliding_point_rect.centerx = pygame.mouse.get_pos()[0]
+                
+                """
+                if not self.sliding_point_rect.centerx > self.slider_right_pos:
+                    if not self.sliding_point_rect.centerx < self.slider_left_pos:
+                        self.sliding_point_rect.move_ip(event.rel[0], 0) 
+                    else:
+                        self.sliding_point_rect.centerx = self.slider_left_pos+1
+                else:
+                    self.sliding_point_rect.centerx = self.slider_right_pos-1
+                """
+
+        if self.has_focus and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                if not self.sliding_point_rect.centerx <= self.slider_left_pos:
+                    self.sliding_point_rect.centerx -= 1
+            if event.key == pygame.K_RIGHT:
+                if not self.sliding_point_rect.centerx >= self.slider_right_pos:
+                    self.sliding_point_rect.centerx += 1
+        
+        
+    def draw(self, screen):
+        self.slider_background = pygame.draw.rect(screen, (220, 0, 0), self.bg_rect)
+        self.sliding_point = pygame.draw.rect(screen, (0, 255, 0), self.sliding_point_rect)
+
+class Checkbox(EventElement): # Add image loading
+    def __init__(self, position, size = (20, 20), toggled = False):
+        super().__init__(position)
+        self.position = position
+        self.size = size
+        self.bg_rect = pygame.Rect(self.position, self.size)
+        self.rect = pygame.Rect(self.position, (self.size[0]*0.6, self.size[0]*0.6))
+        self.rect.center = self.bg_rect.center
+    
+        self.toggled = toggled
+    
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
+            if self.bg_rect.collidepoint(pygame.mouse.get_pos()):
+                self.toggled = not self.toggled
+                
+    
+    def draw(self, screen):
+        self.bg_rect = pygame.draw.rect(screen, (200, 0, 0), self.bg_rect)
+        
+        if self.toggled:
+            self.rect = pygame.draw.rect(screen, (0, 255, 0), self.rect)
+    
+    
+    
+    
 
 
 class SubWindow(EventElement): # Figure out how to delete windows and elements
@@ -469,10 +658,6 @@ class SubWindow(EventElement): # Figure out how to delete windows and elements
         pygame.draw.rect(screen, (18,18,18), self.header_rect) # Sort out tile opacity
         pygame.draw.rect(screen, (18,18,18), self.resizer_rect)
         pygame.draw.rect(screen, (255,0,0), self.close_rect)
-
-    def close_window(self):
-        GuiService.uncache(self)
-        #GuiService.remove_element(self, self.element_index)
     
 
 class ButtonState(Enum):

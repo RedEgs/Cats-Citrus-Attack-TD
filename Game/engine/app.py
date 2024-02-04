@@ -14,8 +14,6 @@ class App():
     """
     Main game/app loop class for the PyRed Engine.
     """
-
-   
     def __init__(self):
         pygame.init()
         pygame.mixer.init()

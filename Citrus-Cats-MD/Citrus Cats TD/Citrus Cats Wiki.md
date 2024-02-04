@@ -18,7 +18,8 @@ esesf
 - [ ] Fix subwindows
 - [ ] Add support for tinkinter pop ups
 - [ ] Fix triple input in scene events
-- [ ] Add Sliders
+- [ ] Add Status Bars
+- [x] Add Sliders
 - [x] Add Text Input
 	- [ ] Tween unfocused text smoothly
 - [x] Button hover size bounce animation
