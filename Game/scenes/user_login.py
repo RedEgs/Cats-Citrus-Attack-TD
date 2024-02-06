@@ -22,12 +22,13 @@ class User_Login(SceneService.Scene):
         self.signup_button = GuiService.ButtonElement((158, 626), ["cctd/resources/user_login/sign_up_button.png"], [self.sign_up])
         self.continue_button = GuiService.ButtonElement((336, 626), ["cctd/resources/user_login/continue_button.png"], [self.contine_to_menu])
 
-
         self.login_status = GuiService.TextElement((246, 440), "", 24, (255,0,0))
+
+        GuiService.DraggableImage((200, 200), (200, 200), "cctd/resources/user_login/continue_button.png")
 
         self.db_filename = 'credentials.db'
         self.init_database()
-
+        
     def draw(self):
         self.app.get_screen().fill((0))  
     

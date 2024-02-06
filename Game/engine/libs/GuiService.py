@@ -115,6 +115,22 @@ class GuiService():
         event_element_cache = cls.active_scene.event_element_cache
         event_element_cache.append(object)
 
+
+
+class WindowToast():
+    # win10toast docs 
+    def __init__(self, title, body, duration, icon_path, threaded:bool):
+        from win10toast import ToastNotifier
+        
+        toast = ToastNotifier()
+        toast.show_toast(
+            title,
+            body,
+            duration = duration,
+            icon_path = icon_path,
+            threaded = threaded,
+        )
+    
 class Element:
     def __init__(self, position):
         self.position = position
@@ -172,6 +188,9 @@ class EventElement(Element):
     def get_element_exception(self):
         return False
 
+    
+    
+    
 class ImageElement(Element):
     def __init__(self, position, image_path, target_size=None):
         super().__init__(position)
@@ -391,12 +410,6 @@ class TextAreaPassword(TextArea):
     
     def get_submitted_text(self):
         return super().get_submitted_text()
-
-
-    
-    
-    
-    
     
 class DraggableRect(EventElement):
     def __init__(self, position, color, size):
@@ -406,22 +419,36 @@ class DraggableRect(EventElement):
         self.rect = pygame.Rect(self.position, self.size)
         self.resizable = False
     
-    
         self.resizing_rect = False
         self.dragging_rect = False
+        
+        self.can_change_mouse = True
                 
-    
     def handle_event(self, event):
+        if event.type == pygame.MOUSEMOTION: # Changes mouse cursor on hovering
+            if self.rect.collidepoint(pygame.mouse.get_pos()): # Hovering
+                if self.can_change_mouse:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_SIZEALL)
+                    self.can_change_mouse = False
+                
+            else:
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                self.can_change_mouse = True
+            
+        
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
             if self.rect.collidepoint(pygame.mouse.get_pos()): # Dragging Header
                 self.dragging_rect = True
-            
+                
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
             self.dragging_rect = False
             
         if self.dragging_rect:
             if event.type == pygame.MOUSEMOTION: # Controls the movement of the WHOLE window 
                 self.rect.move_ip(event.rel)    
+            
+            
+ 
             
         """
         if self.resizable:
@@ -447,7 +474,30 @@ class DraggableRect(EventElement):
         """ 
                               
     def draw(self, screen):
-        self.draggable_rect = pygame.draw.rect(screen, self.color, self.rect)
+        self.draggable_rect = pygame.draw.rect(screen, self.color, self.rect)  
+        
+class DraggableImage(DraggableRect):
+    def __init__(self, position, size, image_path):
+        super().__init__(position, None, size)
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.size = size
+        self.rect = self.image.get_rect()
+        self.rect.center = self.position
+        
+        #self.rect = pygame.Rect(self.position, self.size)
+        self.resizable = False
+    
+        self.resizing_rect = False
+        self.dragging_rect = False
+                
+    
+    def handle_event(self, event):
+        super().handle_event(event)  
+        
+                 
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
 
 class StatusBar(Element): # Image Support
     def __init__(self, position, size, color = (255,0,0), range_value = (0, 100), initial_value = 1):

@@ -16,4 +16,5 @@
         "c:\\Users\\User\\AppData\\Roaming\\Code\\User\\workspaceStorage\\3b7cf310d1b3e40fbbb0c99dff2f1422\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
     ],
     "python.analysis.autoImportCompletions": false,
+    "Lua.workspace.checkThirdParty": "ApplyInMemory",
 }
