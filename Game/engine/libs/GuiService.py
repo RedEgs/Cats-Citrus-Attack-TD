@@ -1,4 +1,5 @@
 import pytweening, pygame, time, sys, os
+from functools import cache
 from enum import Enum
 
 import engine.libs.Utils as utils
@@ -13,15 +14,15 @@ class GuiService():
     active_scene = None
 
     @classmethod    
-    def add_element(cls, element):
-        import engine.libs.SceneService as SceneService
-        
+    def add_element(cls, element): 
         memory_location = element.get_element_data()
         key = cls.element_index
         element.element_index = cls.element_index
         
         cls.ui_elements[key] = {"element": memory_location , "scene": cls.active_scene, "is_exception": element.get_element_exception()}
+        element.set_element_index(cls.element_index)
         cls.element_index += 1  # Increment the index for the next element
+        
         
     
     @classmethod
@@ -34,15 +35,10 @@ class GuiService():
         
         cls.event_elements[key] = {"event_element": memory_location , "scene": cls.active_scene}
         cls.event_element_index += 1  # Increment the index for the next element
-        
 
-        
-        
-        
-        
 
     @classmethod 
-    def draw(cls, screen):
+    def draw(cls, screen):    
         if cls.active_scene.cached == False:
             for key, element in cls.ui_elements.items():
                 obj = element["element"]
@@ -59,6 +55,7 @@ class GuiService():
                 if cls.active_scene == obj_scene:
                     if cls.active_scene.cached == False:
                         cls.cache(obj)
+                    
                 else:
                     pass
 
@@ -100,6 +97,11 @@ class GuiService():
         element_cache = cls.active_scene.element_cache
         element_cache.append(object)
 
+    def wipe_cache(cls):
+        element_cache = cls.active_scene.element_cache = []
+        event_element_cache = cls.active_scene.event_element_cache = []
+        
+
     @classmethod
     def uncache(cls, element):
         element_cache =  cls.active_scene.element_cache
@@ -133,11 +135,12 @@ class WindowToast():
     
 class Element:
     def __init__(self, position):
-        self.position = position
-        self.element_index = None
-        #self.rect = self.image.get_rect(center=position)
-
         GuiService.add_element(self)
+            
+        self.layer = 0
+        self.position = position
+        print(self.element_index)
+    
 
     def update_position(self, position):
         self.position = position
@@ -150,6 +153,9 @@ class Element:
 
     def destroy(self):
         GuiService.uncache(self)
+
+    def set_element_index(self, index):
+        self.element_index = index
 
     def get_element_data(self):
         return self

@@ -97,6 +97,7 @@ class Scene():
         self.extra_data = None
 
         self.element_cache = []
+        self.element_counter = 0
         self.event_element_cache = []
         
         self.cached = False

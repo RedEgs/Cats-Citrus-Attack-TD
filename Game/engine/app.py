@@ -22,7 +22,6 @@ class App():
         screen, clock, settings = self.start_game()
         self.entities, self.scenes, self.guis , self.tweens, self.transitions, self.debugs = self.start_services()
 
-        self.event_queue = None
         self.load_scenes()
     
     """
@@ -92,11 +91,17 @@ class App():
             
             clock.tick(fps)            
     def events(self):
+        
+        TIMED_EVENT = pygame.USEREVENT + 1
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        
+                
+            if event.type == TIMED_EVENT:
+                pass
+                
             self.event_queue = event
             self.guis.handle_event(event)   
                 
@@ -106,13 +111,13 @@ class App():
         self.scenes.run_scene(self.event_queue) 
         self.entities.update()
         self.tweens.update()
-        #self.debugs.update()
+        self.debugs.update()
 
     def draw(self):
         self.scenes.draw_scene()
         self.guis.draw(screen)
         self.transitions.draw(screen)
-        #self.debugs.draw(screen)
+        self.debugs.draw(screen)
         
         
         pygame.display.flip()  

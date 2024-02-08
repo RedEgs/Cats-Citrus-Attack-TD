@@ -29,10 +29,10 @@ class DebugService():
         self.app = app
         self.clock = clock
 
-        #self.fps = FPSCounter((40,40), str(round(self.clock.get_fps(), 0)), 24, (255, 255, 255))
+        self.fps = FPSCounter((40,40), str(round(self.clock.get_fps(), 0)), 24, (255, 255, 255))
 
     def update(self):
-        self.fps = FPSCounter((40,40), str(round(self.clock.get_fps(), 0)), 24, (255, 255, 255))
+        self.fps.update_text(str(round(self.clock.get_fps(), 0)))
 
 
     def draw(self, screen):
