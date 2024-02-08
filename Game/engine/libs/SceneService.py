@@ -53,12 +53,8 @@ class SceneService():
         self.previous_scene = self.active_scene
         self.active_scene = scene
 
-
-        try:
-            self.scenes[self.get_previous_scene()].on_exit()
-            self.scenes[self.get_scene()].on_enter()
-        except KeyError:
-            pass        
+        self.get_scene_by_name(scene).on_enter()
+        self.get_scene_by_name(scene).on_exit()       
         
     def switch_scene(self, scene, *extra_data):
         TransitionService.TransitionService.canTransition = False
@@ -111,7 +107,6 @@ class Scene():
 
     def on_enter(self):
         self.guis.set_active_scene(self)
-        print("CHhanged scene")
 
     def events(self, event):
         pass

@@ -1,14 +1,12 @@
 import pygame, json, os, sys
 
 import engine.libs.Formatter as formatter
-import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
 import engine.libs.GuiService as GuiService 
 import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
-import engine.libs.NetworkService as NetworkService
 
 class App():
     """
@@ -108,13 +106,13 @@ class App():
         self.scenes.run_scene(self.event_queue) 
         self.entities.update()
         self.tweens.update()
-        self.debugs.update()
+        #self.debugs.update()
 
     def draw(self):
-        self.guis.draw(screen)
         self.scenes.draw_scene()
+        self.guis.draw(screen)
         self.transitions.draw(screen)
-        self.debugs.draw(screen)
+        #self.debugs.draw(screen)
         
         
         pygame.display.flip()  
