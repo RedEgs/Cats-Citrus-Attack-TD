@@ -2,7 +2,7 @@
 import pytweening, pygame, sys, os
 from pygame.locals import *
 
-import engine.libs.Formatter as formatter
+import engine.libs.Maths as Maths
 import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
@@ -29,7 +29,7 @@ class Map_Editor(SceneService.Scene):
         super().on_enter()    
         self.map = self.extra_data[0]
 
-        GuiService.SurfaceElement((formatter.get_center(1280, 720)), self.map.map_image) # Background
+        GuiService.SurfaceElement((Maths.get_center(1280, 720)), self.map.map_image) # Background
     
     def events(self, event):
         pass

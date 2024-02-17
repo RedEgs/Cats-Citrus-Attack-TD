@@ -1,6 +1,6 @@
 import pytweening, pygame, sys, os
 
-import engine.libs.Formatter as formatter
+import engine.libs.Maths as Maths
 import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
@@ -13,7 +13,7 @@ class Menu(SceneService.Scene):
         super().__init__(scene_name, app)
         self.app = app
 
-        GuiService.ImageElement((formatter.get_center(1280, 720)), "cctd/resources/main_menu/background.png") # Background
+        GuiService.ImageElement((Maths.get_center(1280, 720)), "cctd/resources/main_menu/background.png") # Background
         GuiService.ImageElement((243, 189), "cctd/resources/main_menu/logo.png")
         
         mod_button = GuiService.ButtonElement((48,48), ["cctd/resources/main_menu/mod_button.png"], [self.dev_button])

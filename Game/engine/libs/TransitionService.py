@@ -4,12 +4,13 @@ import engine.libs.TweenService as TweenService
 import engine.libs.GuiService as GuiService
 import engine.libs.Utils as Utils
 
-class TransitionService():
+
+class TransitionService:
     transitions = []
 
     isTransitioning = len(transitions) == 1
-    canTransition = not isTransitioning 
-    
+    canTransition = not isTransitioning
+
     @classmethod
     def add_transition(cls, transition):
         if len(cls.transitions) < 1:
@@ -24,7 +25,7 @@ class TransitionService():
     def update(cls):
         for transition in cls.transitions:
             transition.update()
-            
+
     @classmethod
     def draw(cls, screen):
         for transition in cls.transitions:
@@ -41,23 +42,27 @@ class Transition:
         self.completed = False
 
         TransitionService.add_transition(self)
-    
+
     def kill_transition(self):
         TransitionService.remove_transition(self)
-    
+
     def update(self):
         pass
 
     def draw(self):
         pass
 
+
 class FadeTransition(Transition):
     def __init__(self, from_scene, to_scene, app, timing):
         super().__init__(from_scene, to_scene)
         self.app = app
-       
+
         self.timing = timing
-        self.loading_image = GuiService.ImageElement(Utils.get_center(1280, 720), "cctd/resources/loading/loading_screen.png")
+        self.loading_image = GuiService.ImageElement(
+            pygame.display.get_window_size(),
+            "cctd/resources/loading/loading_screen.png",
+        )
 
         fade_data = TweenService.TweenData(0, 255, timing, 0)
         self.fade = TweenService.Tween(fade_data)
@@ -66,23 +71,18 @@ class FadeTransition(Transition):
     def update(self):
         if self.curr_percentage == self.timing * 100:
             self.fade.reverse(False)
-            self.app.scenes.set_scene(self.to_scene) # Change the scene while black
-                
+            self.app.scenes.set_scene(self.to_scene)  # Change the scene while black
+
         if self.curr_percentage == self.timing * 200:
             self.completed = True
-            
+
         self.curr_percentage += 1
-        
+
         if self.completed:
             self.kill_transition()
 
-
     def draw(self, screen):
-        #print("drawing")
+        # print("drawing")
         self.loading_image.update_opacity(self.fade.get_output())
         self.loading_image.draw(screen)
-        #Make sure that the image isnt scene specific.
-
-
-
-
+        # Make sure that the image isnt scene specific.

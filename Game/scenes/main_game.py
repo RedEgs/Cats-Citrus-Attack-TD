@@ -1,7 +1,7 @@
 import pytweening, pygame, sys, os
 from enum import Enum
 
-import engine.libs.Formatter as formatter
+import engine.libs.Maths as Maths
 import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
@@ -30,7 +30,7 @@ class Main_Game(SceneService.Scene):
         self.map_handler = map_loader.Map_Loader()
         self.map = self.map_handler.load_map()
         self.map_index = 1
-        self.map_surface = GuiService.SurfaceElement((formatter.get_center(1280, 720)), self.map.map_image) # Background
+        self.map_surface = GuiService.SurfaceElement((Maths.get_center(1280, 720)), self.map.map_image) # Background
         
         self.player_menu_state = PlayerMenuState.NONE
         self.game_state = GameState.PREROUND

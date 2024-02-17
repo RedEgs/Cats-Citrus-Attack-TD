@@ -24,8 +24,6 @@ class User_Login(SceneService.Scene):
 
         self.login_status = GuiService.TextElement((246, 440), "", 24, (255,0,0))
 
-        GuiService.DraggableImage((200, 200), (200, 200), "cctd/resources/user_login/continue_button.png")
-
         self.db_filename = 'credentials.db'
         self.init_database()
         

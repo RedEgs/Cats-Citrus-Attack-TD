@@ -1,7 +1,5 @@
 import pygame, json, os, sys
 
-import engine.libs.Formatter as formatter
-
 def is_in_list(item, list):
     print(item)
     return item in list
