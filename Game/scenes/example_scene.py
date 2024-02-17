@@ -15,32 +15,34 @@ class Example_Scene(SceneService.Scene):
 
         # All Normal GUI Elements
 
-        GuiService.TextElement(
-            GuiService.GuiSpaces.WORLD,
-            self.camera,
-            (800, 100),
-            "tETS tETX blox",
-            24,
-            (0, 0, 0),
-            "left",
-        )
-        
+        # GuiService.TextElement(
+        #     GuiService.GuiSpaces.SCREEN,
+        #     self.camera,
+        #     (800, 100),
+        #     "tETS tETX blox",
+        #     24,
+        #     (0, 0, 0),
+        #     "left",
+        # )
         GuiService.ImageElement(GuiService.GuiSpaces.WORLD, self.camera, (400,400),"test_image.png")
         
-        GuiService.StatusBar(GuiService.GuiSpaces.WORLD, self.camera, (100, 400), (100, 50), initial_value=10)
+        # GuiService.StatusBar(GuiService.GuiSpaces.SCREEN, self.camera, (100, 400), (100, 50), initial_value=10)
         
-        GuiService.EasyCurve(GuiService.GuiSpaces.WORLD, self.camera, (100,100), (200, 200))
+        # GuiService.EasyCurve(GuiService.GuiSpaces.SCREEN, self.camera, (100,100), (200, 200))
         
         
         # All Event Elements
-        GuiService.TextInput(GuiService.GuiSpaces.WORLD, self.camera, (700, 200), 24, "test input")
-        GuiService.Slider(GuiService.GuiSpaces.WORLD, self.camera, (200, 300), (100, 25))
-        GuiService.Checkbox(GuiService.GuiSpaces.WORLD, self.camera, (100, 300))
-        GuiService.ButtonElement(GuiService.GuiSpaces.WORLD, self.camera, (300, 200))
-        GuiService.DraggableRect(GuiService.GuiSpaces.WORLD, self.camera, (700, 600), (0, 0, 255), (100, 100))
+        # GuiService.TextInput(GuiService.GuiSpaces.SCREEN, self.camera, (700, 200), 24, "test input")
+        # GuiService.Slider(GuiService.GuiSpaces.SCREEN, self.camera, (200, 300), (100, 25))
+        # GuiService.Checkbox(GuiService.GuiSpaces.SCREEN, self.camera, (100, 300))
+        # GuiService.ButtonElement(GuiService.GuiSpaces.SCREEN, self.camera, (300, 200))
+        self.rect = GuiService.DraggableRect(GuiService.GuiSpaces.WORLD, self.camera, (700, 600), (0, 0, 255), (100, 100))
         
-        
-        
+    
+    def update(self):
+        pass
+        # print(f"world pos: {self.rect.world_position}")
+        # print(f"screen pos: {self.rect.screen_position}")
 
     def events(self, event):
         # if event.type == self.camera.camera_event:

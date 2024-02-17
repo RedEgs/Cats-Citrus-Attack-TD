@@ -93,7 +93,7 @@ class App:
             self.update()
             self.draw()
 
-            clock.tick(fps)
+            clock.tick()
 
     def events(self):
         for event in pygame.event.get():

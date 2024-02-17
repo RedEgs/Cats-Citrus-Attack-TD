@@ -1,4 +1,5 @@
 import pytweening, pygame, time, sys, os
+import numba
 from enum import Enum
 
 import engine.libs.Utils as utils
@@ -118,6 +119,8 @@ class GuiService():
         for element in cls.active_scene.ui_elements.sprites():        
             element.draw(display)
             element.update()
+
+            
         # cls.active_scene.ui_elements.draw(display) 
         # cls.active_scene.ui_elements.update()
         
@@ -144,8 +147,8 @@ class GuiService():
             
         if event.type == camera.camera_event:
             for element in cls.active_scene.ui_elements.sprites():
-                element.update_position()
                 element.update_element()
+                element.update_position()
 
 
 class WindowToast:
@@ -229,7 +232,13 @@ class Element(RawElement):
         self.element_type = ElementTypes.ELEMENT
         self.ORIGINAL_POSITION = position  # The position in which the element was instanced at. Should be constant.
 
+        self.screen_position = self.ORIGINAL_POSITION
+        self.world_position = None
+        
         if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for their type of space
+            self.world_position = self.world_position = (self.ORIGINAL_POSITION[0] - self.camera.camera_bounds_rect.center[0], 
+                                        self.ORIGINAL_POSITION[1] - self.camera.camera_bounds_rect.center[1])
+            
             self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
         elif self.space == GuiSpaces.SCREEN:
             self.position = position
@@ -241,8 +250,20 @@ class Element(RawElement):
         Otherwise this function doesn't have much use for screen space functions.  
         """
         
+ 
+      
+
+
         if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for world space
+            self.world_position = (self.ORIGINAL_POSITION[0] - self.camera.camera_bounds_rect.center[0], 
+                                self.ORIGINAL_POSITION[1] - self.camera.camera_bounds_rect.center[1])
+            
+            
+            
             self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
+        else: self.position = self.position
+        
+        self.screen_position = self.position
         
     def update_element(self):
         super().update_element()    
@@ -255,6 +276,12 @@ class Element(RawElement):
 
     def set_element_index(self, index):
         super().set_element_index(index)
+        
+    def get_world_position(self):
+        return self.world_position
+    
+    def get_screen_position(self):
+        return self.screen_position
 
 
 
@@ -269,7 +296,8 @@ class EventElement(Element):
         self.element_type = ElementTypes.EVENT
 
         if self.space == GuiSpaces.WORLD:
-            self.mouse_pos = pygame.mouse.get_pos() # Used so world space elements collision
+            self.mouse_pos = (pygame.mouse.get_pos()[0]/self.camera.camera_zoom_scale, 
+                            pygame.mouse.get_pos()[1]/self.camera.camera_zoom_scale)  # Used so world space elements collision
         else:
             self.mouse_pos = pygame.mouse.get_pos() # Make sure to use this instead of "pygame.mouse.get_pos()" (Mainly for convention)
 
@@ -291,7 +319,8 @@ class EventElement(Element):
         super().update()
                 
         if self.space == GuiSpaces.WORLD:
-            self.mouse_pos = pygame.mouse.get_pos()  # Used so world space elements collision
+            self.mouse_pos = (pygame.mouse.get_pos()[0]/self.camera.camera_zoom_scale, 
+                              pygame.mouse.get_pos()[1]/self.camera.camera_zoom_scale)   # Used so world space elements collision
         else:
             self.mouse_pos = pygame.mouse.get_pos() # Make sure to use this instead of "pygame.mouse.get_pos()" (Mainly for convention)
 
@@ -337,7 +366,7 @@ class ImageElement(Element):
         
 
 class TextElement(Element):
-    def __init__(self, space, camera, position, text, size, color, text_align=None):
+    def __init__(self, space, camera, position, text:str ="Placeholder", size: int=16, color: pygame.Color = (0,0,0), text_align: str ="center", underline: bool=False):
         super().__init__(space, camera, position)
         self.text = text
         self.size = size
@@ -345,12 +374,19 @@ class TextElement(Element):
         self.text_align = text_align
 
         self.default_font = pygame.font.Font("font.ttf", self.size)
+        self.default_font.set_underline(underline)
+        
+        
         self.image = self.default_font.render(self.text, True, self.color)
+        self.rect = self.image.get_rect()
 
-        if text_align == "left":
-            self.rect = self.image.get_rect(midleft=self.position)
-        else:
-            self.rect = self.image.get_rect(center=self.position)
+        if self.text_align == "right":
+            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
+        if self.text_align == "center":
+            self.rect.center = self.position
+        if self.text_align == "left":
+            self.rect.midleft = self.position
+            
         
     def update_text(self, text=None):
         if text == None:
@@ -358,24 +394,30 @@ class TextElement(Element):
         else:
             self.text = text
             self.image = self.default_font.render(self.text, True, self.color)
+            
+        self.update_element()
 
     def update_position(self):
         super().update_position()
 
     def update_element(self):
         self.image = self.default_font.render(self.text, True, self.color)
+        self.rect = self.image.get_rect()
 
+        if self.text_align == "right":
+           self.rect.midright = self.position#(self.position[0]-self.rect.width, self.position[1])
+        if self.text_align == "center":
+            self.rect.center = self.position
         if self.text_align == "left":
-            self.rect = self.image.get_rect(midleft=self.position)
-        else:
-            self.rect = self.image.get_rect(center=self.position)
+            self.rect.midleft = self.position
         
     def update(self):
         pass
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-
+        #pygame.draw.rect(screen, (180, 0, 255), self.rect)
+        #pygame.draw.circle(screen, (0,180,255), (self.rect.center), radius=5) # Shows align positions
 
 class TextInput(EventElement):
     def __init__(
@@ -511,7 +553,9 @@ class DraggableRect(EventElement):
 
     def update_dragged_position(self):
         self.position = self.rect.center
-        self.ORIGINAL_POSITION = self.rect.center + self.camera.get_camera_offset()
+        
+        if self.space == GuiSpaces.WORLD:
+            self.ORIGINAL_POSITION = self.rect.center + self.camera.get_camera_offset()
 
     def update_position(self):
         super().update_position()
@@ -536,9 +580,8 @@ class DraggableRect(EventElement):
         if self.dragging_rect:
             if event.type == pygame.MOUSEMOTION:
                 self.rect.move_ip(event.rel)
-                
-                if self.space == GuiSpaces.WORLD:
-                    self.update_dragged_position()
+                self.update_dragged_position()
+                self.update_position()
                 
 
     def draw(self, screen):
@@ -608,7 +651,8 @@ class StatusBar(Element):  # Image Support
         self.bar_background_rect = self.bar_background.get_rect(center=self.position)
         self.bar_fill_rect = self.bar_fill.get_rect(midleft=self.bar_background_rect.midleft)
         
-        
+        print(self.bar_background, self.bar_fill)
+        print(self.bar_background_rect, self.bar_fill_rect)
 
     def set_value(self, percentage):
         self.bar_left_pos = self.position[0]
@@ -641,6 +685,7 @@ class StatusBar(Element):  # Image Support
         pass
 
     def draw(self, screen):
+        
         screen.blit(self.bar_background, self.bar_background_rect)
         screen.blit(self.bar_fill, self.bar_fill_rect)        
 

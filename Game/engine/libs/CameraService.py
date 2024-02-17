@@ -12,7 +12,7 @@ class Camera:
         self.screen_w, self.screen_h = str(resolution).split("x")
 
         pygame.display.set_mode(
-            (int(self.screen_w), int(self.screen_h)), depth=32
+            (int(self.screen_w), int(self.screen_h)), depth=16, flags=pygame.DOUBLEBUF
         )  # Returns the actual screen
         self.screen = pygame.display.get_surface()
 
@@ -27,20 +27,19 @@ class Camera:
         ) # Gets center of screen for ease of access
         self.camera_zoom_scale = 1
         
-        
-        
         self.camera_bounds = {"left": 0, "right": 0, "top": 0, "bottom": 0}
         left = self.camera_bounds["left"]
         top = self.camera_bounds["top"]
-        width = self.display.get_size()[0] - (
+        width = self.screen.get_size()[0] - (
             self.camera_bounds["left"] + self.camera_bounds["right"]
         )
-        height = self.display.get_size()[1] - (
+        height = self.screen.get_size()[1] - (
             self.camera_bounds["top"] + self.camera_bounds["bottom"]
         )
         self.camera_bounds_rect = pygame.Rect(left, top, width, height)
         
         self.camera_event = pygame.USEREVENT
+        self.camera_event_dragging = pygame.event.Event(self.camera_event, {"action": "dragging"})
         self.camera_event_up = pygame.event.Event(self.camera_event, {"action": "up"})
         self.camera_event_down = pygame.event.Event(
             self.camera_event, {"action": "down"}
@@ -58,6 +57,9 @@ class Camera:
             self.camera_event, {"action": "zoom_out"}
         )
 
+        self.camera_moving = False   
+
+
         # Dont mind this, just a little experiment
         if window_blur:
             hwnd = pygame.display.get_wm_info()["window"]
@@ -73,7 +75,57 @@ class Camera:
             )
 
     def events(self, event):
+        if event.type == pygame.MOUSEWHEEL:
+            prev_scale = self.camera_zoom_scale
+            
+            if self.camera_zoom_scale >= 0.51:
+                self.camera_zoom_scale += event.y * 0.01
+            else:
+                self.camera_zoom_scale = 0.51
+                
+            if self.camera_zoom_scale <= 1.75:
+                self.camera_zoom_scale += event.y * 0.01
+            else:
+                self.camera_zoom_scale = 1.75
+            
+            
+            new_scale = self.camera_zoom_scale 
+        
+            if new_scale > prev_scale:
+                pygame.event.post(self.camera_event_zoom_in)
+            else:
+                pygame.event.post(self.camera_event_zoom_out)
+                
+        
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     if event.button == 2:
+        #         self.camera_moving = True
+                
+        # if event.type == pygame.MOUSEBUTTONUP:
+        #     if event.button == 2:
+        #         self.camera_moving = False        
+            
+        # if self.camera_moving == True:  
+        #     if event.type == pygame.MOUSEMOTION:
+        #         self.camera_offset = pygame.math.Vector2(event.rel[0], event.rel[1])
+                
+        #         pygame.event.post(self.camera_event_dragging)
+                
+            #self.camera_bounds_rect.camera_offset = event.rel
+        
+        
+        
         if event.type == pygame.KEYDOWN:
+        #     if event.key == pygame.K_LSHIFT:
+        #         if self.camera_zoom_scale < 2:
+        #             self.camera_zoom_scale += 0.01
+        #             pygame.event.post(self.camera_event_zoom_in)
+
+        #     if event.key == pygame.K_LCTRL:
+        #         if self.camera_zoom_scale > 0.5:
+        #             self.camera_zoom_scale -= 0.01
+        #             pygame.event.post(self.camera_event_zoom_out)
+                    
             if event.key == pygame.K_UP:
                 self.camera_offset[1] -= 1
             
@@ -97,22 +149,14 @@ class Camera:
                 self.camera_offset[0] += 1
                 
                 pygame.event.post(self.camera_event_right)
-
-            if event.key == pygame.K_LSHIFT:
-                if self.camera_zoom_scale < 2:
-                    self.camera_zoom_scale += 0.01
-                    pygame.event.post(self.camera_event_zoom_in)
-
-            if event.key == pygame.K_LCTRL:
-                if self.camera_zoom_scale > 0.5:
-                    self.camera_zoom_scale -= 0.01
-                    pygame.event.post(self.camera_event_zoom_out)
+ 
 
     def update(self):
         pass
 
     def draw(self):
-        self.screen.fill((64, 66, 227))
+        pygame.draw.circle(self.display, (0, 180, 255), self.camera_bounds_rect.center, 5)
+        
         self.screen.blit(
             pygame.transform.scale( # Scales the display so it can be zoomed or resized.
                 self.display,
@@ -127,15 +171,21 @@ class Camera:
         
         # Draws global or screen space elements under here
         
-        self.app.guis.screen_ui_elements.draw(self.screen)
-        self.app.guis.screen_ui_elements.update()
+        for element in self.app.guis.screen_ui_elements:
+            element.draw(self.screen)
+            element.update()
+            element.update_position()
     
-        self.app.guis.global_ui_elements.draw(self.screen)
-        self.app.guis.global_ui_elements.update()
+        for element in self.app.guis.global_ui_elements:
+            element.draw(self.screen)
+            element.update()
+            element.update_position()
         
         
     
-        pygame.draw.rect(self.screen, (0, 255, 255), self.camera_bounds_rect, 5) # Draws the rect in which everything is visible within the camera
+
+        pygame.draw.rect(self.screen, (0, 180, 255), self.camera_bounds_rect, 5) # Draws the rect in which everything is visible within the camera
+        pygame.draw.circle(self.screen, (255, 180, 0), self.camera_bounds_rect.topleft, 5)
         pygame.display.update(self.camera_bounds_rect) # Visually updates only what the window/camera can see
 
     def focus_target(self, target: pygame.rect):
