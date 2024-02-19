@@ -50,4 +50,5 @@ class Example_Scene(SceneService.Scene):
         pass
 
     def draw(self, screen):
-        screen.fill((235, 235, 235))
+        #screen.fill((235, 235, 235))
+        screen.fill((35, 35, 35))

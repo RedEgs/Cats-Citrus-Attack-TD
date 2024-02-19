@@ -155,9 +155,7 @@ class Camera:
         pass
 
     def draw(self):
-        pygame.draw.circle(self.display, (0, 180, 255), (self.camera_bounds_rect.center[0] / self.camera_zoom_scale, 
-                                                         self.camera_bounds_rect.center[1]  / self.camera_zoom_scale), 
-                                                         5/self.camera_zoom_scale)
+        pygame.draw.circle(self.display, (0, 180, 255), (self.display.get_rect()[0]/2, self.display.get_rect()[1]/2 ),100)
         
         self.screen.blit(
             pygame.transform.scale( # Scales the display so it can be zoomed or resized.
@@ -186,8 +184,8 @@ class Camera:
         
     
 
+        
         pygame.draw.rect(self.screen, (0, 180, 255), self.camera_bounds_rect, 5) # Draws the rect in which everything is visible within the camera
-        pygame.draw.circle(self.screen, (255, 180, 0), self.camera_bounds_rect.topleft, 5)
         pygame.display.update(self.camera_bounds_rect) # Visually updates only what the window/camera can see
 
     def focus_target(self, target: pygame.rect):

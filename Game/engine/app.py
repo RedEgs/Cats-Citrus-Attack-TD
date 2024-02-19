@@ -1,5 +1,5 @@
 import random, pygame, json, os, sys
-
+from colorama import Fore, Back, Style
 
 import engine.libs.EntityService as EntityService
 import engine.libs.SceneService as SceneService
@@ -8,16 +8,19 @@ import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
 import engine.libs.CameraService as CameraService
+ 
 class App:
     """
     Main game/app loop class for the PyRed Engine.
     """
 
     def __init__(self):
-        print("started init app")
+        print(Fore.CYAN + "[1/8] Starting Initialisation...")
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
+        print(Fore.LIGHTGREEN_EX + "[2/8] Completed Initialisation")
+
 
         global camera, display, screen, clock, settings
 
@@ -27,6 +30,7 @@ class App:
         display = camera.get_display()
         self.camera_offset = camera.get_camera_offset()
 
+        print(Fore.CYAN + "[3/8] Starting Services...")
         (
             self.entities,
             self.scenes,
@@ -35,10 +39,15 @@ class App:
             self.transitions,
             self.debugs,
         ) = self.start_services()
-        print("started services")
+        print(Fore.LIGHTGREEN_EX + "[4/8] Completed Services")
 
+        print(Fore.CYAN + "[5/8] Loading Scenes")
         self.load_scenes()
+        print(Fore.LIGHTGREEN_EX + "[6/8] Loaded Scenes")
+
+        print(Fore.CYAN + "[7/8] Loading GUI Elements")
         self.guis.load_scene_elements()
+        print(Fore.LIGHTGREEN_EX + "[8/8] Loaded GUI Elements")
 
     def start_game(self):
         """
@@ -103,6 +112,7 @@ class App:
 
             self.event_queue = event
             self.guis.handle_event(event, self.get_camera())
+            self.debugs.handle_event(event)
             self.get_camera().events(event)
 
     def update(self):
