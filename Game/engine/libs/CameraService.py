@@ -155,7 +155,9 @@ class Camera:
         pass
 
     def draw(self):
-        pygame.draw.circle(self.display, (0, 180, 255), self.camera_bounds_rect.center, 5)
+        pygame.draw.circle(self.display, (0, 180, 255), (self.camera_bounds_rect.center[0] / self.camera_zoom_scale, 
+                                                         self.camera_bounds_rect.center[1]  / self.camera_zoom_scale), 
+                                                         5/self.camera_zoom_scale)
         
         self.screen.blit(
             pygame.transform.scale( # Scales the display so it can be zoomed or resized.

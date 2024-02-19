@@ -8,14 +8,13 @@ import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
 import engine.libs.CameraService as CameraService
-
-
 class App:
     """
     Main game/app loop class for the PyRed Engine.
     """
 
     def __init__(self):
+        print("started init app")
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
@@ -36,6 +35,7 @@ class App:
             self.transitions,
             self.debugs,
         ) = self.start_services()
+        print("started services")
 
         self.load_scenes()
         self.guis.load_scene_elements()
@@ -87,7 +87,7 @@ class App:
 
     def run(self):
         fps = settings["max-fps"]
-
+        print("started loop")
         while True:
             self.events()
             self.update()

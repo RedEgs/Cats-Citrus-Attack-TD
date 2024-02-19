@@ -376,7 +376,6 @@ class TextElement(Element):
         self.default_font = pygame.font.Font("font.ttf", self.size)
         self.default_font.set_underline(underline)
         
-        
         self.image = self.default_font.render(self.text, True, self.color)
         self.rect = self.image.get_rect()
 
@@ -400,12 +399,12 @@ class TextElement(Element):
     def update_position(self):
         super().update_position()
 
-    def update_element(self):
-        self.image = self.default_font.render(self.text, True, self.color)
+    def update_element(self): 
         self.rect = self.image.get_rect()
+        #self.image = self.default_font.render(self.text, True, self.color)
 
         if self.text_align == "right":
-           self.rect.midright = self.position#(self.position[0]-self.rect.width, self.position[1])
+            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
         if self.text_align == "center":
             self.rect.center = self.position
         if self.text_align == "left":
@@ -415,7 +414,70 @@ class TextElement(Element):
         pass
 
     def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        
+        #self.default_font.render_to(screen, self.rect, self.text, self.color, self.size)
+        
+        screen.blit(self.image, self.rect) # Old Rendering Method
+        
+        
+        #pygame.draw.rect(screen, (180, 0, 255), self.rect)
+        #pygame.draw.circle(screen, (0,180,255), (self.rect.center), radius=5) # Shows align positions
+class FreeTextElement(Element):
+    def __init__(self, space, camera, position, text:str ="Placeholder", size: int=16, color: pygame.Color = (0,0,0), text_align: str ="center", underline: bool=False):
+        super().__init__(space, camera, position)
+        self.text = text
+        self.size = size
+        self.color = color
+        self.text_align = text_align
+
+        self.default_font = pygame.freetype.Font("font.ttf", self.size)
+        #self.default_font.set_underline(underline)
+        
+        self.rect = self.default_font.get_rect(self.text)
+
+        if self.text_align == "right":
+            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
+        if self.text_align == "center":
+            self.rect.center = self.position
+        if self.text_align == "left":
+            self.rect.midleft = self.position
+            
+        
+    def update_text(self, text=None):
+        changed = False
+        
+        if self.text == None:
+            if self.text == text:
+                pass
+        else:
+            self.text = text
+            changed = True
+        
+        if changed:
+            self.update_element()
+
+    def update_position(self):
+        super().update_position()
+
+    def update_element(self):
+        self.rect = self.default_font.get_rect(self.text)
+
+        if self.text_align == "right":
+            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
+        if self.text_align == "center":
+            self.rect.center = self.position
+        if self.text_align == "left":
+            self.rect.midleft = self.position
+        
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        self.default_font.render_to(screen, self.rect, self.text, self.color, self.size)
+        
+        #screen.blit(self.image[0], self.rect) # Old Rendering Method
+        
+        
         #pygame.draw.rect(screen, (180, 0, 255), self.rect)
         #pygame.draw.circle(screen, (0,180,255), (self.rect.center), radius=5) # Shows align positions
 
