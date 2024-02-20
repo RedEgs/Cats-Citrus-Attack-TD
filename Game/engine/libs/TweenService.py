@@ -1,3 +1,4 @@
+from engine.libs.Services import Service
 import pygame, pytweening, json, os, sys
 
 from typing import Callable
@@ -5,7 +6,7 @@ from dataclasses import dataclass
 
 import engine.libs.Utils as Utils
 
-class TweenService():
+class TweenService(Service):
     tweens = []
     active_tweens = []
 

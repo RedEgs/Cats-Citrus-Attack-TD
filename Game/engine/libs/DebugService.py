@@ -1,5 +1,7 @@
+from engine.libs.Services import Service
 import psutil, pygame, sys, os
 import threading, time
+
 
 import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService
@@ -7,7 +9,7 @@ import engine.libs.SceneService as SceneService
 import engine.libs.GuiService as GuiService
 import engine.libs.TweenService as TweenService
 
-class DebugService:
+class DebugService(Service):
     def __init__(self, app, clock):
         self.app = app
         self.camera = self.app.get_camera()
@@ -204,7 +206,7 @@ class DebugService:
         self.mouse_positions_text.update_text(f"Mouse Position (Screen | World): {pygame.mouse.get_pos()} | {(pygame.mouse.get_pos()[0]+self.camera.get_camera_offset()[0]/self.camera.camera_zoom_scale, pygame.mouse.get_pos()[1]+self.camera.get_camera_offset()[1]/self.camera.camera_zoom_scale)}")
     
         
-        self.camera_offset_text.update_text(f"Camera Offset: {str(self.camera.get_camera_offset())}")
+        self.camera_offset_text.update_text(f"Camera Offset: {(self.camera.camera_offset[0] + int(self.camera.screen_w) / 2, self.camera.camera_offset[1] + int(self.camera.screen_h) / 2)}")
         self.zoom_amount_text.update_text(f"Zoom Amount: {round(self.camera.get_zoom(), 4)}")
         self.surface_scale_text.update_text(f"Surface Scale (Resolution): {self.camera.get_display_output_size()}")
 

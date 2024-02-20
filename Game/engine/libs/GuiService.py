@@ -1,3 +1,4 @@
+from engine.libs.Services import Service
 import pytweening, pygame, time, sys, os
 import numba
 from enum import Enum
@@ -43,7 +44,7 @@ class ElementTypes(Enum): # Used for indicating an elements type (mainly used fo
     EVENT = "event"
 
 
-class GuiService():
+class GuiService(Service):
     active_scene = None
     active_camera = None
 
@@ -264,18 +265,16 @@ class Element(RawElement):
         super().__init__(space, camera)
         self.element_type = ElementTypes.ELEMENT
         self.ORIGINAL_POSITION = position  # The position in which the element was instanced at. Should be constant.
-
-        self.screen_position = self.ORIGINAL_POSITION
         self.world_position = None
         
         if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for their type of space
-            self.world_position = self.world_position = (self.ORIGINAL_POSITION[0] - self.camera.camera_bounds_rect.center[0], 
-                                        self.ORIGINAL_POSITION[1] - self.camera.camera_bounds_rect.center[1])
-            
+            self.world_position = self.ORIGINAL_POSITION
             self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
+        
         elif self.space == GuiSpaces.SCREEN:
             self.position = position
 
+        self.screen_position = self.position
 
     def update_position(self):
         """
@@ -284,19 +283,14 @@ class Element(RawElement):
         """
         
  
-      
-
+        self.screen_position = self.position      
 
         if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for world space
-            self.world_position = (self.ORIGINAL_POSITION[0] - self.camera.camera_bounds_rect.center[0], 
-                                self.ORIGINAL_POSITION[1] - self.camera.camera_bounds_rect.center[1])
-            
-            
-            
             self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
+            self.world_position = self.ORIGINAL_POSITION
         else: self.position = self.position
         
-        self.screen_position = self.position
+
         
     def update_element(self):
         super().update_element()    

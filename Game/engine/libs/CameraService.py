@@ -1,12 +1,15 @@
+from engine.libs.Services import Service
+
 import random, pygame, json, os, sys
+import numpy as np
+import numba
 from BlurWindow.blurWindow import blur
 
 import win32api
 import win32con
 import win32gui
 
-
-class Camera:
+class Camera(Service):
     def __init__(self, app, resolution, window_blur: False) -> None:
         self.app = app
         self.screen_w, self.screen_h = str(resolution).split("x")
@@ -20,7 +23,7 @@ class Camera:
             (1280*2, 720*2)
         )  # Creates a virtual surface so a camera offset or zoom can be applied 
         self.camera_offset = pygame.math.Vector2(
-            0, 0
+            0-int(self.screen_w)/2, 0-int(self.screen_h)/2
         )  # The camera offset so the display can be moved left and right etc.
         self.camera_center = pygame.math.Vector2(
             self.display.get_size()[0] // 2, self.display.get_size()[1] // 2  # X  # Y
@@ -73,6 +76,11 @@ class Camera:
             win32gui.SetLayeredWindowAttributes(
                 hwnd, win32api.RGB(*(235, 235, 235)), 0, win32con.LWA_COLORKEY
             )
+
+        self.camera_grid = Camera_Grid(self.app, self)
+
+
+
 
     def events(self, event):
         if event.type == pygame.MOUSEWHEEL:
@@ -155,7 +163,7 @@ class Camera:
         pass
 
     def draw(self):
-        pygame.draw.circle(self.display, (0, 180, 255), (self.display.get_rect()[0]/2, self.display.get_rect()[1]/2 ),100)
+        pygame.draw.circle(self.display, (180, 0, 255), (self.display.get_rect()[0]/2-self.camera_offset[0], self.display.get_rect()[1]/2-self.camera_offset[1] ), 3)
         
         self.screen.blit(
             pygame.transform.scale( # Scales the display so it can be zoomed or resized.
@@ -214,3 +222,39 @@ class Camera:
 
     def get_camera_center(self):
         return self.camera_center
+
+
+
+class Camera_Grid():
+    def __init__(self, app, camera: Camera):
+        self.app = app 
+        self.camera = camera
+
+           # Center of the world self.display.get_rect()[0]/2-self.camera_offset[0], self.display.get_rect()[1]/2-self.camera_offset[1] 
+        self._grid_size = self.camera.get_display().get_size() #width and height of the world
+        self._tile_size = 10
+        self._grid_gap = 2
+
+        self._grid_size_x = self._grid_size[0]//self._tile_size
+        self._grid_size_y = self._grid_size[1]//self._tile_size
+       
+        self.initialise_grid()
+        self.draw_grid()
+
+    def initialise_grid(self):
+        self._grid = [[0 for x in range(self._grid_size_x)]
+                                for y in range(self._grid_size_y)]
+        
+        print(self._grid)
+
+    def draw_grid(self):
+        for row in range(self._grid_size_x):
+            for column in range(self._grid_size_y):
+                color = (255,255,255)
+
+                pygame.draw.rect(self.camera.screen, color,
+                                [(self._grid_gap+self._grid_size_x) * column + self._grid_gap,
+                                (self._grid_gap+self._grid_size_y) * row + self._grid_gap,
+                                self._grid_size_x,
+                                self._grid_size_y])
+

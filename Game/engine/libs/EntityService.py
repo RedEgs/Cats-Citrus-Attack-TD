@@ -1,10 +1,11 @@
+from engine.libs.Services import Service
 import pygame, json, os, sys
 
 import engine.libs.Utils as utils
 
 
 
-class EntityService():
+class EntityService(Service):
     """
     Stores all entities to keep them loaded in RAM and update them.
     Entities that aren't currently active are sent to a different stack within the same class.

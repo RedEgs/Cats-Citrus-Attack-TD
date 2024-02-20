@@ -1,4 +1,4 @@
-import random, pygame, json, os, sys
+import logging, random, pygame, json, os, sys
 from colorama import Fore, Back, Style
 
 import engine.libs.EntityService as EntityService
@@ -9,21 +9,27 @@ import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
 import engine.libs.CameraService as CameraService
  
+class EngineLogger:
+    def __init__(self):
+        logging.basicConfig(filename="recent.log", filemode="w", 
+                            format="%(asctime)s | %(levelname)s - %(message)s",                            
+                            level=logging.INFO)
+        self.engine_logger = logging.getLogger()
+        logging.info("Initialised the logger!")
 class App:
     """
     Main game/app loop class for the PyRed Engine.
     """
 
     def __init__(self):
-        print(Fore.CYAN + "[1/8] Starting Initialisation...")
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
-        print(Fore.LIGHTGREEN_EX + "[2/8] Completed Initialisation")
 
+        self.engine_logger = EngineLogger().engine_logger
+        self.service_registry = []
 
         global camera, display, screen, clock, settings
-
         camera, clock, settings = self.start_game()
 
         screen = camera.get_screen()
@@ -39,6 +45,8 @@ class App:
             self.transitions,
             self.debugs,
         ) = self.start_services()
+
+
         print(Fore.LIGHTGREEN_EX + "[4/8] Completed Services")
 
         print(Fore.CYAN + "[5/8] Loading Scenes")
@@ -66,11 +74,11 @@ class App:
         return camera, clock, settings
 
     def start_services(self):
-        entities = EntityService.EntityService()
+        entities = EntityService.EntityService(self)
         scenes = SceneService.SceneService(self)
-        guis = GuiService.GuiService()
-        tweens = TweenService.TweenService()
-        transitions = TransitionService.TransitionService()
+        guis = GuiService.GuiService(self)
+        tweens = TweenService.TweenService(self)
+        transitions = TransitionService.TransitionService(self)
         debugs = DebugService.DebugService(self, clock)
 
         return entities, scenes, guis, tweens, transitions, debugs

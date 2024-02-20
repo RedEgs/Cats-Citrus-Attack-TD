@@ -1,3 +1,4 @@
+from engine.libs.Services import Service
 import pygame, json, os, sys
 
 import engine.libs.Utils as utils
@@ -6,7 +7,7 @@ import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
 
 
-class SceneService:
+class SceneService(Service):
     """
     Handles the loading, setting, etc., of all scenes
     """

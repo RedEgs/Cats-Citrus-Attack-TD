@@ -1,3 +1,4 @@
+from engine.libs.Services import Service
 import pygame, json, os, sys
 
 import engine.libs.TweenService as TweenService
@@ -5,7 +6,7 @@ import engine.libs.GuiService as GuiService
 import engine.libs.Utils as Utils
 
 
-class TransitionService:
+class TransitionService(Service):
     transitions = []
 
     isTransitioning = len(transitions) == 1

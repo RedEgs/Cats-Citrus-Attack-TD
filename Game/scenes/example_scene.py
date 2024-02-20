@@ -24,7 +24,7 @@ class Example_Scene(SceneService.Scene):
         #     (0, 0, 0),
         #     "left",
         # )
-        GuiService.ImageElement(GuiService.GuiSpaces.WORLD, self.camera, (400,400),"test_image.png")
+        #self.img = GuiService.ImageElement(GuiService.GuiSpaces.WORLD, self.camera, (0,0),"test_image.png")
         
         # GuiService.StatusBar(GuiService.GuiSpaces.SCREEN, self.camera, (100, 400), (100, 50), initial_value=10)
         
@@ -36,7 +36,7 @@ class Example_Scene(SceneService.Scene):
         # GuiService.Slider(GuiService.GuiSpaces.SCREEN, self.camera, (200, 300), (100, 25))
         # GuiService.Checkbox(GuiService.GuiSpaces.SCREEN, self.camera, (100, 300))
         # GuiService.ButtonElement(GuiService.GuiSpaces.SCREEN, self.camera, (300, 200))
-        self.rect = GuiService.DraggableRect(GuiService.GuiSpaces.WORLD, self.camera, (700, 600), (0, 0, 255), (100, 100))
+        #self.rect = GuiService.DraggableRect(GuiService.GuiSpaces.WORLD, self.camera, (-50, 100), (0, 0, 255), (100, 100))
         
     
     def update(self):
