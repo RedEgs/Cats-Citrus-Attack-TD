@@ -16,6 +16,8 @@ class EngineLogger:
                             level=logging.INFO)
         self.engine_logger = logging.getLogger()
         logging.info("Initialised the logger!")
+        
+        
 class App:
     """
     Main game/app loop class for the PyRed Engine.

@@ -1,5 +1,5 @@
 from engine.libs.Services import Service
-
+from pygame import gfxdraw
 import random, pygame, json, os, sys
 import numpy as np
 import numba
@@ -77,8 +77,11 @@ class Camera(Service):
                 hwnd, win32api.RGB(*(235, 235, 235)), 0, win32con.LWA_COLORKEY
             )
 
-        self.camera_grid = Camera_Grid(self.app, self)
-
+        #self.camera_grid = Camera_Grid(self.app, self)
+        #self.updating_grid = True
+        #self.camera_grid.draw()
+        
+        #self.updating_grid = False
 
 
 
@@ -158,13 +161,17 @@ class Camera(Service):
                 
                 pygame.event.post(self.camera_event_right)
  
+        if event.type == self.camera_event:
+            self.updating_grid = True
+        else:
+            self.updating_grid = False
 
     def update(self):
         pass
 
     def draw(self):
         pygame.draw.circle(self.display, (180, 0, 255), (self.display.get_rect()[0]/2-self.camera_offset[0], self.display.get_rect()[1]/2-self.camera_offset[1] ), 3)
-        
+        #self.camera_grid.draw()
         self.screen.blit(
             pygame.transform.scale( # Scales the display so it can be zoomed or resized.
                 self.display,
@@ -179,6 +186,8 @@ class Camera(Service):
         
         # Draws global or screen space elements under here
         
+        
+        
         for element in self.app.guis.screen_ui_elements:
             element.draw(self.screen)
             element.update()
@@ -190,10 +199,10 @@ class Camera(Service):
             element.update_position()
         
         
-    
-
         
-        pygame.draw.rect(self.screen, (0, 180, 255), self.camera_bounds_rect, 5) # Draws the rect in which everything is visible within the camera
+    
+        
+        #pygame.draw.rect(self.screen, (0, 180, 255), self.camera_bounds_rect, 5) # Draws the rect in which everything is visible within the camera
         pygame.display.update(self.camera_bounds_rect) # Visually updates only what the window/camera can see
 
     def focus_target(self, target: pygame.rect):
@@ -201,8 +210,6 @@ class Camera(Service):
 
     def check_camera_bounds(self, target: pygame.Rect):
         return self.camera_bounds_rect.colliderect(target)
-
-
 
     def get_display(self):
         return self.display
@@ -229,32 +236,50 @@ class Camera_Grid():
     def __init__(self, app, camera: Camera):
         self.app = app 
         self.camera = camera
-
-           # Center of the world self.display.get_rect()[0]/2-self.camera_offset[0], self.display.get_rect()[1]/2-self.camera_offset[1] 
-        self._grid_size = self.camera.get_display().get_size() #width and height of the world
-        self._tile_size = 10
-        self._grid_gap = 2
-
-        self._grid_size_x = self._grid_size[0]//self._tile_size
-        self._grid_size_y = self._grid_size[1]//self._tile_size
-       
-        self.initialise_grid()
-        self.draw_grid()
-
-    def initialise_grid(self):
-        self._grid = [[0 for x in range(self._grid_size_x)]
-                                for y in range(self._grid_size_y)]
         
-        print(self._grid)
+        self._cam_zoom = self.camera.get_zoom()
+        screen_size = self.camera.get_display().get_size()
+        self._screen_size = screen_size[0]* 2 *(self._cam_zoom), screen_size[1]* 2 * (self._cam_zoom)
+        
+        self._screen = self.camera.get_screen()
+        self._display = self.camera.get_display()
+        
+        
+        
+        self._grid_surface = pygame.Surface(self._screen_size, pygame.SRCALPHA)
+        
+        self._tile_size = 100
+        self._line_thickness = 1
+        self._line_opacity = 20
+        self._line_color = (200,200,200) + (self._line_opacity, )
+        
+    def update_vars(self):
+        screen_size = self.camera.get_display().get_size()
+        self._cam_zoom = self.camera.get_zoom()
+        
+    def draw(self):
 
-    def draw_grid(self):
-        for row in range(self._grid_size_x):
-            for column in range(self._grid_size_y):
-                color = (255,255,255)
+            
+        if self.camera.updating_grid == True:
+            self.update_vars()
+            scaled_thickness = max(1, int(self._cam_zoom*2))
+            
+            h, w = self._screen_size
+            screen_height = h
+            screen_width = w * 2
+            
+            for column in range(0, screen_height, self._tile_size):
+                pygame.draw.line(self._grid_surface, self._line_color, (0, column), (screen_width, column), scaled_thickness)
+                
+            for row in range(0, screen_width, self._tile_size):
+                pygame.draw.line(self._grid_surface, self._line_color, (row, 0), (row, screen_height), scaled_thickness)
+           
+           
+        self._display.blit(self._grid_surface, (0-self.camera.get_camera_offset()[0]-self._screen_size[0]/2, 0-self.camera.get_camera_offset()[1]-self._screen_size[1]/2))  
+         
+        # for x in range(0, screen_width, cell_size):
+        #     pygame.draw.line(screen, BLACK, (x, 0), (x, screen_height))
 
-                pygame.draw.rect(self.camera.screen, color,
-                                [(self._grid_gap+self._grid_size_x) * column + self._grid_gap,
-                                (self._grid_gap+self._grid_size_y) * row + self._grid_gap,
-                                self._grid_size_x,
-                                self._grid_size_y])
-
+        
+        
+        
