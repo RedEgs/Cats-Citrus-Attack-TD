@@ -24,8 +24,8 @@ class Main(App):
         self.user = user
 
     def load_scenes(self):
-        self.scenes.load_scenes([example_scene.Example_Scene("example_scene", self)])
-        self.scenes.set_scene("example_scene")
+        self.scene_service.load_scenes([example_scene.Example_Scene("example_scene", self)])
+        self.scene_service.set_scene("example_scene")
 
 
 """network_test.Network_Test("network_test", self),

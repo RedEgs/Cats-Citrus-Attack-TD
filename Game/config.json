@@ -8,5 +8,13 @@
             "window-icon-path": "ico.png",
             "start-scene": "user_login"
         }
+    },
+    "workspace": {
+        "settings": {
+            "debug-mode": true,
+            "enable-grid": false
+            
+
+        }
     }
 }

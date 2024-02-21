@@ -168,17 +168,7 @@ class DebugService(Service):
         #fps_counter_thread = threading.Thread(target=self.debug_fps_info).start()
         cpu_counter_thread = threading.Thread(target=self.debug_cpu_info).start()
     
-    
-    def debug_fps_info(self):  
-        self.current_fps = self.clock.get_fps()
-        
-        if self.current_fps > self.fps_high:
-            self.fps_high = self.current_fps
-                
-        if self.current_fps < self.fps_low and self.current_fps != 0:
-            self.fps_low = self.current_fps
-            #print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
-            #print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
+       #print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
             #print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
             
         
@@ -198,6 +188,17 @@ class DebugService(Service):
                 
             #print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
     
+    def debug_fps_info(self):  
+        self.current_fps = self.clock.get_fps()
+        
+        if self.current_fps > self.fps_high:
+            self.fps_high = self.current_fps
+                
+        if self.current_fps < self.fps_low and self.current_fps != 0:
+            self.fps_low = self.current_fps
+            
+        print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
+         
     
     def update(self):
         self.debug_fps_info()
@@ -211,9 +212,9 @@ class DebugService(Service):
         self.surface_scale_text.update_text(f"Surface Scale (Resolution): {self.camera.get_display_output_size()}")
 
 
-        self.gui_elements_text.update_text(f"Elements: {len(self.app.guis.ui_elements)}")
-        self.gui_active_elements_text.update_text(f"Active Elements (Drawn): {len(self.app.guis.active_scene.ui_elements.sprites()) + len(self.app.guis.screen_ui_elements)}")
-        self.gui_all_active_elements_text.update_text(f"All Active Elements (Drawn): {len(self.app.guis.active_scene.ui_elements.sprites()) + len(self.app.guis.screen_ui_elements) + len(self.app.guis.global_ui_elements)}")
+        self.gui_elements_text.update_text(f"Elements: {len(self.app.gui_service.ui_elements)}")
+        self.gui_active_elements_text.update_text(f"Active Elements (Drawn): {len(self.app.gui_service.active_scene.ui_elements.sprites()) + len(self.app.gui_service.screen_ui_elements)}")
+        self.gui_all_active_elements_text.update_text(f"All Active Elements (Drawn): {len(self.app.gui_service.active_scene.ui_elements.sprites()) + len(self.app.gui_service.screen_ui_elements) + len(self.app.gui_service.global_ui_elements)}")
 
 
         self.fps_text.update_text(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
@@ -227,7 +228,7 @@ class DebugService(Service):
 
     def hide_debug_info(self):
         if self.debug_hidden == False:
-            for element in self.app.guis.global_ui_elements:
+            for element in self.app.gui_service.global_ui_elements:
                 element.hide()
                 self.hidden_list.append(element)
 
