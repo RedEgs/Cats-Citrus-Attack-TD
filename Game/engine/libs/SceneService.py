@@ -93,9 +93,9 @@ class Scene:
         
         self.scene_name = scene_name
         self.app = app
-        self.guis = app.guis
+        self.gui_service = app.gui_service
         
-        self.guis.set_active_scene(self)
+        self.gui_service.set_active_scene(self)
         self.extra_data = None
         
         self.ui_elements = pygame.sprite.Group()
@@ -113,7 +113,7 @@ class Scene:
         pass
 
     def on_enter(self):
-        self.guis.set_active_scene(self)
+        self.gui_service.set_active_scene(self)
 
     def events(self, event):
         pass

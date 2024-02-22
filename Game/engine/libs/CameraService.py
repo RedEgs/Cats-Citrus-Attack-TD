@@ -77,11 +77,14 @@ class Camera(Service):
                 hwnd, win32api.RGB(*(235, 235, 235)), 0, win32con.LWA_COLORKEY
             )
 
-        #self.camera_grid = Camera_Grid(self.app, self)
-        #self.updating_grid = True
-        #self.camera_grid.draw()
-        
-        #self.updating_grid = False
+
+        if self.app.workspace_settings["enable-grid"]:
+            self.camera_grid = Camera_Grid(self.app, self)
+            self.enable_grid = True
+            self.updating_grid = True
+            self.camera_grid.draw()
+            
+            self.updating_grid = False
 
 
 
@@ -106,37 +109,8 @@ class Camera(Service):
                 pygame.event.post(self.camera_event_zoom_in)
             else:
                 pygame.event.post(self.camera_event_zoom_out)
-                
-        
-        # if event.type == pygame.MOUSEBUTTONDOWN:
-        #     if event.button == 2:
-        #         self.camera_moving = True
-                
-        # if event.type == pygame.MOUSEBUTTONUP:
-        #     if event.button == 2:
-        #         self.camera_moving = False        
-            
-        # if self.camera_moving == True:  
-        #     if event.type == pygame.MOUSEMOTION:
-        #         self.camera_offset = pygame.math.Vector2(event.rel[0], event.rel[1])
-                
-        #         pygame.event.post(self.camera_event_dragging)
-                
-            #self.camera_bounds_rect.camera_offset = event.rel
-        
-        
         
         if event.type == pygame.KEYDOWN:
-        #     if event.key == pygame.K_LSHIFT:
-        #         if self.camera_zoom_scale < 2:
-        #             self.camera_zoom_scale += 0.01
-        #             pygame.event.post(self.camera_event_zoom_in)
-
-        #     if event.key == pygame.K_LCTRL:
-        #         if self.camera_zoom_scale > 0.5:
-        #             self.camera_zoom_scale -= 0.01
-        #             pygame.event.post(self.camera_event_zoom_out)
-                    
             if event.key == pygame.K_UP:
                 self.camera_offset[1] -= 1
             
@@ -152,14 +126,16 @@ class Camera(Service):
             if event.key == pygame.K_LEFT:
                 self.camera_offset[0] -= 1
                 
-                
-                
                 pygame.event.post(self.camera_event_left)
 
             if event.key == pygame.K_RIGHT:
                 self.camera_offset[0] += 1
                 
                 pygame.event.post(self.camera_event_right)
+ 
+            if event.key == pygame.K_F6:
+                self.enable_grid = not self.enable_grid
+                print(self.enable_grid)
  
         if event.type == self.camera_event:
             self.updating_grid = True
@@ -171,7 +147,10 @@ class Camera(Service):
 
     def draw(self):
         pygame.draw.circle(self.display, (180, 0, 255), (self.display.get_rect()[0]/2-self.camera_offset[0], self.display.get_rect()[1]/2-self.camera_offset[1] ), 3)
-        #self.camera_grid.draw()
+        
+        if self.app.workspace_settings["enable-grid"]:
+            self.camera_grid.draw()
+        
         self.screen.blit(
             pygame.transform.scale( # Scales the display so it can be zoomed or resized.
                 self.display,
@@ -188,12 +167,12 @@ class Camera(Service):
         
         
         
-        for element in self.app.guis.screen_ui_elements:
+        for element in self.app.gui_service.screen_ui_elements:
             element.draw(self.screen)
             element.update()
             element.update_position()
     
-        for element in self.app.guis.global_ui_elements:
+        for element in self.app.gui_service.global_ui_elements:
             element.draw(self.screen)
             element.update()
             element.update_position()
@@ -260,7 +239,7 @@ class Camera_Grid():
     def draw(self):
 
             
-        if self.camera.updating_grid == True:
+        if self.camera.updating_grid and self.camera.enable_grid == True:
             self.update_vars()
             scaled_thickness = max(1, int(self._cam_zoom*2))
             
@@ -274,8 +253,8 @@ class Camera_Grid():
             for row in range(0, screen_width, self._tile_size):
                 pygame.draw.line(self._grid_surface, self._line_color, (row, 0), (row, screen_height), scaled_thickness)
            
-           
-        self._display.blit(self._grid_surface, (0-self.camera.get_camera_offset()[0]-self._screen_size[0]/2, 0-self.camera.get_camera_offset()[1]-self._screen_size[1]/2))  
+        if self.camera.enable_grid:
+            self._display.blit(self._grid_surface, (0-self.camera.get_camera_offset()[0]-self._screen_size[0]/2, 0-self.camera.get_camera_offset()[1]-self._screen_size[1]/2))  
          
         # for x in range(0, screen_width, cell_size):
         #     pygame.draw.line(screen, BLACK, (x, 0), (x, screen_height))
