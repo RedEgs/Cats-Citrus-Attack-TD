@@ -1,0 +1,5 @@
+v0.0.0.1 -
+implemented oop based game loop
+first iterations/prototypes of the window header + made it toggleable
+window header can be moved like normal+window can be closed from header but minimising and maximising is extremely buggy
+yet to implement titlebar, icons and make it stylish and minimising and maximising
