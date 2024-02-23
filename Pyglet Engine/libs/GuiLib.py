@@ -5,17 +5,22 @@ from pyglet import shapes
 
 from pyglet.image.codecs.png import PNGImageDecoder
 from functools import cache
+from enum import Enum
 
-import pyautogui
+import pyautogui, numba
 import numpy as np
-import numba
+
 
 class ExtendedWidget(gui.WidgetBase):
-    def __init__(self, x, y, width, height, window: pyglet.window.Window = None):
+    def __init__(self, x, y, width, height, window: window.Window = None, batch: pyglet.graphics.Batch = None):
         super().__init__(x, y, width, height)
         self._window = window
-            
-        self._top_right = np.array([x+self._window.width, y])
+        
+        if batch == None:
+            self._widget_batch = pyglet.graphics.Batch()
+        else:
+            self._widget_batch = batch
+
         
     def _check_area(self, x, y, area_x, area_y, area_width, area_height):
         return area_x <= x <= area_x + area_width and area_y <= y <= area_y + area_height
@@ -24,14 +29,11 @@ class ExtendedWidget(gui.WidgetBase):
         pos = pyautogui.position()
         return pos[0], pos[1]
 
+    def draw(self):
+        self._widget_batch.draw()
    
    
-        
     
-    
-    
-
-
 class WindowHeader(ExtendedWidget): 
     def __init__(self, x=0, y=760-30, width=1280, height=30, window: pyglet.window.Window = None):
         super().__init__(x, y, width, height, window)
@@ -123,7 +125,45 @@ class WindowHeader(ExtendedWidget):
         
         
         # self.close_sprite.draw()
-
-
-
 WindowHeader.register_event_type("on_window_move")
+
+class PanelWidget(ExtendedWidget):
+    # top of the panel = (self._y+self._height)
+    
+    
+    
+    def __init__(self, x, y, width, height, window: window.Window = None, widget_title: str = None):
+        super().__init__(x, y, width, height, window)
+        
+        self.panel_title = "Panel"
+        
+        self.drop_shadow = self.render_drop_shadow()
+        self.panel_rect = shapes.BorderedRectangle(x, y ,width, height, 2, (18,18,18), (38,38,38), self._widget_batch)
+        self.title_pane_rect = shapes.BorderedRectangle(x, (self._y+self._height),width, 22, 2, (23,23,23), (38,38,38), self._widget_batch)
+        
+
+
+        self._load_title()
+    
+    
+    
+    
+    def _load_title(self):
+        self._widget_title = pyglet.text.Label(self.panel_title,
+                          font_name='Segoe UI',
+                          font_size=10,
+                          x=(self.title_pane_rect.width//4)-(18), y=self.title_pane_rect._y+(12),
+                          anchor_x='center', anchor_y='center', batch=self._widget_batch)
+    
+    def render_drop_shadow(self):
+        new_panel = shapes.Rectangle(self.x, self.y, self.width*1.2, self.height*1.2, (255,0,0), self._widget_batch)
+
+    
+        return new_panel
+        
+        
+        
+   
+        
+    
+    
