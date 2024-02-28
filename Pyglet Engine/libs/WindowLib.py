@@ -34,7 +34,11 @@ class Window(window.Window):
             self.gui_frame.add_widget(self.window_header)
         
         self.gui_frame = pyglet.gui.Frame(self, order=1)
-        self.panel1 = GuiLib.PanelWidget(0, self.height//2-100, 200, 200, self)
+        self.panel = GuiLib.Panel(0, 0, 200, 10, self)
+        
+        self.shader_test = GuiLib.ShaderWidget(100, 100, 100, 100, self)
+        
+        #self.panel1 = GuiLib.PanelWidget(0+100, self.height//2-100, 200, 400, self)
 
 
         pyglet.gl.glClearColor(.1,.1,.1,1) # Note that these are values 0.0 - 1.0 and not (0-255).
@@ -58,4 +62,5 @@ class Window(window.Window):
         
         if self._style == self.WINDOW_STYLE_BORDERLESS:
             self.window_header.draw()
-        self.panel1.draw()
+        self.panel.draw()
+        self.shader_test.draw()
