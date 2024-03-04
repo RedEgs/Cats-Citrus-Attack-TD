@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>737</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -25,8 +25,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>780</width>
-      <height>651</height>
+      <width>770</width>
+      <height>650</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -41,18 +41,72 @@
      <attribute name="title">
       <string>Scripting</string>
      </attribute>
-     <widget class="QTextEdit" name="script_edit">
+     <widget class="QTabWidget" name="script_tabs">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
-        <width>751</width>
-        <height>601</height>
+        <y>5</y>
+        <width>740</width>
+        <height>610</height>
        </rect>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
       </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideLeft</enum>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="vscript_tab">
+       <attribute name="title">
+        <string>Visual Script (VScript)</string>
+       </attribute>
+       <widget class="QGraphicsView" name="vscript_workspace">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>710</width>
+          <height>560</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ide_tab">
+       <attribute name="title">
+        <string>Script IDE</string>
+       </attribute>
+       <widget class="QPlainTextEdit" name="script_edit">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>710</width>
+          <height>560</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
+        </property>
+        <property name="placeholderText">
+         <string>import pygame, time, os, sys...</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </widget>
    </widget>
@@ -75,6 +129,11 @@
      <width>250</width>
      <height>350</height>
     </size>
+   </property>
+   <property name="font">
+    <font>
+     <underline>false</underline>
+    </font>
    </property>
    <property name="autoFillBackground">
     <bool>true</bool>
@@ -197,7 +256,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="assets_library_dock_contents">
-    <widget class="QListView" name="assets_library_listview">
+    <widget class="QTableView" name="assets_library_listview">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -269,13 +328,17 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
     <property name="title">
      <string>Project</string>
     </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
    </widget>
    <widget class="QMenu" name="windows_button">
     <property name="title">
@@ -291,6 +354,26 @@
    <addaction name="windows_button"/>
    <addaction name="help_button"/>
   </widget>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save </string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="text">
+    <string>Save as</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>resources_tree</tabstop>

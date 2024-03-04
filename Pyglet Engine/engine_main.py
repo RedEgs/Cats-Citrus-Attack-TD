@@ -1,40 +1,69 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'untitledDzhjZx.ui'
+## Form generated from reading UI file 'untitledMzlQEK.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-import sys, os
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from libs.WidgetsLib import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
+import sys
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+#creds to https://github.com/art1415926535/PyQt5-syntax-highlighting/blob/master/example.py
 
 class Ui_main_window(object):
-    def setup_ui(self, main_window):
+    def setupUi(self, main_window):
         if not main_window.objectName():
             main_window.setObjectName(u"main_window")
-        main_window.resize(1280, 720)
+        main_window.resize(1280, 737)
         main_window.setMinimumSize(QSize(1280, 720))
+        self.actionSave = QAction(main_window)
+        self.actionSave.setObjectName(u"actionSave")
+        self.actionSave_as = QAction(main_window)
+        self.actionSave_as.setObjectName(u"actionSave_as")
+        self.actionNew = QAction(main_window)
+        self.actionNew.setObjectName(u"actionNew")
+        self.actionOpen = QAction(main_window)
+        self.actionOpen.setObjectName(u"actionOpen")
         self.central_widget = QWidget(main_window)
         self.central_widget.setObjectName(u"central_widget")
         self.central_tabs = QTabWidget(self.central_widget)
         self.central_tabs.setObjectName(u"central_tabs")
-        self.central_tabs.setGeometry(QRect(0, 0, 780, 651))
+        self.central_tabs.setGeometry(QRect(0, 0, 770, 650))
         self.viewport_tab = QWidget()
         self.viewport_tab.setObjectName(u"viewport_tab")
         self.central_tabs.addTab(self.viewport_tab, "")
         self.scripting_tab = QWidget()
         self.scripting_tab.setObjectName(u"scripting_tab")
-        self.script_edit = QTextEdit(self.scripting_tab)
+        self.script_tabs = QTabWidget(self.scripting_tab)
+        self.script_tabs.setObjectName(u"script_tabs")
+        self.script_tabs.setGeometry(QRect(10, 5, 740, 610))
+        self.script_tabs.setTabPosition(QTabWidget.North)
+        self.script_tabs.setTabShape(QTabWidget.Rounded)
+        self.script_tabs.setElideMode(Qt.ElideLeft)
+        self.script_tabs.setUsesScrollButtons(True)
+        self.vscript_tab = QWidget()
+        self.vscript_tab.setObjectName(u"vscript_tab")
+        self.vscript_workspace = QGraphicsView(self.vscript_tab)
+        self.vscript_workspace.setObjectName(u"vscript_workspace")
+        self.vscript_workspace.setGeometry(QRect(10, 10, 710, 560))
+        self.script_tabs.addTab(self.vscript_tab, "")
+        self.ide_tab = QWidget()
+        self.ide_tab.setObjectName(u"ide_tab")
+        self.script_edit = QCodeEditor(self.ide_tab)
         self.script_edit.setObjectName(u"script_edit")
-        self.script_edit.setGeometry(QRect(10, 10, 751, 601))
+        self.script_edit.setGeometry(QRect(10, 10, 710, 560))
+        self.script_edit.setFrameShape(QFrame.StyledPanel)
         self.script_edit.setFrameShadow(QFrame.Raised)
+        self.script_edit.setLineWidth(0)
+        self.script_tabs.addTab(self.ide_tab, "")
         self.central_tabs.addTab(self.scripting_tab, "")
         main_window.setCentralWidget(self.central_widget)
         self.resources_dock = QDockWidget(main_window)
@@ -42,6 +71,9 @@ class Ui_main_window(object):
         self.resources_dock.setMinimumSize(QSize(250, 320))
         self.resources_dock.setMaximumSize(QSize(250, 320))
         self.resources_dock.setBaseSize(QSize(250, 350))
+        font = QFont()
+        font.setUnderline(False)
+        self.resources_dock.setFont(font)
         self.resources_dock.setAutoFillBackground(True)
         self.resources_dock.setFloating(False)
         self.resources_dock.setFeatures(QDockWidget.AllDockWidgetFeatures)
@@ -88,7 +120,7 @@ class Ui_main_window(object):
         self.assets_library_dock.setAllowedAreas(Qt.LeftDockWidgetArea|Qt.RightDockWidgetArea|Qt.TopDockWidgetArea)
         self.assets_library_dock_contents = QWidget()
         self.assets_library_dock_contents.setObjectName(u"assets_library_dock_contents")
-        self.assets_library_listview = QListView(self.assets_library_dock_contents)
+        self.assets_library_listview = QTableView(self.assets_library_dock_contents)
         self.assets_library_listview.setObjectName(u"assets_library_listview")
         self.assets_library_listview.setGeometry(QRect(10, 30, 230, 271))
         self.assets_library_listview.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -112,7 +144,7 @@ class Ui_main_window(object):
         main_window.addToolBar(Qt.TopToolBarArea, self.tool_bar)
         self.menu_bar = QMenuBar(main_window)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1280, 26))
+        self.menu_bar.setGeometry(QRect(0, 0, 1280, 21))
         self.project_button = QMenu(self.menu_bar)
         self.project_button.setObjectName(u"project_button")
         self.windows_button = QMenu(self.menu_bar)
@@ -125,10 +157,15 @@ class Ui_main_window(object):
         self.menu_bar.addAction(self.project_button.menuAction())
         self.menu_bar.addAction(self.windows_button.menuAction())
         self.menu_bar.addAction(self.help_button.menuAction())
+        self.project_button.addAction(self.actionNew)
+        self.project_button.addAction(self.actionOpen)
+        self.project_button.addAction(self.actionSave)
+        self.project_button.addAction(self.actionSave_as)
 
         self.retranslateUi(main_window)
 
         self.central_tabs.setCurrentIndex(1)
+        self.script_tabs.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(main_window)
@@ -136,7 +173,17 @@ class Ui_main_window(object):
 
     def retranslateUi(self, main_window):
         main_window.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - {project name}", None))
+        self.actionSave.setText(QCoreApplication.translate("main_window", u"Save ", None))
+        self.actionSave_as.setText(QCoreApplication.translate("main_window", u"Save as", None))
+        self.actionNew.setText(QCoreApplication.translate("main_window", u"New", None))
+        self.actionOpen.setText(QCoreApplication.translate("main_window", u"Open", None))
         self.central_tabs.setTabText(self.central_tabs.indexOf(self.viewport_tab), QCoreApplication.translate("main_window", u"Game (Viewport)", None))
+        self.script_tabs.setTabText(self.script_tabs.indexOf(self.vscript_tab), QCoreApplication.translate("main_window", u"Visual Script (VScript)", None))
+        self.script_edit.setPlaceholderText(QCoreApplication.translate("main_window", u"import pygame, time, os, sys...", None))
+        self.syntax_highlighter_script_edit = PythonHighlighter(self.script_edit.document())
+        
+        
+        self.script_tabs.setTabText(self.script_tabs.indexOf(self.ide_tab), QCoreApplication.translate("main_window", u"Script IDE", None))
         self.central_tabs.setTabText(self.central_tabs.indexOf(self.scripting_tab), QCoreApplication.translate("main_window", u"Scripting", None))
         self.resources_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Resources", None))
         self.resource_search_bar.setPlaceholderText(QCoreApplication.translate("main_window", u"Search...", None))
@@ -149,25 +196,15 @@ class Ui_main_window(object):
         self.help_button.setTitle(QCoreApplication.translate("main_window", u"Help", None))
     # retranslateUi
 
-    def load_project_files(self):
-        from PySide2.QtGui import QIcon
-        for element in os.listdir(startpath):
-            path_info = startpath + "/" + element
-            parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
-            if os.path.isdir(path_info):
-                load_project_structure(path_info, parent_itm)
-                parent_itm.setIcon(0, QIcon('assets/folder.ico'))
-            else:
-                parent_itm.setIcon(0, QIcon('assets/file.ico'))
-
         
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
  
+    
     main_window = QtWidgets.QMainWindow()
     ui = Ui_main_window()
 
-    ui.setup_ui(main_window)
+    ui.setupUi(main_window)
     main_window.show()
 
     sys.exit(app.exec_())

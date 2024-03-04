@@ -46,6 +46,8 @@ class Ui_new_project_dialog(object):
         self.create_proj_button.setGeometry(QRect(120, 80, 111, 28))
         self.create_proj_button.clicked.connect(self.create_project)
 
+        self.chosen_filepath = False
+
         self.retranslateUi(Dialog)
 
         QMetaObject.connectSlotsByName(Dialog)
@@ -53,25 +55,37 @@ class Ui_new_project_dialog(object):
 
     def choose_directory(self):
         self.filepath = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
+        self.chosen_filepath = True
+
 
     def create_project(self):
         import json, datetime
         
-        os.mkdir(self.filepath + f"/{self.project_name_entry.text()}")
-        
-        with open(f"{self.filepath}/{self.project_name_entry.text()}/project.json", "w") as file:
-            settings = {
-                "project_name": f"{self.project_name_entry.text()}",
-                "date_created": f"{datetime.date.today()}",
-            }    
-        
-            json.dump(settings, file)
-            #file.close()                    
-        self.save_previous_project(f"{self.filepath}/{self.project_name_entry.text()}.json")
-        
-        os.system(f'python engine_main.py')# Open new file
-        sys.exit() # Make sure to open project first
-            #print("need to choose a file")
+        if self.chosen_filepath:
+            os.mkdir(self.filepath + f"/{self.project_name_entry.text()}")
+            
+            with open(f"{self.filepath}/{self.project_name_entry.text()}/project.json", "w") as file:
+                settings = {
+                    "project_name": f"{self.project_name_entry.text()}",
+                    "date_created": f"{datetime.date.today()}",
+                }    
+            
+                json.dump(settings, file)
+                #file.close()                    
+            self.save_previous_project(f"{self.filepath}/{self.project_name_entry.text()}")
+            
+            os.system(f'python engine_main.py')# Open new file
+            sys.exit() # Make sure to open project first
+                #print("need to choose a file")
+        else:
+            error_msg = QMessageBox()
+            error_msg.setIcon(QMessageBox.Critical)
+            error_msg.setText("Must Select Filepath Before Creating.")
+            error_msg.setWindowTitle("No filepath chosen.")
+            error_msg.setStandardButtons(QMessageBox.Ok)
+            error_msg.exec_()        
+
+
 
     def save_previous_project(self, proj_dir):
         with open(f"recent", "a") as f:
@@ -159,6 +173,8 @@ class Ui_main_window(object):
                     j = json.load(g)
                     item_name = QStandardItem(j["project_name"])
                     item_date = QStandardItem(j["date_created"]) 
+                
+                    item_name.setData(str(line).strip("\n")+"/project.json", 1)
 
                     self.proj_list_view_model.appendRow([item_name, item_date])
 
@@ -170,7 +186,16 @@ class Ui_main_window(object):
         selection_model.selectionChanged.connect(self.set_selection)
 
     def set_selection(self, selected: QtCore.QItemSelection, deselected):
-        print(selected.indexes(), deselected)
+        self.selected_project_path = selected.indexes()[0].data(1)
+        
+    def open_project(self):
+        pass
+        
+        #need to implement projectd and shi first
+        # try:
+        #     os.system(f'python engine_main.py')# Open new file
+        # except:
+        #     pass
 
     def retranslateUi(self, main_window):
         main_window.setWindowTitle(QCoreApplication.translate("main_window", u"Project Manager", None))

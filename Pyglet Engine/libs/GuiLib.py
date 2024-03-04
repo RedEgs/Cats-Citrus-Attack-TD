@@ -214,6 +214,9 @@ class GridWidget(ExtendedWidget):
         self.buffer_texture = pyglet.image.Texture.create(1280, 720)
         self.framebuffer = Framebuffer()
         self.framebuffer.attach_texture(self.buffer_texture)
+
+    
+
     
     
     
