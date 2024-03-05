@@ -26,7 +26,7 @@
       <x>0</x>
       <y>0</y>
       <width>770</width>
-      <height>650</height>
+      <height>691</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -47,7 +47,7 @@
         <x>10</x>
         <y>5</y>
         <width>740</width>
-        <height>610</height>
+        <height>650</height>
        </rect>
       </property>
       <property name="tabPosition">
@@ -75,7 +75,7 @@
           <x>10</x>
           <y>10</y>
           <width>710</width>
-          <height>560</height>
+          <height>600</height>
          </rect>
         </property>
        </widget>
@@ -88,9 +88,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>10</y>
+          <y>9</y>
           <width>710</width>
-          <height>560</height>
+          <height>601</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -169,13 +169,13 @@
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
-    <widget class="QTreeView" name="resources_tree">
+    <widget class="QTreeWidget" name="resources_tree">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>30</y>
        <width>230</width>
-       <height>240</height>
+       <height>251</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -199,16 +199,24 @@
      <property name="allColumnsShowFocus">
       <bool>false</bool>
      </property>
+     <property name="columnCount">
+      <number>1</number>
+     </property>
      <attribute name="headerVisible">
-      <bool>true</bool>
+      <bool>false</bool>
      </attribute>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
     </widget>
     <widget class="QLineEdit" name="resource_search_bar">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>3</y>
-       <width>230</width>
+       <width>131</width>
        <height>22</height>
       </rect>
      </property>
@@ -217,6 +225,19 @@
      </property>
      <property name="clearButtonEnabled">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>3</y>
+       <width>91</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sort By Type</string>
      </property>
     </widget>
    </widget>
@@ -262,7 +283,7 @@
        <x>10</x>
        <y>30</y>
        <width>230</width>
-       <height>271</height>
+       <height>311</height>
       </rect>
      </property>
      <property name="verticalScrollBarPolicy">
