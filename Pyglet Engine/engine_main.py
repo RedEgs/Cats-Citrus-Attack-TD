@@ -23,7 +23,8 @@ from pathlib import Path
 #creds to https://www.softicons.com/toolbar-icons/must-have-icons-by-visualpharm/new-icon
     # https://www.softicons.com/toolbar-icons/must-have-icons-by-visualpharm
 
-def load_project_structure(startpath, tree):
+
+def load_project_resources(startpath, tree):
     """
     Load Project structure tree
     :param startpath: 
@@ -45,7 +46,7 @@ def load_project_structure(startpath, tree):
         
         resources_items.append(element)
         if os.path.isdir(path_info):
-            load_project_structure(path_info, parent_itm)
+            load_project_resources(path_info, parent_itm)
             parent_itm.setIcon(0, QIcon('assets/folder.ico'))
             
         else:
@@ -56,6 +57,11 @@ def load_project_structure(startpath, tree):
                 parent_itm.setIcon(0, QIcon('assets/file.ico'))
                 
     return resources_items
+def reload_project_resources(startpath, tree):
+    tree.clear()
+    files = load_project_resources(startpath, tree)
+    return files
+ 
        
 def search_tree_view(tree_widget, line_edit):
     search_query = line_edit.text().lower()
@@ -67,6 +73,15 @@ def search_tree_view(tree_widget, line_edit):
         
 
 class Ui_main_window(object):
+    def __init__(self, project_path):
+        import json
+        # Load from project file here
+        self.project_working_path = project_path
+        self.project_json = json.load(open(f"{project_path}/project.json"))
+        self.project_name = self.project_json["project_name"]
+        print(self.project_name)
+        self.project_window_title = f"Red Engine - {self.project_name}"
+        
     def setupUi(self, main_window):
         if not main_window.objectName():
             main_window.setObjectName(u"main_window")
@@ -74,45 +89,134 @@ class Ui_main_window(object):
         main_window.setMinimumSize(QSize(1280, 720))
         self.actionSave = QAction(main_window)
         self.actionSave.setObjectName(u"actionSave")
+        icon = QIcon()
+        icon.addFile(u"assets/10125_icons/imageres_28.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionSave.setIcon(icon)
         self.actionSave_as = QAction(main_window)
         self.actionSave_as.setObjectName(u"actionSave_as")
-        self.actionNew = QAction(main_window)
-        self.actionNew.setObjectName(u"actionNew")
-        self.actionOpen = QAction(main_window)
-        self.actionOpen.setObjectName(u"actionOpen")
+        icon1 = QIcon()
+        icon1.addFile(u"assets/10125_icons/imageres_29.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionSave_as.setIcon(icon1)
+        self.actionNew_Project = QAction(main_window)
+        self.actionNew_Project.setObjectName(u"actionNew_Project")
+        icon2 = QIcon()
+        icon2.addFile(u"assets/10125_icons/shell32_264.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionNew_Project.setIcon(icon2)
+        self.actionOpen_Project = QAction(main_window)
+        self.actionOpen_Project.setObjectName(u"actionOpen_Project")
+        icon3 = QIcon()
+        icon3.addFile(u"assets/10125_icons/imageres_1025.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionOpen_Project.setIcon(icon3)
+        self.actionRecent_Projects = QAction(main_window)
+        self.actionRecent_Projects.setObjectName(u"actionRecent_Projects")
+        icon4 = QIcon()
+        icon4.addFile(u"assets/10125_icons/imageres_185.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionRecent_Projects.setIcon(icon4)
+        self.actionRun_Project = QAction(main_window)
+        self.actionRun_Project.setObjectName(u"actionRun_Project")
+        icon5 = QIcon()
+        icon5.addFile(u"assets/10125_icons/Play.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionRun_Project.setIcon(icon5)
+        self.actionResources = QAction(main_window)
+        self.actionResources.setObjectName(u"actionResources")
+        self.actionResources.setCheckable(True)
+        self.actionResources.setChecked(True)
+        icon6 = QIcon()
+        icon6.addFile(u"assets/10125_icons/Folder.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionResources.setIcon(icon6)
+        self.actionAssets_Library = QAction(main_window)
+        self.actionAssets_Library.setObjectName(u"actionAssets_Library")
+        self.actionAssets_Library.setCheckable(True)
+        self.actionAssets_Library.setChecked(True)
+        icon7 = QIcon()
+        icon7.addFile(u"assets/10125_icons/rar.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionAssets_Library.setIcon(icon7)
+        self.actionProperties = QAction(main_window)
+        self.actionProperties.setObjectName(u"actionProperties")
+        self.actionProperties.setCheckable(True)
+        self.actionProperties.setChecked(True)
+        icon8 = QIcon()
+        icon8.addFile(u"assets/10125_icons/imageres_5366.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionProperties.setIcon(icon8)
+        self.actionUndo = QAction(main_window)
+        self.actionUndo.setObjectName(u"actionUndo")
+        icon9 = QIcon()
+        icon9.addFile(u"assets/10125_icons/imageres_5315.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionUndo.setIcon(icon9)
+        self.actionRedo = QAction(main_window)
+        self.actionRedo.setObjectName(u"actionRedo")
+        icon10 = QIcon()
+        icon10.addFile(u"assets/10125_icons/imageres_5311.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionRedo.setIcon(icon10)
+        self.actionVisit_Source = QAction(main_window)
+        self.actionVisit_Source.setObjectName(u"actionVisit_Source")
+        icon11 = QIcon()
+        icon11.addFile(u"assets/10125_icons/link.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionVisit_Source.setIcon(icon11)
+        self.actionNew_File = QAction(main_window)
+        self.actionNew_File.setObjectName(u"actionNew_File")
+        icon12 = QIcon()
+        icon12.addFile(u"assets/10125_icons/Add.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionNew_File.setIcon(icon12)
+        self.actionNew_Folder = QAction(main_window)
+        self.actionNew_Folder.setObjectName(u"actionNew_Folder")
+        self.actionNew_Folder.setIcon(icon12)
         self.central_widget = QWidget(main_window)
         self.central_widget.setObjectName(u"central_widget")
         self.central_tabs = QTabWidget(self.central_widget)
         self.central_tabs.setObjectName(u"central_tabs")
-        self.central_tabs.setGeometry(QRect(0, 0, 770, 691))
+        self.central_tabs.setGeometry(QRect(0, 0, 770, 701))
         self.viewport_tab = QWidget()
         self.viewport_tab.setObjectName(u"viewport_tab")
-        self.central_tabs.addTab(self.viewport_tab, "")
+        icon13 = QIcon()
+        icon13.addFile(u"assets/10125_icons/shell32_35.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.central_tabs.addTab(self.viewport_tab, icon13, "")
+        self.actionDelete_Resource = QAction(main_window)
+        self.actionDelete_Resource.setObjectName(u"actionDelete_Resource")
+        icon13 = QIcon()
+        icon13.addFile(u"assets/10125_icons/Delete.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionDelete_Resource.setIcon(icon13)
+        
+        
+        
         self.scripting_tab = QWidget()
         self.scripting_tab.setObjectName(u"scripting_tab")
+        
         self.script_tabs = QTabWidget(self.scripting_tab)
         self.script_tabs.setObjectName(u"script_tabs")
-        self.script_tabs.setGeometry(QRect(10, 5, 740, 650))
+        self.script_tabs.setGeometry(QRect(10, 5, 740, 661))
         self.script_tabs.setTabPosition(QTabWidget.North)
         self.script_tabs.setTabShape(QTabWidget.Rounded)
         self.script_tabs.setElideMode(Qt.ElideLeft)
         self.script_tabs.setUsesScrollButtons(True)
+        self.script_tabs.setTabsClosable(True)
+        self.script_tabs.tabCloseRequested.connect(lambda index: self.script_tabs.removeTab(index))
+        
+        
+        
         self.vscript_tab = QWidget()
         self.vscript_tab.setObjectName(u"vscript_tab")
         self.vscript_workspace = QGraphicsView(self.vscript_tab)
         self.vscript_workspace.setObjectName(u"vscript_workspace")
         self.vscript_workspace.setGeometry(QRect(10, 10, 710, 600))
-        self.script_tabs.addTab(self.vscript_tab, "")
+        icon14 = QIcon()
+        icon14.addFile(u"assets/10125_icons/imageres_5365.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.script_tabs.addTab(self.vscript_tab, icon14, "")
+
         self.ide_tab = QWidget()
         self.ide_tab.setObjectName(u"ide_tab")
         self.script_edit = QPlainTextEdit(self.ide_tab)
         self.script_edit.setObjectName(u"script_edit")
-        self.script_edit.setGeometry(QRect(10, 9, 710, 601))
+        self.script_edit.setGeometry(QRect(10, 9, 710, 611))
         self.script_edit.setFrameShape(QFrame.StyledPanel)
         self.script_edit.setFrameShadow(QFrame.Raised)
         self.script_edit.setLineWidth(0)
-        self.script_tabs.addTab(self.ide_tab, "")
-        self.central_tabs.addTab(self.scripting_tab, "")
+        icon15 = QIcon()
+        icon15.addFile(u"assets/10125_icons/Text Document.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.script_tabs.addTab(self.ide_tab, icon15, "")
+        icon16 = QIcon()
+        icon16.addFile(u"assets/10125_icons/script.ico", QSize(), QIcon.Normal, QIcon.Off)
+        self.central_tabs.addTab(self.scripting_tab, icon16, "")
         main_window.setCentralWidget(self.central_widget)
         self.resources_dock = QDockWidget(main_window)
         self.resources_dock.setObjectName(u"resources_dock")
@@ -135,8 +239,7 @@ class Ui_main_window(object):
         self.resources_dock_contents.setSizePolicy(sizePolicy)
         self.resources_dock_contents.setMinimumSize(QSize(0, 350))
         self.resources_dock_contents.setAutoFillBackground(False)
-        
-        
+
         self.resources_tree = QTreeWidget(self.resources_dock_contents)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(0, u"1");
@@ -154,22 +257,30 @@ class Ui_main_window(object):
         self.resources_tree.setAnimated(False)
         self.resources_tree.setAllColumnsShowFocus(False)
         self.resources_tree.setColumnCount(1)
+        self.resources_tree.setDragDropMode(QAbstractItemView.DragOnly)
         self.resources_tree.header().setVisible(False)
-        self.resources_tree_files = load_project_structure(os.getcwd(), self.resources_tree)
+        self.resources_tree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.resources_tree.customContextMenuRequested.connect(self.create_resources_context_menu)
+        self.resources_tree_files = load_project_resources(self.project_working_path, self.resources_tree)
         
-    
-
+        self.resources_tree.itemClicked.connect(self._select_item_resources_tree)
+        self.resources_tree.itemDoubleClicked.connect(self._open_in_editor)
+        
+        
+        self.actionNew_File.triggered.connect(self._create_file_resources_tree)
+        self.actionNew_Folder.triggered.connect(self._create_folder_resources_tree)
+        self.actionDelete_Resource.triggered.connect(self._delete_file_resources_tree)
+        
+        
+        
+        
         self.resource_search_bar = QLineEdit(self.resources_dock_contents)
         self.resource_search_bar.setObjectName(u"resource_search_bar")
-        self.resource_search_bar.setGeometry(QRect(10, 3, 230, 22))
+        self.resource_search_bar.setGeometry(QRect(10, 3, 131, 22))
         self.resource_search_bar.setClearButtonEnabled(True)
-        self.resource_search_bar_completer = QCompleter(self.resources_tree_files)
-        self.resource_search_bar.setCompleter(self.resource_search_bar_completer)
-        
-        
-        self.resource_search_bar.textChanged.connect(lambda: search_tree_view(self.resources_tree, self.resource_search_bar))
-        
-        
+        self.resources_sort_button = QPushButton(self.resources_dock_contents)
+        self.resources_sort_button.setObjectName(u"resources_sort_button")
+        self.resources_sort_button.setGeometry(QRect(150, 3, 91, 23))
         self.resources_dock.setWidget(self.resources_dock_contents)
         main_window.addDockWidget(Qt.LeftDockWidgetArea, self.resources_dock)
         self.assets_library_dock = QDockWidget(main_window)
@@ -204,49 +315,69 @@ class Ui_main_window(object):
         self.properties_dock_contents.setObjectName(u"properties_dock_contents")
         self.properties_dock.setWidget(self.properties_dock_contents)
         main_window.addDockWidget(Qt.RightDockWidgetArea, self.properties_dock)
-        self.tool_bar = QToolBar(main_window)
-        self.tool_bar.setObjectName(u"tool_bar")
-        main_window.addToolBar(Qt.TopToolBarArea, self.tool_bar)
         self.menu_bar = QMenuBar(main_window)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1280, 21))
+        self.menu_bar.setGeometry(QRect(0, 0, 1280, 26))
         self.project_button = QMenu(self.menu_bar)
         self.project_button.setObjectName(u"project_button")
         self.windows_button = QMenu(self.menu_bar)
         self.windows_button.setObjectName(u"windows_button")
         self.help_button = QMenu(self.menu_bar)
         self.help_button.setObjectName(u"help_button")
+        self.menuEdit = QMenu(self.menu_bar)
+        self.menuEdit.setObjectName(u"menuEdit")
         main_window.setMenuBar(self.menu_bar)
         QWidget.setTabOrder(self.resources_tree, self.resource_search_bar)
 
         self.menu_bar.addAction(self.project_button.menuAction())
+        self.menu_bar.addAction(self.menuEdit.menuAction())
         self.menu_bar.addAction(self.windows_button.menuAction())
         self.menu_bar.addAction(self.help_button.menuAction())
-        self.project_button.addAction(self.actionNew)
-        self.project_button.addAction(self.actionOpen)
+        self.project_button.addAction(self.actionNew_Project)
+        self.project_button.addAction(self.actionOpen_Project)
+        self.project_button.addAction(self.actionRecent_Projects)
+        self.project_button.addSeparator()
         self.project_button.addAction(self.actionSave)
         self.project_button.addAction(self.actionSave_as)
+        self.windows_button.addAction(self.actionResources)
+        self.windows_button.addAction(self.actionAssets_Library)
+        self.windows_button.addAction(self.actionProperties)
+        self.help_button.addAction(self.actionVisit_Source)
+        self.menuEdit.addAction(self.actionUndo)
+        self.menuEdit.addAction(self.actionRedo)
 
         self.retranslateUi(main_window)
 
         self.central_tabs.setCurrentIndex(1)
         self.script_tabs.setCurrentIndex(1)
 
-
+        
         QMetaObject.connectSlotsByName(main_window)
     # setupUi
-
-    def search_resources(self):
-        search_tree_view(self.resources_tree, self.resource_search_bar)
-
-
 
     def retranslateUi(self, main_window):
         main_window.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - {project name}", None))
         self.actionSave.setText(QCoreApplication.translate("main_window", u"Save ", None))
+#if QT_CONFIG(shortcut)
+        self.actionSave.setShortcut(QCoreApplication.translate("main_window", u"Ctrl+S", None))
+#endif // QT_CONFIG(shortcut)
         self.actionSave_as.setText(QCoreApplication.translate("main_window", u"Save as", None))
-        self.actionNew.setText(QCoreApplication.translate("main_window", u"New", None))
-        self.actionOpen.setText(QCoreApplication.translate("main_window", u"Open", None))
+#if QT_CONFIG(shortcut)
+        self.actionSave_as.setShortcut(QCoreApplication.translate("main_window", u"Ctrl+Shift+S", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionNew_Project.setText(QCoreApplication.translate("main_window", u"New Project", None))
+        self.actionOpen_Project.setText(QCoreApplication.translate("main_window", u"Open Project", None))
+        self.actionDelete_Resource.setText(QCoreApplication.translate("main_window", u"Delete Resource", None))
+        self.actionRecent_Projects.setText(QCoreApplication.translate("main_window", u"Recent Projects", None))
+        self.actionRun_Project.setText(QCoreApplication.translate("main_window", u"Run Project", None))
+        self.actionResources.setText(QCoreApplication.translate("main_window", u"Resources", None))
+        self.actionAssets_Library.setText(QCoreApplication.translate("main_window", u"Assets Library", None))
+        self.actionProperties.setText(QCoreApplication.translate("main_window", u"Properties", None))
+        self.actionUndo.setText(QCoreApplication.translate("main_window", u"Undo", None))
+        self.actionRedo.setText(QCoreApplication.translate("main_window", u"Redo", None))
+        self.actionVisit_Source.setText(QCoreApplication.translate("main_window", u"Visit Source", None))
+        self.actionNew_File.setText(QCoreApplication.translate("main_window", u"New File", None))
+        self.actionNew_Folder.setText(QCoreApplication.translate("main_window", u"New Folder", None))
         self.central_tabs.setTabText(self.central_tabs.indexOf(self.viewport_tab), QCoreApplication.translate("main_window", u"Game (Viewport)", None))
         self.script_tabs.setTabText(self.script_tabs.indexOf(self.vscript_tab), QCoreApplication.translate("main_window", u"Visual Script (VScript)", None))
         self.script_edit.setPlaceholderText(QCoreApplication.translate("main_window", u"import pygame, time, os, sys...", None))
@@ -254,20 +385,70 @@ class Ui_main_window(object):
         self.central_tabs.setTabText(self.central_tabs.indexOf(self.scripting_tab), QCoreApplication.translate("main_window", u"Scripting", None))
         self.resources_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Resources", None))
         self.resource_search_bar.setPlaceholderText(QCoreApplication.translate("main_window", u"Search...", None))
+        self.resources_sort_button.setText(QCoreApplication.translate("main_window", u"Sort By Type", None))
         self.assets_library_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Assets Library", None))
         self.assets_library_search_bar.setPlaceholderText(QCoreApplication.translate("main_window", u"Search...", None))
         self.properties_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Properties", None))
-        self.tool_bar.setWindowTitle(QCoreApplication.translate("main_window", u"toolBar", None))
         self.project_button.setTitle(QCoreApplication.translate("main_window", u"Project", None))
         self.windows_button.setTitle(QCoreApplication.translate("main_window", u"Windows", None))
         self.help_button.setTitle(QCoreApplication.translate("main_window", u"Help", None))
+        self.menuEdit.setTitle(QCoreApplication.translate("main_window", u"Edit", None))
     # retranslateUi
+    
+    
+    def _open_file_as_ide(self):
+        pass
+        self.ide_index = 0
+        self.ide_index +=1 
+    
+    def _open_in_editor(self, item):
+        self.resources_tree_dselected_item = self.project_working_path + "/" + item.data(0,0)
+       
+        QIdeTab(self.script_tabs, None, 0)
+       
+        # # Load contents into file 
+        # contents = open_file(self, self.resources_tree_dselected_item)
+        # self.script_edit.setPlainText(contents)
         
+        # # Change IDE settings
+        # self.script_saved_status = False
+        
+        # # Change tab text
+        # self.script_tabs.setTabText(self.script_tabs.indexOf(self.ide_tab), QCoreApplication.translate("main_window", f"Script IDE - {item.data(0,0)}*", None))
+
+    def _select_item_resources_tree(self, item:QTreeWidgetItem):
+        self.resources_tree_selected_item = self.project_working_path + "/" + item.data(0,0)
+
+    def _delete_file_resources_tree(self, event):
+        delete_file(self, self.resources_tree_selected_item)
+        self.resources_tree_files = reload_project_resources(self.project_working_path, self.resources_tree)
+      
+    def _create_file_resources_tree(self, event):
+        create_file(main_window, self.project_working_path)
+        self.resources_tree_files = reload_project_resources(self.project_working_path, self.resources_tree)
+      
+    def _create_folder_resources_tree(self, event):
+        create_folder(main_window, self.project_working_path)
+        self.resources_tree_files = reload_project_resources(self.project_working_path, self.resources_tree)
+        
+  
+
+    def create_resources_context_menu(self, event):
+        menu = QMenu(self.resources_tree)
+        
+        menu.addAction(self.actionNew_File)
+        menu.addAction(self.actionNew_Folder)
+        menu.addAction(self.actionDelete_Resource)
+
+
+
+        menu.exec_(self.resources_tree.mapToGlobal(event))
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
  
     main_window = QtWidgets.QMainWindow()
-    ui = Ui_main_window()
+    ui = Ui_main_window(str(os.getcwd())+"/example")
 
     ui.setupUi(main_window)
     main_window.show()
