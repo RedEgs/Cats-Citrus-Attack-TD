@@ -57,7 +57,8 @@ def load_project_resources(startpath, tree):
                 parent_itm.setIcon(0, QIcon('assets/file.ico'))
                 
     return resources_items
-def reload_project_resources(startpath, tree):
+
+def reload_project_resources(previous_files=None, startpath = None, tree = None):    
     tree.clear()
     files = load_project_resources(startpath, tree)
     return files
@@ -81,6 +82,8 @@ class Ui_main_window(object):
         self.project_name = self.project_json["project_name"]
         print(self.project_name)
         self.project_window_title = f"Red Engine - {self.project_name}"
+        
+        self.ide_tabs = []
         
     def setupUi(self, main_window):
         if not main_window.objectName():
@@ -190,7 +193,7 @@ class Ui_main_window(object):
         self.script_tabs.setElideMode(Qt.ElideLeft)
         self.script_tabs.setUsesScrollButtons(True)
         self.script_tabs.setTabsClosable(True)
-        self.script_tabs.tabCloseRequested.connect(lambda index: self.script_tabs.removeTab(index))
+        self.script_tabs.tabCloseRequested.connect(lambda index: self._close_ide_tab(index))
         
         
         
@@ -211,6 +214,10 @@ class Ui_main_window(object):
         self.script_edit.setFrameShape(QFrame.StyledPanel)
         self.script_edit.setFrameShadow(QFrame.Raised)
         self.script_edit.setLineWidth(0)
+        self.script_edit.setAcceptDrops(True)
+
+        
+        
         icon15 = QIcon()
         icon15.addFile(u"assets/10125_icons/Text Document.ico", QSize(), QIcon.Normal, QIcon.Off)
         self.script_tabs.addTab(self.ide_tab, icon15, "")
@@ -346,6 +353,12 @@ class Ui_main_window(object):
         self.menuEdit.addAction(self.actionUndo)
         self.menuEdit.addAction(self.actionRedo)
 
+
+        self.actionSave.triggered.connect(self._save_file_in_editor)
+
+
+
+
         self.retranslateUi(main_window)
 
         self.central_tabs.setCurrentIndex(1)
@@ -380,7 +393,7 @@ class Ui_main_window(object):
         self.actionNew_Folder.setText(QCoreApplication.translate("main_window", u"New Folder", None))
         self.central_tabs.setTabText(self.central_tabs.indexOf(self.viewport_tab), QCoreApplication.translate("main_window", u"Game (Viewport)", None))
         self.script_tabs.setTabText(self.script_tabs.indexOf(self.vscript_tab), QCoreApplication.translate("main_window", u"Visual Script (VScript)", None))
-        self.script_edit.setPlaceholderText(QCoreApplication.translate("main_window", u"import pygame, time, os, sys...", None))
+        self.script_edit.setPlaceholderText(QCoreApplication.translate("main_window", u"Double click a file to open it in the code editor...", None))
         self.script_tabs.setTabText(self.script_tabs.indexOf(self.ide_tab), QCoreApplication.translate("main_window", u"Script IDE", None))
         self.central_tabs.setTabText(self.central_tabs.indexOf(self.scripting_tab), QCoreApplication.translate("main_window", u"Scripting", None))
         self.resources_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Resources", None))
@@ -394,45 +407,70 @@ class Ui_main_window(object):
         self.help_button.setTitle(QCoreApplication.translate("main_window", u"Help", None))
         self.menuEdit.setTitle(QCoreApplication.translate("main_window", u"Edit", None))
     # retranslateUi
-    
-    
-    def _open_file_as_ide(self):
-        pass
-        self.ide_index = 0
-        self.ide_index +=1 
-    
-    def _open_in_editor(self, item):
-        self.resources_tree_dselected_item = self.project_working_path + "/" + item.data(0,0)
-       
-        QIdeTab(self.script_tabs, None, 0)
-       
-        # # Load contents into file 
-        # contents = open_file(self, self.resources_tree_dselected_item)
-        # self.script_edit.setPlainText(contents)
-        
-        # # Change IDE settings
-        # self.script_saved_status = False
-        
-        # # Change tab text
-        # self.script_tabs.setTabText(self.script_tabs.indexOf(self.ide_tab), QCoreApplication.translate("main_window", f"Script IDE - {item.data(0,0)}*", None))
 
+
+    def _close_ide_tab(self, index):
+        self.script_tabs.removeTab(index)
+        
+        try: self.ide_tabs.pop(index-2)
+        except IndexError:pass
+
+    def _open_in_editor(self, item):
+        path = get_tree_item_path(self.project_working_path, item).replace("//", "/")
+        self.resources_tree_dselected_item = [path , item.data(0,0)]
+       
+        if os.path.isfile(self.resources_tree_dselected_item[0]):
+            self.ide_index = 0
+            self.ide_index +=1
+        
+            new_ide_tab = QIdeTab(self.script_tabs, self.resources_tree_dselected_item, self.ide_index)
+            text_edit = new_ide_tab.script_edit
+            self.ide_tabs.append(new_ide_tab)
+       
+    def _save_file_in_editor(self):
+        focused = QtWidgets.QApplication.focusWidget()
+
+        if focused.__class__ == QsciScintilla:
+            for tab in self.ide_tabs:
+                tab.save_file()
+        else:
+            print("saved project")
+            
     def _select_item_resources_tree(self, item:QTreeWidgetItem):
         self.resources_tree_selected_item = self.project_working_path + "/" + item.data(0,0)
 
     def _delete_file_resources_tree(self, event):
-        delete_file(self, self.resources_tree_selected_item)
-        self.resources_tree_files = reload_project_resources(self.project_working_path, self.resources_tree)
+        item = self.resources_tree_selected_item_from_context
+        path = get_tree_item_path(self.project_working_path, item)
+
+        delete_file(self, path)
+        self.resources_tree_files = reload_project_resources(self.resources_tree_files, self.project_working_path, self.resources_tree)
       
     def _create_file_resources_tree(self, event):
-        create_file(main_window, self.project_working_path)
-        self.resources_tree_files = reload_project_resources(self.project_working_path, self.resources_tree)
+        item = self.resources_tree_selected_item_from_context
+        path = self.project_working_path
+        
+        if item != None:
+            if not os.path.isfile(self.project_working_path + f"/{item.data(0, 0)}"):
+                path = get_tree_item_path(self.project_working_path, item)
+                
+        create_file(main_window, path)
+        self.resources_tree_files = reload_project_resources(self.resources_tree_files, self.project_working_path, self.resources_tree)
       
     def _create_folder_resources_tree(self, event):
-        create_folder(main_window, self.project_working_path)
-        self.resources_tree_files = reload_project_resources(self.project_working_path, self.resources_tree)
+        item = self.resources_tree_selected_item_from_context
+        path = self.project_working_path
         
-  
-
+        print(path)
+        
+        if item != None:
+            path = get_tree_item_path(self.project_working_path, item) #self.project_working_path + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
+            self.resources_tree.expandItem(item)
+      
+        
+        create_folder(main_window, path)
+        self.resources_tree_files = reload_project_resources(self.resources_tree_files, self.project_working_path, self.resources_tree)
+            
     def create_resources_context_menu(self, event):
         menu = QMenu(self.resources_tree)
         
@@ -440,6 +478,7 @@ class Ui_main_window(object):
         menu.addAction(self.actionNew_Folder)
         menu.addAction(self.actionDelete_Resource)
 
+        self.resources_tree_selected_item_from_context = self.resources_tree.itemAt(event)
 
 
         menu.exec_(self.resources_tree.mapToGlobal(event))
