@@ -1,5 +1,6 @@
 import logging, random, pygame, json, os, sys
 from colorama import Fore, Back, Style
+import cProfile, asyncio
 
 import engine.libs.EntityService as EntityService
 import engine.libs.SceneService as SceneService
@@ -7,7 +8,7 @@ import engine.libs.GuiService as GuiService
 import engine.libs.TweenService as TweenService
 import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
-import engine.libs.CameraService as CameraService
+import engine.libs.ViewportModule as ViewportModule
  
 class EngineLogger:
     def __init__(self):
@@ -28,115 +29,93 @@ class App:
         pygame.mixer.init()
         pygame.font.init()
         self.engine_logger = EngineLogger().engine_logger
-
-
-        self.service_registry = []
-        self.start_game()
-
-        self.screen = self.camera.get_screen() # Get the screen from the camera
-        self.display = self.camera.get_display() # Get the display from camera
-        self.camera_offset = self.camera.get_camera_offset() # Get the offset from the camera
-
-        # (
-        #     self.entity_service,
-        #     self.scene_service,
-        #     self.gui_service,
-        #     self.tween_service,
-        #     self.transition_service,
-        #     self.debug_service,
-        # ) = self.start_services()
-        
-        self.start_services()
+ 
+        self.load_engine()
+        self.load_services()
        
 
         self.load_scenes()
-        self.gui_service.load_scene_elements()
-
-        self.previous_fps = self.clock.get_fps()
-        self.fps_high = self.previous_fps
-        self.fps_low = 100
-        self.current_fps = 0
-
+        #self.gui_service.load_scene_elements()
 
     def load_config(self):
         """
         Loads game settings from a "config.json" file.
         """
-
-        # Settings Pygame settings (Not related to those in the .json)
-        pygame.key.set_repeat(500, 10)
         
+        self.service_registry = []
         
         with open("config.json", "r") as conf:
             data_raw = json.load(conf)
             
             app_settings = data_raw["app"]["settings"]
             workspace_settings = data_raw["workspace"]["settings"]
-            
-            # res = settings["resolution"]
-            # fps = settings["max-fps"]
-            # caption = settings["window-title-name"]
-            # icon = settings["window-icon-path"]
+            camera_settings = data_raw["camera"]["settings"]
 
-            # if icon == "None" or icon is None or icon == "":
-            #     icon = None
-                
-            return app_settings, workspace_settings
+            return app_settings, workspace_settings, camera_settings
 
-    def start_game(self):
+        if self.workspace_settings["performance-mode"]:
+            pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN])
+        
+
+
+    def load_engine(self):
         """
         Runs necessary functions to start pygame etc.
         """
-        self.app_settings, self.workspace_settings = self.load_config() # Load the game config
+        self.app_settings, self.workspace_settings, self.camera_settings = self.load_config() # Load the game config
         
-        self.camera = CameraService.Camera(self, self.app_settings["resolution"], False)
+        self.load_core() 
+        
         pygame.display.set_caption(self.app_settings["window-title-name"])  # Set Window Title
+
+    def load_core(self):
         self.clock = pygame.time.Clock()
-
-        # if self.app_settings["icon"]:
-        #     pygame.display.set_icon(pygame.image.load(icon))  # Window icon
-
-        # ---------------------------
-
-    def start_services(self):
+        self.delta_time = 0
         
-        self.entity_service = EntityService.EntityService(self)
+        self.viewport = ViewportModule.Viewport(self)
+        self.viewport_offset = self.viewport.main_camera.get_camera_offset() # Get the offset from the camera
+
+    def load_services(self):
+        
         self.scene_service = SceneService.SceneService(self)
         self.gui_service = GuiService.GuiService(self)
         self.tween_service = TweenService.TweenService(self)
         self.transition_service = TransitionService.TransitionService(self)
         
-        if self.workspace_settings["debug-mode"] == True:
+        if self.workspace_settings["debug-mode"]:
             self.debug_service = DebugService.DebugService(self, self.clock)
         else:
             self.debug_service = None
-        
-        
-        
-        
+            
 
+        
 
     def run(self):
         fps = self.app_settings["max-fps"]
+        
         while True:
             self.events()
             self.update()
             self.draw()
-
-            self.clock.tick()
+            
+            self.delta_time = self.clock.tick(100000) * .001
+            
+            
+            
 
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
+            
             self.event_queue = event
-            self.gui_service.handle_event(event, self.get_camera())
-            self.get_camera().events(event)
+            self.gui_service.handle_event(event, self)
             
             if self.debug_service:
                 self.debug_service.handle_event(event)
+                
+        
 
     def update(self):
         self.transition_service.update()
@@ -146,32 +125,33 @@ class App:
         if self.debug_service:
             self.debug_service.update()
         
- 
-        #self.entity_service.update() # TBA later
-
-    def debug_fps_info(self):      
-        self.current_fps = self.clock.get_fps()
-        
-        if self.current_fps > self.fps_high:
-            self.fps_high = self.current_fps
-                
-        if self.current_fps < self.fps_low and self.current_fps != 0:
-            self.fps_low = self.current_fps
-            
-        print(f"Current: {round(self.current_fps)} | High: {round(self.fps_high)} | Low: {round(self.fps_low)}")
-         
-
 
     def draw(self):
-        self.scene_service.draw_scene(self.display)
-        self.gui_service.draw(self.camera)
-        self.transition_service.draw(self.display)
-        self.camera.draw()
+        self.scene_service.draw_scene(self.viewport.get_main_camera_surface())
+        self.gui_service.draw(self.get_screen(), self.viewport, self.get_current_scene())
         
-        self.debug_fps_info()
+
+
+
+        self.viewport.draw()
 
     def get_gui_service(self):
         return self.gui_service
 
-    def get_camera(self):
-        return self.camera
+    def get_main_camera(self):
+        return self.scene_service.get_main_camera()
+
+    def get_screen(self):
+        return self.viewport.get_screen()
+    
+    def get_viewport(self):
+        return self.viewport
+    
+    def get_delta_time(self):
+        return self.delta_time
+    
+    def get_fps(self):
+        return self.clock.get_fps()
+    
+    def get_current_scene(self):
+        return self.scene_service.get_scene()

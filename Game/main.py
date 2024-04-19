@@ -2,8 +2,7 @@ import pygame, json, os, sys
 
 from engine.app import *
 from engine.libs import SceneService as SceneService
-
-from tkinter import *
+import cProfile, asyncio
 
 """import scenes.main_menu as main_menu
 import scenes.difficulty_select as d_select
@@ -14,6 +13,7 @@ import scenes.map_editor as map_editor
 import scenes.user_login as user_login
 import scenes.network_test as network_test"""
 import scenes.example_scene as example_scene
+import scenes.example_scene_2 as example_scene_2
 
 
 class Main(App):
@@ -24,7 +24,9 @@ class Main(App):
         self.user = user
 
     def load_scenes(self):
+        self.scene_service.load_scenes([example_scene_2.Example_Scene("example_scene_2", self)])
         self.scene_service.load_scenes([example_scene.Example_Scene("example_scene", self)])
+       
         self.scene_service.set_scene("example_scene")
 
 
@@ -39,5 +41,9 @@ class Main(App):
 
 
 if __name__ == "__main__":
+
+    
     main = Main()
+    #cProfile.run("main.run()", sort="ncalls")
+    #asyncio.run(main.run())
     main.run()

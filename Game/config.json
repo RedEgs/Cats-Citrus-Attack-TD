@@ -11,10 +11,24 @@
     },
     "workspace": {
         "settings": {
-            "debug-mode": true,
-            "enable-grid": false
-            
-
+            "use-opengl": false,
+            "debug-mode": true, 
+            "performance-mode": false
         }
+    },
+    "camera": {
+        "settings": {
+            "enable-zooming": false 
+        }
+    },
+    "experimental": {
+        "features": {
+            "enable-window-blurring": false,
+            "color-to-blur": [2, 127, 252],
+            "discord-rich-presence": true 
+        }
+    },
+    "discord-rpc": {
+        
     }
 }

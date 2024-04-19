@@ -60,19 +60,17 @@ class FadeTransition(Transition):
         self.app = app
 
         self.timing = timing
-        self.loading_image = GuiService.ImageElement(
-            pygame.display.get_window_size(),
-            "cctd/resources/loading/loading_screen.png",
-        )
+        self.loading_image = pygame.Surface((1280, 720))
+        self.loading_image.fill((0))
 
-        fade_data = TweenService.TweenData(0, 255, timing, 0)
-        self.fade = TweenService.Tween(fade_data)
-        self.fade.start(False, True)
+
+        # fade_data = TweenService.TweenData(0, 255, timing, 0)
+        # self.fade = TweenService.Tween(fade_data)
+        # self.fade.start(False, True)
 
     def update(self):
         if self.curr_percentage == self.timing * 100:
-            self.fade.reverse(False)
-            self.app.scenes.set_scene(self.to_scene)  # Change the scene while black
+            self.app.scene_service.set_scene(self.to_scene)  # Change the scene while black
 
         if self.curr_percentage == self.timing * 200:
             self.completed = True
@@ -82,8 +80,30 @@ class FadeTransition(Transition):
         if self.completed:
             self.kill_transition()
 
+    def percentage_to_opacity(self, percentage):
+            # Ensure percentage is within the range [0, 100]
+        percentage = max(0, min(100, percentage))
+        
+        if percentage <= 50:
+            # Map the percentage to the range [0, 50]
+            mapped_percentage = (percentage / 50) * 100
+        else:
+            # Map the percentage to the range [50, 100]
+            mapped_percentage = ((100 - percentage) / 50) * 100
+            
+        # Map the mapped_percentage to the opacity range [0, 255]
+        return int((mapped_percentage / 100) * 255)
+
+
     def draw(self, screen):
-        # print("drawing")
-        self.loading_image.update_opacity(self.fade.get_output())
-        self.loading_image.draw(screen)
+        print("drawing trans")
+        if self.curr_percentage >= self.timing * 50:
+            #print(self.percentage_to_opacity(self.curr_percentage))
+            self.loading_image.set_alpha( self.percentage_to_opacity(self.curr_percentage))
+            
+        elif self.curr_percentage <= self.timing * 100:
+            #print(self.percentage_to_opacity(self.curr_percentage))
+            self.loading_image.set_alpha( self.percentage_to_opacity(self.curr_percentage) - 25)
+       
+        screen.blit(self.loading_image, (0,0))
         # Make sure that the image isnt scene specific.

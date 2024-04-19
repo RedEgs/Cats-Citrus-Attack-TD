@@ -1,33 +1,20 @@
+import pygame.gfxdraw
 from engine.libs.Services import Service
-import pytweening, pygame, time, sys, os
-import numba
+import pytweening, pygame, time, sys, os, math
 from enum import Enum
 from colorama import Fore, Back, Style
 
+import functools
 
 import engine.libs.Utils as utils
-import engine.libs.TweenService as TweenService
-import engine.libs.CameraService as CameraService
-
-
-class GuiServiceState(Enum):
-    DRAWING = "drawing"
-    LOADING = "loading"
-    CACHING = "caching"
-
+import engine.libs.ViewportModule as ViewportModule
+import engine.libs.CameraModule as CameraModule
 
 class GuiSpaces(Enum):
     WORLD = "world" 
     SCREEN = "screen"  
-    GLOBAL = "global"
-
     # Screen space elements are rendered relative to its position on the window
     # They are rendered directly onto the screen rather than to the camera.
-    
-    # Global space elements behave similarly to screen space elements except they don't have the properties of normal elements.
-    # To elaborate, global space elements don't contain an origin, or an index.
-    # Where as normal elements are rendered based on their index, type and scene.
-    # Visually they look no different to screen space elements
     
     # World space elements are rendered relative to its position on the camera, meaning if the camera move, its position on the window moves aswell
     # It is direclty influenced by the camera. Elements rendered to the camera have a world position
@@ -36,71 +23,112 @@ class GuiSpaces(Enum):
     # If i were to move the camera, a world space element would move with the camera, so its "global position" or "screen position" (they are synonymous) would change, although its "world position" would remain the same
     # If i were to move the camera, a screen space element would stay in the exact same place regardless of what the camera is doing. 
 
-
-
 class ElementTypes(Enum): # Used for indicating an elements type (mainly used for ordering purposes)
     RAW = "raw" 
     ELEMENT = "element"
     EVENT = "event"
 
-
 class GuiService(Service):
-    active_scene = None
-    active_camera = None
 
-    ui_elements = [] # Contains EVERY gui element
-    hidden_ui_elements = [] # Contains EVERY hidden gui element
 
-    screen_ui_elements = pygame.sprite.Group()
-    screen_ui_event_elements = []
+    current_scene = None
+    ui_elements_index = 0
+    ui_elements_dict = {"global" : {"hidden_elements" : [],
+                                    "visible_elements": []}}
     
-    global_ui_elements = pygame.sprite.Group()
-    global_ui_event_elements = []
     
+    # How element + scene caching is stored with variable names
+    
+    # ui_elements
+    # ├── {scene} (Any given instance of a scene) (render group)
+    # │   ├── hidden_elements (element lists)
+    # │   └── visible_elements (element lists)
+    # └── global (render group)
+    #     ├── hidden_elements (element lists)
+    #     └── visible_elements (element lists)
+    
+    @classmethod
+    def create_render_group(cls, scene: str):
+        """
+        Creates a render groups and "populates" it with a list, should only be ran once
+        """
+        cls.ui_elements_dict.update({scene: {"hidden_elements": [],
+                                             "visible_elements": []}}) 
+        
+
+    @classmethod
+    def _load_current_scene(cls, scene): 
+        """
+        Underscore indicates, it should only be used once
+        """
+        
+        cls.current_scene = scene.get_scene_info()
+        cls.create_render_group(scene.get_scene_info())
+        cls.render_buffer = cls.build_render_buffer(scene.get_scene_info())
+        
+    @classmethod
+    def set_current_scene(cls, scene: str):
+        cls.current_scene = scene
+        
+
+    @classmethod
+    def get_valid_list(cls, element) -> list: # Check what list to put it in
+        """
+        Checks which list is most appropriate for the given element.
+        """
+        if cls.current_scene: # Check if element is contained within a scene
+            return cls.ui_elements_dict[cls.current_scene]["visible_elements"]
+        else:
+            return cls.ui_elements_dict["global"]["visible_elements"]
+         
+    @classmethod
+    def configure_element(cls, element, scope_index: int, element_index: int, list, scene: str = "global"):
+        """
+        Sets the constants of the element based on its, 
+            scope index (scene index or global index), 
+            element index,
+            hidden or shown status,
+            space type,
+        """
+        
+        if scene == "global" or scene == None:
+            element.parent = "global"
+        else:
+            element.parent = scene
+            
+            
+        element.scope_index = scope_index
+        element.element_index = element_index
+        element.parent_cache = list
+        
+        if scene == "global" and element.space_type == GuiSpaces.WORLD: # Just a check to make sure there are no world elements that are global (converts their space if so)
+            element.space_type = GuiSpaces.SCREEN
+        else:
+            element.space_type = element.space_type
+            
     @classmethod
     def add_element(cls, element):
-        cls.ui_elements.append(element) # Add all elements indiscriminantly to ui_elements
-        current_element_index = len(cls.ui_elements) # Gets the current length of the list for indexing purposes
-        element.set_element_index(current_element_index) # Sets the elements index
+        """
+        Adds elements to list, shouldn't be used to move elements between lists, as it messes with element indexes
+        """
+        cls.ui_elements_index += 1 # Make sure to increment the index
+        element_index = cls.ui_elements_index # Make sure to get global index of ui element
+         
+       
+        if cls.current_scene is None:
+            parent_scene = "global"
+        else: parent_scene = cls.current_scene
+        
+        
+        list_to_add = cls.get_valid_list(element) # Get the list it should add to
+        scope_index = next_index = len(list_to_add) # Get the index of that list that it should add to
+       
+        cls.configure_element(element, scope_index, element_index, list_to_add, parent_scene) # Adjust variables in elements
+        list_to_add.insert(next_index, element) # Insert the element at that index in its respective cache
+        
+        print(f"Added {element} at scope index, {scope_index}, with parent, {parent_scene}, at element index, {element_index}")
 
-        if cls.active_scene:
-            element.origin = cls.active_scene # Sets the origin of the scene
     
-            if element.space == GuiSpaces.SCREEN:  # Checks which space (SCREEN)
-                cls.screen_ui_elements.add(element) # Screen UI
-
-                element.element_list = cls.screen_ui_elements
-                
-            elif element.space == GuiSpaces.WORLD: # Checks which space
-                cls.active_scene.ui_elements.add(element) # Add to work space
-
-                element.element_list = cls.active_scene.ui_elements
-
-            print(Fore.LIGHTMAGENTA_EX + f"Adding {element} at index {current_element_index} to {cls.active_scene.ui_elements}")
-        else:
-            print(Fore.YELLOW +f"No active scene found, adding {element} to global elements")
-            
-
-            element.element_type = GuiSpaces.GLOBAL
-
-            cls.global_ui_elements.add(element) # Add to sprite group
-            element.element_list = cls.global_ui_elements
-
-    @classmethod
-    def set_active_scene(cls, scene):
-        cls.active_scene = scene
-
-    @classmethod
-    def load_scene_elements(cls):
-        if cls.active_scene: # Makes sure that there is an active scene otherwise there is a problem
-            a_s = cls.active_scene
-            
-            for element in cls.ui_elements: # Iterates through every single gui element 
-                if element.origin == a_s: # Checks to see which scene they are from
-
-                    if element.element_type == ElementTypes.EVENT:
-                        a_s.ui_event_elements.append(element)
-                        print(Fore.LIGHTMAGENTA_EX + f"Added {element} to {a_s.ui_event_elements} with {len(a_s.ui_event_elements)} elements")
     
     @classmethod
     def destroy_element(cls, element):
@@ -111,105 +139,112 @@ class GuiService(Service):
         element.kill()
         
     @classmethod
-    def hide_element(cls, element, keep_updating: bool = False):
-        active_index = element.element_list.sprites().index(element)
-        element.element_list.remove(element)
-        element.is_active = False
-        element.active_index = active_index
+    def hide_element(cls, element, keep_updating: bool = False):#
+        element.parent_cache.remove(element)
+        cls.ui_elements_dict[element.parent]["hidden_elements"].append(element)
+        element.parent_cache = cls.ui_elements_dict[element.parent]["hidden_elements"]
+        element.visibility = False
+        
+        
+        # active_index = element.element_list.sprites().index(element)
+        # element.element_list.remove(element)
+        # element.is_active = False
+        # element.active_index = active_index
 
     @classmethod
     def unhide_element(cls, element, keep_updating: bool = False):
-        element.element_list.add(element)
-        element.is_active = True
+        element.parent_cache.remove(element)
+        cls.ui_elements_dict[element.parent]["visible_elements"].append(element)
+        element.parent_cache = cls.ui_elements_dict[element.parent]["visible_elements"]
+        element.visibility = True
+        
+        
+        # element.element_list.add(element)
+        # element.is_active = True
     
     @classmethod
-    def draw(cls, camera):
+    def update_render_buffer(cls, current_scene):
+        if cls._scene_element_cache_len != len(cls.ui_elements_dict[current_scene]["visible_elements"]) or cls._global_element_cache_len != len(cls.ui_elements_dict["global"]["visible_elements"]):
+            cls.render_buffer = cls.build_render_buffer(current_scene)
+        
+    #@functools.cache
+    @classmethod
+    def build_render_buffer(cls, current_scene):
+        cls._global_element_cache_len = len(cls.ui_elements_dict["global"]["visible_elements"])
+        cls._scene_element_cache_len = len(cls.ui_elements_dict[current_scene]["visible_elements"])
+        
+        l1 = cls.render_global_elements_dict = cls.ui_elements_dict["global"]["visible_elements"]
+        l2 = cls.render_scene_elements_dict = cls.ui_elements_dict[current_scene]["visible_elements"]
+        l3 = [] # <- This is the render buffer list
+        
+        l3 += l2 #l3.extend(l1)
+        l3 += l1 #l3.extend(l2)
+        
+        return l3
+    
+    @classmethod
+    def draw(cls, screen, viewport, current_scene):
         """
         All relevant elements are drawn at this part
         """
-
-        display = camera.get_display()
-        screen = camera.get_screen()
-        camera.guis = cls
-
-        
-        ## Draw order of elements (top to bottom)
-        # Global Elements
-        # Screen Space Elements
-        # World Elements
-        
-        
-        # World Space Elements are draw under this section
-       
-        for element in cls.active_scene.ui_elements.sprites():        
-            element.draw(display)
-            element.update()
-
-            
-        # cls.active_scene.ui_elements.draw(display) 
-        # cls.active_scene.ui_elements.update()
-        
-        
-
-        
+        main_camera_surface = viewport.get_main_camera_surface()
+      
     
-        
+        cls.update_render_buffer(current_scene)
+        for element in cls.render_buffer:
+            element.update_position()
+        main_camera_surface.fblits([(element.image, element.position) for element in cls.render_buffer])
+
+
+
+
 
     @classmethod
-    def handle_event(cls, event, camera: CameraService.Camera):
+    def handle_event(cls, event, app):
+        # sourcery skip: swap-nested-ifs
         """
         All relevant event elements have their events handled here
         """
  
-        for element in cls.active_scene.ui_event_elements:
-            element.handle_event(event)
+        # for element in cls.current_scene.ui_event_elements:
+        #     element.handle_event(event)
             
-        for element in cls.screen_ui_event_elements:
-            element.handle_event(event)
-            
-        for element in cls.global_ui_event_elements:
-            element.handle_event(event)
-            
-        if event.type == camera.camera_event:
-            for element in cls.active_scene.ui_elements.sprites():
-                element.update_element()
-                element.update_position()
+        # for element in cls.screen_ui_event_elements:
+        #     element.handle_event(event)
+        
+
+        if event.type == app.camera_event:
+            for element in cls.render_buffer: 
+                pass
+                #element.update_element()
+                #element.update_position()
 
 
-class WindowToast:
-    # win10toast docs
-    def __init__(self, title, body, duration, icon_path, threaded: bool):
-        from win10toast import ToastNotifier
-
-        toast = ToastNotifier()
-        toast.show_toast(
-            title,
-            body,
-            duration=duration,
-            icon_path=icon_path,
-            threaded=threaded,
-        )
-
+#SECTION - GUI (NOT GAME RELATED)
 
 class RawElement(pygame.sprite.Sprite):
     def __init__(
-        self, space: Enum = GuiSpaces.WORLD, camera: CameraService.Camera = any
+        self, space: Enum = GuiSpaces.WORLD, camera = None
     ):
         pygame.sprite.Sprite.__init__(self)  # Inherits from pygames sprites
         self.element_type = ElementTypes.RAW
-        self.origin = None # This is the scene in which the element was instanced from
-        # self.origin_index = 0  # May be implemented later : The index of the instance relative to all the other gui elements with the same origin scene
+        
+        self.parent = None # The scene the object was instanced from
+        self.element_index = None # The index of the element out of all elements
+        self.parent_cache = None
+        self.scope_index = None # The index of which its parents are (scene index or global index)
+        self.space_type = space  # Contains the type of space in which it should be drawn in.
+        self.visibility = True
+        self.space = space
 
-        self.element_index = 0  # The index in which it was instanced | E.G Index = 5 would mean it was the 5th element to be instanced
-        self.element_list = None
         self.camera = camera  # Contains reference to the camera
-        self.space = space  # Contains the type of space in which it should be drawn in.
 
-        self.active_index = 0
-        self.is_active = True
         GuiService.add_element(
             self
         )  # Officially makes it a GUI Element to be handle by GUI Service
+
+    def update_camera(self, camera):
+        self.camera = camera
 
     def update_element(self):
         """
@@ -256,41 +291,71 @@ class RawElement(pygame.sprite.Sprite):
 
 
 class Element(RawElement):
+
+    
     def __init__(
         self,
         space: Enum = GuiSpaces.WORLD,
-        camera: CameraService.Camera = any,
+        camera: any = None,
         position: pygame.math.Vector2 = (0,0),  # The position on screen in which the element should be instanced at
     ):
         super().__init__(space, camera)
         self.element_type = ElementTypes.ELEMENT
-        self.ORIGINAL_POSITION = position  # The position in which the element was instanced at. Should be constant.
-        self.world_position = None
         
-        if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for their type of space
-            self.world_position = self.ORIGINAL_POSITION
-            self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
+        self._original_position = pygame.Vector2(position)
         
-        elif self.space == GuiSpaces.SCREEN:
-            self.position = position
+        if self.space == GuiSpaces.WORLD:
+            self.screen_position = self._original_position - camera.get_camera_offset()
+            self.world_position = self._original_position
+            self.position = self.world_position
+        else:
+            self.screen_position = self._original_position
+            self.world_position = None
+            self.position = self.screen_position
+        
+        # self.ORIGINAL_POSITION = position  # The position in which the element was instanced at. Should be constant.
+        # self.world_position = None
+        
+        # if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for their type of space
+        #     self.world_position = self.ORIGINAL_POSITION
+        #     self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
+        
+        # elif self.space == GuiSpaces.SCREEN:
+        #     self.position = position
 
-        self.screen_position = self.position
+        # self.screen_position = self.position
 
     def update_position(self):
         """
         This updates the position of elements for those that are using world space so that they are always affected by the camera
         Otherwise this function doesn't have much use for screen space functions.  
         """
+
+        if self.space == GuiSpaces.WORLD:
+            self.screen_position = self._original_position - self.camera.get_camera_offset()
+            self.world_position = self._original_position 
+            self.position = self.screen_position
+        else: 
+            self.screen_position = self._original_position
+            self.world_position = None
+            self.position = self.screen_position
+
+    
         
+
  
-        self.screen_position = self.position      
+ 
+        # self.screen_position = self.position      
 
-        if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for world space
-            self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
-            self.world_position = self.ORIGINAL_POSITION
-        else: self.position = self.position
+        # if self.space == GuiSpaces.WORLD:  # This is to make sure that positioning of elements is correct for world space
+        #     self.position = self.ORIGINAL_POSITION - self.camera.camera_offset  # Makes sure that elements are effected by the camera
+        #     self.world_position = self.ORIGINAL_POSITION
+            
+            
+        # else: self.position = self.position
         
-
+    def update_camera(self, camera):
+        super().update_camera(camera)
         
     def update_element(self):
         super().update_element()    
@@ -304,11 +369,35 @@ class Element(RawElement):
     def set_element_index(self, index):
         super().set_element_index(index)
         
+    def set_world_position(self, position: pygame.Vector2):
+        if self.space == GuiSpaces.SCREEN: raise Exception("Cannot set world position of screen element")
+        
+        self._original_position = position
+        self.screen_position = self._original_position - self.camera.get_camera_offset()
+        self.world_position = self._original_position
+        self.position = self.world_position
+
+    def set_screen_position(self, position: pygame.Vector2):
+        if self.space == GuiSpaces.WORLD: raise Exception("Cannot set screen position of world element")
+        self._original_position = position
+        self.screen_position = self._original_position
+        self.world_position = None
+        self.position = self.screen_position
+        
+    
+    
+    
+        
     def get_world_position(self):
         return self.world_position
     
     def get_screen_position(self):
         return self.screen_position
+    
+    def get_position(self):
+        return self.position
+
+
 
 
 
@@ -316,7 +405,7 @@ class EventElement(Element):
     def __init__(
         self,
         space: Enum = GuiSpaces.WORLD,
-        camera: CameraService.Camera = any,
+        camera: any = None,
         position: pygame.math.Vector2 = (0,0), 
     ):
         super().__init__(space, camera, position)
@@ -336,6 +425,10 @@ class EventElement(Element):
         """
         Makes sure the event elements can interface with pygames event queue. Ran time any event is fired.
         """
+        
+    def update_camera(self, camera):
+        super().update_camera(camera)
+        
     def update_position(self):
         super().update_position()
         
@@ -402,45 +495,40 @@ class TextElement(Element):
 
         self.default_font = pygame.font.Font("font.ttf", self.size)
         self.default_font.set_underline(underline)
-        
+
         self.image = self.default_font.render(self.text, True, self.color)
         self.rect = self.image.get_rect()
 
-        if self.text_align == "right":
-            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
         if self.text_align == "center":
             self.rect.center = self.position
-        if self.text_align == "left":
+        elif self.text_align == "left":
             self.rect.midleft = self.position
+        elif self.text_align == "right":
+            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
             
         
     def update_text(self, text=None):
         changed = False
-        
-        if self.text == None:
-            if self.text == text:
-                pass
-        else:
+
+        if self.text != None:
             self.text = text
             changed = True
-        
         if changed:
             self.update_element()
 
     def update_position(self):
         super().update_position()
-
+   
     def update_element(self): 
         self.rect = self.image.get_rect()
         #self.image = self.default_font.render(self.text, True, self.color)
 
-        if self.text_align == "right":
-            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
         if self.text_align == "center":
             self.rect.center = self.position
-        if self.text_align == "left":
+        elif self.text_align == "left":
             self.rect.midleft = self.position
-        
+        elif self.text_align == "right":
+            self.rect.midright = (self.position[0]-self.rect.width, self.position[1])
     def update(self):
         pass
 
@@ -453,62 +541,79 @@ class TextElement(Element):
         #pygame.draw.rect(screen, (180, 0, 255), self.rect)
         #pygame.draw.circle(screen, (0,180,255), (self.rect.center), radius=5) # Shows align positions
 class FreeTextElement(Element):
-    def __init__(self, space, camera, position, text:str ="Placeholder", size: int=16, color: pygame.Color = (0,0,0), text_align: str ="center", underline: bool=False):
-        super().__init__(space, camera, position)
+    def __init__(self, space, camera, position, text:str ="Placeholder", size: int=16, color: pygame.Color = (0,0,0), text_align: str ="center", underline: bool=False, enable_caching: bool = True):
+        super().__init__(space, camera, position)        
+        
         self.text = text
         self.size = size
         self.color = color
         self.text_align = text_align
+        self.enable_caching = enable_caching
 
         self.default_font = pygame.freetype.Font("font.ttf", self.size)
         self.default_font.underline = underline
-        self.font_surf, self.font_rect = self.default_font.render(self.text, self.color)
+        self.image, self.rect = self.default_font.render(self.text, self.color)
 
-        if self.text_align == "right":
-            self.font_rect.midright = self.position#(self.position[0]-self.font_rect.width+self.size, self.position[1])
+        self.surface_cache = {}
+
         if self.text_align == "center":
-            self.font_rect.center = self.position
-        if self.text_align == "left":
-            self.font_rect.midleft = self.position
+            self.rect.center = self.position
+        elif self.text_align == "left":
+            self.rect.midleft = self.position
+        elif self.text_align == "right":
+            self.rect.midright = self.position#(self.position[0]-self.rect.width+self.size, self.position[1])
+            
+        if enable_caching:
+            self.update_text = self.update_text_cache
+        else:
+            self.update_text = self.update_text_cacheless
+            
             
         
-    def update_text(self, text=None):
-        changed = False
-        
-        if self.text == None:
-            if self.text == text:
-                pass
+    def update_text_cache(self, text=None):
+        self.text = text
+        if text not in self.surface_cache:
+            self.image, self.rect = self.update_element()
+            self.surface_cache[text] = self.image, self.rect
         else:
-            self.text = text
-            changed = True
+            self.image, self.rect = self.surface_cache[text]
+        return self.image, self.rect
         
-        if changed:
-            self.update_element()
+    def update_text_cacheless(self, text=None):
+        self.text = text
+        self.image, self.rect = self.update_element()
 
+     
+      
+        
+        
+        
+        
+        
     def update_position(self):
         super().update_position()
 
     def update_element(self):
-        self.font_surf, self.font_rect = self.default_font.render(self.text, self.color)
+        #print(f"updating text from {self.element_index}")
+        self.image, self.rect = self.default_font.render(self.text, self.color)
 
-        if self.text_align == "right":
-            self.font_rect.midright = self.position#(self.position[0]-self.font_rect.width+self.size, self.position[1])
         if self.text_align == "center":
-            self.font_rect.center = self.position
-        if self.text_align == "left":
-            self.font_rect.midleft = self.position
+            self.rect.center = self.position
+        elif self.text_align == "left":
+            self.rect.midleft = self.position
+        elif self.text_align == "right":
+            self.rect.midright = self.position#(self.position[0]-self.rect.width+self.size, self.position[1])
 
-    def update(self):
-        pass
+        return self.image, self.rect
+
 
     def draw(self, screen):
+        screen.blit(self.image, self.rect) # Old Rendering Method
         
-        screen.blit(self.font_surf, self.font_rect) # Old Rendering Method
         
-        
-        #pygame.draw.rect(screen, (180, 0, 255), self.font_rect)
-        #pygame.draw.circle(screen, (0,180,255), (self.font_rect.midright), radius=5) # Shows align positions
-        #pygame.draw.circle(screen, (255,180,0), (self.font_rect.midleft), radius=2) # Shows align positions
+        #pygame.draw.rect(screen, (180, 0, 255), self.rect)
+        #pygame.draw.circle(screen, (0,180,255), (self.rect.midright), radius=5) # Shows align positions
+        #pygame.draw.circle(screen, (255,180,0), (self.rect.midleft), radius=2) # Shows align positions
 
 
 
@@ -1025,6 +1130,7 @@ class ButtonState(Enum):
 
 
 class ButtonElement(EventElement):
+    import engine.libs.TweenService as TweenService
     def __init__(
         self,
         space,
@@ -1060,8 +1166,6 @@ class ButtonElement(EventElement):
             self.image_activated = pygame.transform.scale(
                 self.original_image_activated, self.size
             )
-            self.rect = self.image_default.get_rect(center=self.position)
-
         else:
             self.original_image_default = pygame.Surface((150, 50))
             self.original_image_activated = self.original_image_default
@@ -1075,7 +1179,7 @@ class ButtonElement(EventElement):
             )
             self.original_image_default.fill((245, 66, 66))
 
-            self.rect = self.image_default.get_rect(center=self.position)
+        self.rect = self.image_default.get_rect(center=self.position)
 
         self.image_pair = image_pair
         self.function_pair = function_pair
@@ -1213,3 +1317,210 @@ class ButtonElement(EventElement):
             )
 
         screen.blit(self.image_default, self.rect)
+
+
+#!SECTION 
+
+#SECTION - GAME RELATED STUFF
+
+class Spritesheet():
+    def __init__(
+        self,         
+        spritesheet_path: str = None,
+        spritesheet_info: pygame.Rect = None,
+        scale_by: int = None,
+    ):
+        
+        self.sprites_x = spritesheet_info.x
+        self.sprites_y = spritesheet_info.y
+        self.sprites_w = spritesheet_info.w
+        self.sprites_h = spritesheet_info.h
+        
+        self.scale_by = scale_by
+        
+        self.sprites = []
+        
+        self.spritesheet_image = pygame.image.load(spritesheet_path).convert_alpha()
+        
+        # if scale_by is not None or scale_by > 1:
+        #     self.spritesheet_image = pygame.transform.scale(self.spritesheet_image, [self.spritesheet_image.get_size()[0] * scale_by, 
+        #                                                                              self.spritesheet_image.get_size()[1] * scale_by])
+
+        self.index = 0
+        self.load_sprites(self.sprites_x, self.sprites_y, self.sprites_w, self.sprites_h)
+        
+        
+        
+    def load_sprites(self, rows, columns, w, h):
+        self.sprites = []
+        
+        for row in range(rows):
+            for col in range(columns):
+                print(self.scale_by)
+                
+                x = col * w
+                y = row * h
+                
+                sprite = self.spritesheet_image.subsurface((x, y, w, h))
+                self.sprites.append(sprite)
+                    
+    
+    def set_sprite(self, index):
+        self.sprite = self.sprites[index]#self.get_sprite(index)
+        self.sprite_index = index
+
+    def get_sprite(self, index):
+        if 0 <= index < len(self.sprites):
+            return self.sprites[index]
+        
+        print("Invalid sprite index")
+        return 0
+        
+    def get_sprites(self):
+        return self.sprites
+
+    def get_current_sprite(self):
+        return self.index
+
+class AnimatedSprite(Element):
+    def __init__(
+        self, 
+        space: Enum = GuiSpaces.WORLD, 
+        camera: any = None, 
+        position: pygame.Vector2 = (0, 0),
+        spritesheet_path: str = None,
+        spritesheet_info: pygame.Rect = None, 
+        scale_by: int = None
+    ):
+        super().__init__(space, camera, position)
+        self.spritesheet = Spritesheet(spritesheet_path, spritesheet_info, scale_by)
+        self.sprites = self.spritesheet.get_sprites()
+        self.index = self.spritesheet.index
+        
+    def set_sprite(self, index):
+        self.sprite = self.sprites[index]#self.get_sprite(index)
+        self.sprite_index = index
+
+    def get_sprite(self, index):
+        if 0 <= index < len(self.sprites):
+            return self.sprites[index]
+        
+        print("Invalid sprite index")
+        return 0
+        
+    def get_sprites(self):
+        return self.sprites
+
+    def get_current_sprite(self):
+        return self.index
+    
+    def draw(self, screen):
+        print(self.sprite)
+        screen.blit(self.sprite, self.position)        
+
+class SpriteStack(Element):
+    def __init__(self, 
+        space: Enum = GuiSpaces.WORLD,
+        camera: any = None, 
+        position: pygame.Vector2 = (0, 0),
+        spritesheet_path: str = None,
+        spritesheet_info: pygame.Rect = None,
+        scale_by: int = None,
+        stack_spacing: int = 1,
+        draw_outline: bool = False,
+    ):
+        super().__init__(space, camera, position)
+        self.stack_spacing = stack_spacing
+        self.scale_by = scale_by
+        self.draw_outline = draw_outline
+        
+        self.spritesheet = Spritesheet(spritesheet_path, spritesheet_info, scale_by)
+        self.sprites = self.spritesheet.get_sprites()
+        self.num_angles = 24 # multiples of 360
+        
+        self.cache = SpriteStackCache(self)
+        self.rotated_sprites = self.cache.stack_cache[1]["rotated_sprites"]
+        
+        self.current_angle = 0
+        self.viewing_angle = self.cache.viewing_angle
+
+        self.image, self.rect = self.bake_image()
+        
+    def bake_image(self):
+        self.image = self.rotated_sprites[self.current_angle]
+        self.rect = self.image.get_rect(center=self.position)
+        
+        return self.image, self.rect
+        
+    def draw(self, screen: pygame.Surface):
+
+          
+        screen.blit(self.bake_image())
+        
+       
+    def set_angle(self, angle):
+        self.current_angle = int(angle % self.num_angles)
+        self.image, self.rect = self.bake_image()
+       
+            
+    def get_angle(self):
+        return self.current_angle
+            
+    def get_sprites(self):
+        return self.sprites
+    
+    def get_sprites_size(self):
+        return (self.spritesheet.sprites_w, self.spritesheet.sprites_h)
+    
+    def get_layer_count(self):
+        return len(self.sprites)
+    
+    def get_center_position(self):
+        return (self.position[0]-(self.spritesheet.sprites_w * self.scale_by), self.position[1]-(self.spritesheet.sprites_h * self.scale_by))
+
+class SpriteStackCache():
+    def __init__(self, spritestack: SpriteStack):
+        self.spritestack = spritestack
+        self.stack_cache = {}
+
+        self.viewing_angle = 360 // self.spritestack.num_angles
+        
+        self.create_stack_cache()
+
+    def create_stack_cache(self):
+        self.stack_cache[1] = {
+            "rotated_sprites": {},
+        }
+        self.layers = self.spritestack.get_sprites()
+        self.create_render()
+        
+    def create_render(self):
+        outline = self.spritestack.draw_outline
+        
+        
+        for angle in range(self.spritestack.num_angles):
+            surf = pygame.Surface((self.layers[0].get_size()[0] * self.spritestack.scale_by, self.layers[0].get_size()[1] * self.spritestack.scale_by))
+            surf = pygame.transform.rotate(surf, angle * self.viewing_angle)
+            sprite_surf = pygame.Surface([surf.get_width(), surf.get_height() 
+                                   + (self.spritestack.get_layer_count() * self.spritestack.stack_spacing) * self.spritestack.scale_by], pygame.SRCALPHA)
+
+            for i, layer in enumerate(self.layers):     
+                layer = pygame.transform.rotate(layer, angle * self.viewing_angle)
+                
+                
+                n_layer = pygame.transform.scale(layer, (layer.get_size()[0] * self.spritestack.scale_by, layer.get_size()[1] * self.spritestack.scale_by))
+
+                sprite_surf.blit(n_layer, (0, (i * self.spritestack.stack_spacing) * self.spritestack.scale_by))
+                
+                
+            if outline:
+                outline_coords = pygame.mask.from_surface(sprite_surf).outline()
+                pygame.draw.polygon(sprite_surf, (21, 28, 41), outline_coords, 2)
+    
+    
+    
+            image = pygame.transform.flip(sprite_surf, True, True)
+            self.stack_cache[1]["rotated_sprites"][angle] = image
+       
+
+        
