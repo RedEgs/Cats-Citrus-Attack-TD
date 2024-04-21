@@ -12,7 +12,7 @@
     "workspace": {
         "settings": {
             "use-opengl": false,
-            "debug-mode": true, 
+            "debug-mode": false, 
             "performance-mode": false
         }
     },

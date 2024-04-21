@@ -71,6 +71,7 @@ class App:
     def load_core(self):
         self.clock = pygame.time.Clock()
         self.delta_time = 0
+        self.elapsed_time = 0
         
         self.viewport = ViewportModule.Viewport(self)
         self.viewport_offset = self.viewport.main_camera.get_camera_offset() # Get the offset from the camera
@@ -99,7 +100,7 @@ class App:
             self.draw()
             
             self.delta_time = self.clock.tick(100000) * .001
-            
+            self.elapsed_time += self.delta_time            
             
             
 
@@ -120,7 +121,7 @@ class App:
     def update(self):
         self.transition_service.update()
         self.scene_service.run_scene(self.event_queue)
-        self.tween_service.update()
+        self.tween_service.update(self.delta_time)
        
         if self.debug_service:
             self.debug_service.update()
@@ -149,6 +150,9 @@ class App:
     
     def get_delta_time(self):
         return self.delta_time
+    
+    def get_elapsed_time(self):
+        return self.elapsed_time
     
     def get_fps(self):
         return self.clock.get_fps()

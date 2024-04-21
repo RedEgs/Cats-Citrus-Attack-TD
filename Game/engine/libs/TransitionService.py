@@ -1,5 +1,5 @@
 from engine.libs.Services import Service
-import pygame, json, os, sys
+import pygame, pytweening, json, os, sys
 
 import engine.libs.TweenService as TweenService
 import engine.libs.GuiService as GuiService
@@ -107,3 +107,44 @@ class FadeTransition(Transition):
        
         screen.blit(self.loading_image, (0,0))
         # Make sure that the image isnt scene specific.
+
+class WipeTransition(Transition):
+    def __init__(self, from_scene, to_scene, app, timing):
+        super().__init__(from_scene, to_scene)
+        self.app = app
+
+        self.timing = timing
+        self.loading_image = pygame.Surface((1280, 720))
+        self.loading_image.fill((0))
+
+        self.wipe = TweenService.Tween(1300, 0, 1, pytweening.easeInOutSine, reverse=True, reverse_once=True)
+        # fade_data = TweenService.TweenData(0, 255, timing, 0)
+        # self.fade = TweenService.Tween(fade_data)
+        # self.fade.start(False, True)
+
+    def update(self):
+        print(self.wipe.get_progress())
+        if self.curr_percentage == self.timing * 0:
+            self.wipe.start()
+             
+        if self.wipe.progress >= .99:
+            self.app.scene_service.set_scene(self.to_scene)  # Change the scene while black
+
+        if self.completed:
+            self.kill_transition()
+
+    def draw(self, screen):
+        self.pos = self.wipe.get_output()
+        # if self.curr_percentage >= self.timing * 50:
+        #     #print(self.percentage_to_opacity(self.curr_percentage))
+        #     self.pos = self.r_wipe.get_output()
+            
+            
+        # elif self.curr_percentage <= self.timing * 100:
+        #     #print(self.percentage_to_opacity(self.curr_percentage))
+            
+            
+            
+       
+        # Make sure that the image isnt scene specific.
+        screen.blit(self.loading_image, (self.pos,0))

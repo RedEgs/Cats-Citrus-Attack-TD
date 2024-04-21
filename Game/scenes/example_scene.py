@@ -1,11 +1,12 @@
 import pytweening, pygame, sys, os, time, math
 
+
 from engine.app import *
 from engine.libs import SceneService as SceneService
 from engine.libs import Maths
-from engine.libs import CameraModule, GridModule, ParticleModule
+from engine.libs import CameraModule, GridModule, ParticleModule, SpecialEffectsModule
+from engine.libs import TweenService
 
-# TODO FIX HIDING AND UNHIDING OF ELEMETNS
 
 class Example_Scene(SceneService.Scene):
     def __init__(self, scene_name, app):
@@ -13,23 +14,36 @@ class Example_Scene(SceneService.Scene):
         self.app = app
         self.camera = CameraModule.CameraComponent(app, pygame.Rect(0, 0, 1280, 720))
     
-    
-    
+
+
+        self.last_update = pygame.time.get_ticks() 
         # self.grid = GridModule.Grid(100, 50)
         # self.grid_surf = self.grid.pre_render_grid((2, 127, 252))
-        self.sprite_stack = GuiService.SpriteStack(GuiService.GuiSpaces.WORLD, self.camera, (0,0), "spritestack.png", pygame.Rect(1, 8, 16, 16), scale_by=5, stack_spacing=1)
+        self.sprite_stack = GuiService.SpriteStack(GuiService.GuiSpaces.WORLD, self.camera, (100,0), "spritestack.png", pygame.Rect(1, 8, 16, 16), scale_by=5, stack_spacing=1)
+
+    
         #self.sprite_stack.hide()
         self.frame = 0
+
+        self.l_pos_1 = pygame.Vector2(-500, -500)
+        self.l_pos_2 = pygame.Vector2(100, 100)
         
+        self.tween = TweenService.Tween(self.l_pos_1, self.l_pos_2, 10, pytweening.easeInOutCubic, reverse=True, reverse_once=True)
+        self.tween2 = TweenService.Tween(0, 255, 3, pytweening.easeInOutExpo)
+        self.pressed = False
+
+    def debug(self):
+        print("debug")
 
     def on_enter(self):
         super().on_enter()
 
 
     def update(self):
-        self.frame += self.app.get_delta_time() * 15
+        pass     
+        # self.frame += self.app.get_delta_time() * 15
         
-        self.sprite_stack.set_angle(self.frame)
+        # self.sprite_stack.set_angle(self.frame)
         #self.camera.track_target_raw(self.sprite_stack.rect)
         
         
@@ -53,6 +67,20 @@ class Example_Scene(SceneService.Scene):
         elif key[pygame.K_d]:
             self.camera.move_right(1)
             
+        if key[pygame.K_f]:
+            if not self.pressed:
+                self.app.scene_service.switch_scene("example_scene_2")
+                self.pressed =True
+                
+        if key[pygame.K_g]:
+            self.tween.start()
+        
+        if key[pygame.K_z]:
+            self.tween2.start()
+            
+            
+            
+            
         # if key[pygame.K_e]:
         #     self.app.scene_service.switch_scene("example_scene_2")
             # if self.sprite_stack.visibility == True:
@@ -74,21 +102,18 @@ class Example_Scene(SceneService.Scene):
         # Draw horizontal line
         
         
-        pygame.draw.line(surface, pygame.Color("red"), (0, 0-self.camera.get_camera_offset()[1]), (1280, 0-self.camera.get_camera_offset()[1]))
+        pygame.draw.line(surface, pygame.Color("red"), pygame.Vector2(self.l_pos_1)-self.camera.get_camera_offset(), pygame.Vector2(self.l_pos_2)-self.camera.get_camera_offset())
+        pygame.draw.rect(surface, (0, self.tween2.get_output(), 0), (self.tween.get_output()[0]-self.camera.get_camera_offset()[0], self.tween.get_output()[1]-self.camera.get_camera_offset()[1], 10, 10))
 
-        # Draw vertical line
-        pygame.draw.line(surface, pygame.Color("red"), (0-self.camera.get_camera_offset()[0], 0), (0-self.camera.get_camera_offset()[0], 720))     
+
+
+        #pygame.draw.line(surface, pygame.Color("red"), (0, 0-self.camera.get_camera_offset()[1]), (1280, 0-self.camera.get_camera_offset()[1]))
+
+        # # Draw vertical line
+        #pygame.draw.line(surface, pygame.Color("red"), (0-self.camera.get_camera_offset()[0], 0), (0-self.camera.get_camera_offset()[0], 720))     
         
-        # surface.blit(self.grid_surf, (0-self.camera.get_camera_offset().x,
-        #                               0-self.camera.get_camera_offset().y))
-
-        pygame.draw.rect(surface, (255,255,255), pygame.Rect((self.sprite_stack.position), (100,  100)))
-        # pygame.draw.rect(surface, "green", pygame.Rect(self.camera.get_camera_offset()-self.camera.get_camera_offset(), (30,  30)))
-        # pygame.draw.rect(surface, (0, 0, 255), pygame.Rect((0, 0), (20,  20)))
-        # pygame.draw.rect(surface, "yellow", pygame.Rect(self.camera.get_camera_center(), (10,  10)))
-        
-        # pygame.draw.rect(surface, (255, 255, 0), pygame.Rect((self.camera.get_camera_center()), (20,  20)))
-
+        # # surface.blit(self.grid_surf, (0-self.camera.get_camera_offset().x,
+        # #                               0-self.camera.get_camera_offset().y))
 
         
         

@@ -1,6 +1,5 @@
 import pytweening, pygame, sys, os, math
 
-import engine.libs.Formatter as formatter
 import engine.libs.Utils as utils
 import engine.libs.EntityService as EntityService 
 import engine.libs.SceneService as SceneService 
@@ -8,72 +7,91 @@ import engine.libs.GuiService as GuiService
 import engine.libs.TweenService as TweenService
 
 
-class TowerHandler:
-    def __init__(self, app, map):
-        #self.registry = app.registry_service
-        self.map = map
+class TowerManager():
+    tower_group = []
+    placed_tower_group = []
+    selected_tower = None
+        
+ 
+        
+    @classmethod
+    def add_tower(cls, tower):
+        cls.tower_group.append(tower)
+        
+    @classmethod
+    def draw(cls, surface, map_surface, map_mask, panel_rect):
+        if cls.selected_tower:
+            cls.selected_tower.draw_preview_image(surface, map_surface, map_mask, panel_rect)
 
-        self.towers = pygame.sprite.Group()
-        self.towers_amount = len(self.towers)
-        self.towers_limit = 5
-
-        self.selected_tower = None
-
-        self.click_state = False
-
-    def place(self):
-        max_size = (1920,1080)
-
-
-
-        self.towers.add(new_tower)
     
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
-            self.click_state = True
+    @classmethod
+    def place_tower(cls, map_surface, map_mask, gui_surface):
+        if cls.selected_tower is not None:
+            cls.placed_tower_group.append(cls.selected_tower)
+            cls.selected_tower.place(map_surface, map_mask, gui_surface)
+        
+    @classmethod
+    def get_selected_tower(cls):
+        if cls.selected_tower is not None:
+            return cls.selected_tower
+    
+    @classmethod
+    def set_selected_tower(cls, tower):
+        cls.selected_tower = tower
+    
+    
+class Tower:
+    def __init__(self, tower_dir, tower_data, tower_sprite):
+        self.tower_dir = tower_dir
+        self.tower_data = self.load_json(tower_data)
+    
+        self.tower_sprite = tower_sprite
+        self.rect = self.tower_sprite.get_rect()
+        
+        self.preview_placement_sprite =  pygame.transform.grayscale(self.tower_sprite)
+        self.preview_placement_mask = pygame.mask.from_surface(self.preview_placement_sprite)
+    
+        
+        TowerManager.add_tower(self)
 
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            if self.click_state == True:
-                self.click_state = False
-                self.place()
+    def load_json(self, tower_data):
+        import json
 
-
-
-    def update(self):
-        for tower in self.towers.sprites():
-            tower.update()
+        with open(tower_data) as tower_data_file:
+            data = json.load(tower_data_file)
             
-    def draw(self, screen):
-        self.towers.draw(screen)
+        return data
 
-    def get_towers(self):
-        return self.towers
-   
+    def draw_preview_image(self, surface, map_surface, map_mask, panel_rect):
+        if TowerManager.get_selected_tower() is not None:
+            self.preview_placement_mask_offset = pygame.Vector2(pygame.mouse.get_pos())-pygame.Vector2(self.preview_placement_mask.get_size())//2
+            
+            if self.check_placement(map_surface, map_mask, panel_rect):
+                self.preview_placement_sprite.fill((0, 1, 0), None, pygame.BLEND_RGB_ADD)
+            else:
+                self.preview_placement_sprite.fill((255, 0, 0), None, pygame.BLEND_RGB_MULT)
+            
+            
+            surface.blit(self.preview_placement_sprite, pygame.mouse.get_pos())
 
-class Tower(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        super().__init__()  # Call the superclass constructor  
-        self.file_path = f"cctd/towers/example_hero"
-        self.sprite_path = f"{self.file_path}/sprite.png"
+    def place(self, map_surface: pygame.Surface, map_mask: pygame.Mask, gui_surface):
+        if self.check_placement(map_surface, map_mask, gui_surface):
+            self.pos = pygame.mouse.get_pos()
+            self.rect = self.tower_sprite.get_rect(center=self.pos)
+            
+            map_surface.blit(self.tower_sprite, (self.tower_sprite.get_rect(center=(pygame.mouse.get_pos()))))
+    
+    def check_placement(self, map_surface: pygame.Surface, map_mask: pygame.Mask, rect):
+        if TowerManager.get_selected_tower is not None:
+            return map_surface.get_rect().collidepoint(pygame.mouse.get_pos()) and not rect.collidepoint(pygame.mouse.get_pos()) and not map_mask.overlap(self.preview_placement_mask, self.preview_placement_mask_offset)
 
-        self.image = pygame.image.load(self.sprite_path).convert_alpha()  # Use 'image' instead of 'sprite' for clarity
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
+    def open_tower_context(self):
+        print("cliekd on tower")
 
-        self.mask = pygame.mask.Mask((self.rect.width, self.rect.height))
-        self.mask.fill()
 
-    def update(self):
-        pass
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)  # Use 'blit' to draw the image on the screen
-
-    def get_sprite(self):
-        return self.image  # Use 'image' instead of 'sprite' for consistency
-
-    def get_mask(self):
-        return self.mask
-
-    def get_rect(self):
-        return self.rect
+    def is_over(self):
+        return self.rect.collidepoint(pygame.mouse.get_pos())
+        
+    def get_drawable(self):
+        return self.tower_sprite, self.rect

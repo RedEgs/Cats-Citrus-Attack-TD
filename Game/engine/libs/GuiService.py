@@ -193,6 +193,7 @@ class GuiService(Service):
         cls.update_render_buffer(current_scene)
         for element in cls.render_buffer:
             element.update_position()
+            
         main_camera_surface.fblits([(element.image, element.position) for element in cls.render_buffer])
 
 
@@ -452,6 +453,78 @@ class EventElement(Element):
 
 
 
+
+
+class PanelElement(Element):
+    def __init__(self, space, camera, position, size, color, drop_shadow = False, shadow_size = 4, rounded = False, corner_radius = 0.05, glass = False, outline = False, outline_color = None, outline_thickness = 5):
+        super().__init__(space, camera, position)
+        
+        self.image = pygame.Surface(size, pygame.SRCALPHA)
+        self.image.fill(color, None)
+        
+        
+        if rounded:
+            self.image = self.generate_round_surf(self.image, (position, size), color, corner_radius)
+        
+        if outline:
+            self.image = self.apply_outline(outline_color, position, outline_thickness)
+            
+        if drop_shadow:
+            self.image = self.apply_shadow(shadow_size)
+        
+
+    def generate_round_surf(self, surface,rect,color,radius=0.05):
+        rect = pygame.Rect(rect)
+        color = pygame.Color(*color)
+        alpha  = color.a
+        color.a = 0
+        pos = rect.topleft
+        rect.topleft = 0,0
+        rectangle = pygame.Surface(rect.size, pygame.SRCALPHA)
+
+        circle = pygame.Surface([min(rect.size)*3]*2, pygame.SRCALPHA)
+        pygame.draw.ellipse(circle,(0,0,0),circle.get_rect(),0)
+        circle = pygame.transform.smoothscale(circle,[int(min(rect.size)*radius)]*2)
+
+        radius = rectangle.blit(circle,(0,0))
+        radius.bottomright = rect.bottomright
+        rectangle.blit(circle,radius)
+        radius.topright = rect.topright
+        rectangle.blit(circle,radius)
+        radius.bottomleft = rect.bottomleft
+        rectangle.blit(circle,radius)
+
+        rectangle.fill((0,0,0),rect.inflate(-radius.w,0))
+        rectangle.fill((0,0,0),rect.inflate(0,-radius.h))
+
+        rectangle.fill(color,special_flags=pygame.BLEND_RGBA_MAX)
+        rectangle.fill((255,255,255,alpha),special_flags=pygame.BLEND_RGBA_MIN)
+
+        surface.blit(rectangle,pos)
+        return rectangle
+ 
+    def apply_outline(self, outline_color, position, thickness):
+        from engine.libs import SpecialEffectsModule
+        
+        return SpecialEffectsModule.aa_outline(self.image, (255,255,255), thickness)
+        
+    def apply_shadow(self, size):
+        from engine.libs import SpecialEffectsModule
+        
+        return SpecialEffectsModule.dropshadow(self.image, size)
+        
+        
+        
+    def update_position(self):
+        super().update_position()
+        self.rect = self.image.get_rect(topleft=self.position)
+    
+    
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        
+    def get_rect(self):
+        return self.image.get_rect(topleft=self.position)
 
 class ImageElement(Element):
     """

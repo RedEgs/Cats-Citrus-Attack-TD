@@ -2,7 +2,7 @@ import pygame, json, os, sys
 
 from engine.app import *
 from engine.libs import SceneService as SceneService
-import cProfile, asyncio
+
 
 """import scenes.main_menu as main_menu
 import scenes.difficulty_select as d_select
@@ -14,7 +14,7 @@ import scenes.user_login as user_login
 import scenes.network_test as network_test"""
 import scenes.example_scene as example_scene
 import scenes.example_scene_2 as example_scene_2
-
+import scenes.workshop as workshop
 
 class Main(App):
     def __init__(self):
@@ -24,10 +24,12 @@ class Main(App):
         self.user = user
 
     def load_scenes(self):
+
         self.scene_service.load_scenes([example_scene_2.Example_Scene("example_scene_2", self)])
         self.scene_service.load_scenes([example_scene.Example_Scene("example_scene", self)])
+        self.scene_service.load_scenes([workshop.Workshop("workshop", self)])
        
-        self.scene_service.set_scene("example_scene")
+        self.scene_service.set_scene("workshop")
 
 
 """network_test.Network_Test("network_test", self),
