@@ -72,9 +72,6 @@ def search_tree_view(tree_widget, line_edit):
         item.setHidden(search_query not in item.text(0).lower())
         
 
-
-        
-
 class Ui_main_window(object):
     def __init__(self, project_path):
         import json

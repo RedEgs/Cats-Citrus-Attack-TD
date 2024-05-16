@@ -108,8 +108,12 @@ class Workshop(SceneService.Scene):
                         self.tower_selected = not self.tower_selected
            
             if pygame.time.get_ticks() >= self.tower_placement_pressed + 500:
+                
+                
                 self.tower_placement_pressed = pygame.time.get_ticks()
-                self.tower_manager.place_tower(self.map_image, self.map_mask, self.tower_selection_panel.get_rect())
+                
+                if self.tower_manager.selected_tower and not self.tower_manager.selected_tower.preview_rect.colliderect(self.tower_selection_panel.get_rect()):
+                    self.tower_manager.place_tower(self.map_image, self.map_mask, self.tower_selection_panel.get_rect())
                 
             if pygame.time.get_ticks() >= self.tower_context_pressed + 500 and not self.tower_context_open:
                 for tower in th.TowerManager.placed_tower_group:

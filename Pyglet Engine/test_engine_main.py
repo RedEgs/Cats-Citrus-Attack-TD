@@ -462,13 +462,19 @@ class Ui_main_window(object):
             self.ide_tabs.append(new_ide_tab)
        
     def _save_file_in_editor(self):
+        import PyQt5.QtWidgets 
+        
         focused = QtWidgets.QApplication.focusWidget()
 
-        if focused.__class__ == QsciScintilla:
+        if focused.__class__ == PyQt5.QtWidgets.QPlainTextEdit:
             for tab in self.ide_tabs:
                 tab.save_file()
+            
+            
+            
         else:
-            print("saved project")
+            pass
+            #print(focused.__class__)
             
     def _select_item_resources_tree(self, item:QTreeWidgetItem):
         self.resources_tree_selected_item = self.project_working_path + "/" + item.data(0,0)
