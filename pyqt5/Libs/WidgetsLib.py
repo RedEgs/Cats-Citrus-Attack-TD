@@ -21,7 +21,6 @@ class GameWidget(QWidget):
         qp.drawImage(0,0,self.image)
         qp.end()
 
-
 class QIdeTab(QWidget):
     def __init__(self, parent_tabs:QTabWidget, filepath, index):
         super(QWidget, self).__init__(parent_tabs)
@@ -98,7 +97,6 @@ def get_tree_parent_path(item):
 def get_tree_item_path(working_dir, item):
     return working_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
 
-
 def open_file(parent, selected_item):
     import os
     
@@ -156,3 +154,53 @@ def create_folder(parent, working_dir):
                 buttons=QMessageBox.Discard,
                 defaultButton=QMessageBox.Discard,
         )
+      
+      
+#SECTION - Treeview functions    
+            
+def load_project_resources(startpath, tree):
+    """
+    Load Project structure tree
+    :param startpath: 
+    :param tree: 
+    :return: 
+    """
+    import os
+    from PyQt5.QtWidgets import QTreeWidgetItem
+    from PyQt5.QtGui import QIcon
+    
+    
+    resources_items = []
+    for element in os.listdir(startpath):
+        path_info = str(startpath) + "/" + element
+        parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
+        file_type = element.split(".")
+        
+        
+        
+        resources_items.append(element)
+        if os.path.isdir(path_info):
+            load_project_resources(path_info, parent_itm)
+            parent_itm.setIcon(0, QIcon('assets/folder.ico'))
+            
+        else:
+           
+            if len(file_type) >= 2 and os.path.isfile(f'assets/{file_type[len(file_type)-1]}.ico'):
+                parent_itm.setIcon(0, QIcon(f'assets/{file_type[len(file_type)-1]}.ico'))
+            else:
+                parent_itm.setIcon(0, QIcon('assets/file.ico'))
+                
+    return resources_items
+
+def reload_project_resources(previous_files=None, startpath = None, tree = None):    
+    tree.clear()
+    files = load_project_resources(startpath, tree)
+    return files
+ 
+       
+def search_tree_view(tree_widget, line_edit):
+    search_query = line_edit.text().lower()
+    for item in tree_widget.findItems("", QtCore.Qt.MatchContains):
+        item.setHidden(search_query not in item.text(0).lower())
+        
+#Se
