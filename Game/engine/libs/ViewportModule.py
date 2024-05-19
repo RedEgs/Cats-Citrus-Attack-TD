@@ -27,28 +27,56 @@ class Viewport(Service):
                
        
     def load_settings_from_config(self):
-        with open("config.json", "r") as conf:
-            data_raw = json.load(conf)
+        if not self.app._override_config:
+        
+            with open("config.json", "r") as conf:
+                data_raw = json.load(conf)
+                
+                self.app_settings = data_raw["app"]["settings"]
+                self.workspace_settings = data_raw["workspace"]["settings"]
+                self.camera_settings = data_raw["camera"]["settings"]
+                self.experimental_features = data_raw["experimental"]["features"]
+
+            # Load resolution from file
+            resolution = self.app_settings["resolution"]
+            self.screen_w, self.screen_h = str(resolution).split("x")
+
+        else:
+            data_raw = json.loads(self.app._override_config_text)
             
             self.app_settings = data_raw["app"]["settings"]
             self.workspace_settings = data_raw["workspace"]["settings"]
             self.camera_settings = data_raw["camera"]["settings"]
             self.experimental_features = data_raw["experimental"]["features"]
+            
+            resolution = self.app_settings["resolution"]
+            self.screen_w, self.screen_h = str(resolution).split("x")
 
-        # Load resolution from file
-        resolution = self.app_settings["resolution"]
-        self.screen_w, self.screen_h = str(resolution).split("x")
-    
+        
     
     def load_screen_default(self):
         """
         Loads the display for the pygame window, with resolution from config
         """   
         # Initialise and create the actual display
-        pygame.display.set_mode(
-            (int(self.screen_w), int(self.screen_h)), depth=16, flags=pygame.DOUBLEBUF
-        ) 
-        self.screen = pygame.display.get_surface()
+        if not self.app._qt_mode:
+            pygame.display.set_mode(
+                (int(self.screen_w), int(self.screen_h)), depth=16, flags=pygame.DOUBLEBUF
+            ) 
+            self.screen = pygame.display.get_surface()
+        else:
+            self.app._hwnd = None
+            if len(sys.argv) > 1:
+                self.app._hwnd = int(sys.argv[1])
+                os.environ['SDL_WINDOWID'] = str(self.app._hwnd)
+            
+            os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (-1000, -1000)
+        
+            pygame.display.set_mode(
+                (int(self.screen_w), int(self.screen_h)), depth=16, flags=pygame.NOFRAME
+            ) 
+            self.screen = pygame.display.get_surface()
+            
     
     def load_screen_opengl(self):
         """

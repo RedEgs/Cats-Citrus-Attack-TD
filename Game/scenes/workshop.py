@@ -70,19 +70,19 @@ class Workshop(SceneService.Scene):
         elif key[pygame.K_d]:
             self.camera.move_right(1)
             
-        if key[pygame.K_F1]:
+        if key[pygame.K_x]:
             if pygame.time.get_ticks() >= self.f1_pressed + 1050:
                 print("pressed")
                 self.f1_pressed = pygame.time.get_ticks()
                 self.tower_selection_panel_tween.reverse()
         
-        if key[pygame.K_F2]:
+        if key[pygame.K_c]:
             if pygame.time.get_ticks() >= self.f2_pressed + 1050:
                 print("pressed")
                 self.f2_pressed = pygame.time.get_ticks()
                 self.enemy_selection_panel_tween.reverse()
                 
-        if key[pygame.K_F3]:
+        if key[pygame.K_v]:
             if pygame.time.get_ticks() >= self.f3_pressed + 400:
                 print("pressed")
                 self.f3_pressed = pygame.time.get_ticks()

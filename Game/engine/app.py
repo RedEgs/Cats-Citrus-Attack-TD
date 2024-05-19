@@ -24,7 +24,45 @@ class App:
     Main game/app loop class for the PyRed Engine.
     """
 
-    def __init__(self):
+    def __init__(self, override_config = False, qt_mode = False):
+        self._override_config = override_config
+        self._qt_mode = qt_mode
+        self._override_config_text = """{
+            "app": {
+                "settings": {
+                    "resolution": "1280x720",
+                    "v-sync": 0,
+                    "max-fps": 60,
+                    "window-title-name": "Citrus Cats TD",
+                    "window-icon-path": "ico.png",
+                    "start-scene": "user_login"
+                }
+            },
+            "workspace": {
+                "settings": {
+                    "use-opengl": false,
+                    "debug-mode": false, 
+                    "performance-mode": false
+                }
+            },
+            "camera": {
+                "settings": {
+                    "enable-zooming": false 
+                }
+            },
+            "experimental": {
+                "features": {
+                    "enable-window-blurring": false,
+                    "color-to-blur": [2, 127, 252],
+                    "discord-rich-presence": true 
+                }
+            },
+            "discord-rpc": {
+                
+            }
+            }"""            
+        
+  
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
@@ -41,22 +79,31 @@ class App:
         """
         Loads game settings from a "config.json" file.
         """
-        
         self.service_registry = []
         
-        with open("config.json", "r") as conf:
-            data_raw = json.load(conf)
+        if not self._override_config:
             
+            
+            with open("config.json", "r") as conf:
+                data_raw = json.load(conf)
+                
+                app_settings = data_raw["app"]["settings"]
+                workspace_settings = data_raw["workspace"]["settings"]
+                camera_settings = data_raw["camera"]["settings"]
+
+                return app_settings, workspace_settings, camera_settings
+
+            if self.workspace_settings["performance-mode"]:
+                pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN])
+        else:
+
+            data_raw = json.loads(self._override_config_text)
+                
             app_settings = data_raw["app"]["settings"]
             workspace_settings = data_raw["workspace"]["settings"]
             camera_settings = data_raw["camera"]["settings"]
 
             return app_settings, workspace_settings, camera_settings
-
-        if self.workspace_settings["performance-mode"]:
-            pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN])
-        
-
 
     def load_engine(self):
         """
@@ -87,7 +134,11 @@ class App:
             self.debug_service = DebugService.DebugService(self, self.clock)
         else:
             self.debug_service = None
-            
+         
+    def send_key(self, key):
+        event = pygame.event.Event(pygame.KEYDOWN, key=key)
+        pygame.event.post(event)
+        print("sent event:" + str(event))   
 
         
 
@@ -102,6 +153,19 @@ class App:
             self.delta_time = self.clock.tick(100000) * .001
             self.elapsed_time += self.delta_time            
             
+    def qt_run(self):
+        """ONLY USE IF YOU INTEND TO USE WITH PYQT5/PYSIDE"""
+        fps = self.app_settings["max-fps"]
+        
+        while True:
+            self.events()
+            self.update()
+            self.draw()
+            
+            self.delta_time = self.clock.tick(100000) * .001
+            self.elapsed_time += self.delta_time         
+            
+            yield self.get_screen()
             
 
     def events(self):

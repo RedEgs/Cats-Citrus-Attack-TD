@@ -1,0 +1,4 @@
+2024-05-19 22:32:10,057 | INFO - Initialised the logger!
+2024-05-19 22:32:10,105 | INFO - Initialised Service: GuiService at index 0
+2024-05-19 22:32:10,105 | INFO - Initialised Service: TweenService at index 1
+2024-05-19 22:32:10,106 | INFO - Initialised Service: TransitionService at index 2
