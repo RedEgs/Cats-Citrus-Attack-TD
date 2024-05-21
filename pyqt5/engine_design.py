@@ -296,7 +296,7 @@ class Ui_main_window(object):
     # setupUi
 
     def retranslateUi(self, main_window):
-        main_window.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - {project name}", None))
+        main_window.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - New Project", None))
         self.actionSave.setText(QCoreApplication.translate("main_window", u"Save ", None))
 #if QT_CONFIG(shortcut)
         self.actionSave.setShortcut(QCoreApplication.translate("main_window", u"Ctrl+S", None))

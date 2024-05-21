@@ -194,3 +194,4 @@ def search_tree_view(tree_widget, line_edit):
         item.setHidden(search_query not in item.text(0).lower())
         
 #Se
+
