@@ -7,32 +7,23 @@ from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 import typing
 
-class GameWidget(QWidget):
-    def __init__(self,surface,parent=None):
-        super(QtGui.ImageWidget,self).__init__(parent)
-        w=surface.get_width()
-        h=surface.get_height()
-        self.data=surface.get_buffer().raw
-        self.image=QtGui.QImage(self.data,w,h,QtGui.QImage.Format_RGB32)
-
-    def paintEvent(self,event):
-        qp=QtGui.QPainter()
-        qp.begin(self)
-        qp.drawImage(0,0,self.image)
-        qp.end()
-
-class QIdeTab(QWidget):
-    def __init__(self, parent_tabs:QTabWidget, filepath, index):
+class QIdeWindow(QWidget):
+    def __init__(self, parent_tabs:QTabWidget, filepath = None, index = None):
         super(QWidget, self).__init__(parent_tabs)
         self._parent_tabs = parent_tabs
-        self._saved = False
         self._filepath = filepath
-        self.tab_title = f"Script IDE - {filepath[1]}"
+        self._index = index
         
+        if self._filepath == None and self._index == None:
+            self._saved = False
+            self.tab_title = f"Script IDE - Untitled"
+        else:
+            self._saved = False
+            self.tab_title = f"Script IDE - {filepath[1]}"
         
         self.ide_tab = QWidget()
-        self.ide_tab.setObjectName(f"ide_tab_{index}")
-        
+        self.ide_tab.setObjectName(f"ide_tab")
+            
         self.horizontalLayout = QHBoxLayout(self.ide_tab)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         
@@ -63,10 +54,10 @@ class QIdeTab(QWidget):
         self.horizontalLayout.addWidget(self.script_edit)
         
         self.tab_index = parent_tabs.addTab(self.ide_tab, self.tab_title)
-        self.load_file()
+        # self.load_file()
         
-        self.script_edit.textChanged.connect(self.mark_as_unsaved)
-        self._parent_tabs.setCurrentIndex(self.tab_index)
+        # self.script_edit.textChanged.connect(self.mark_as_unsaved)
+        # self._parent_tabs.setCurrentIndex(self.tab_index)
         
     
     def mark_as_unsaved(self):
@@ -196,8 +187,7 @@ def reload_project_resources(previous_files=None, startpath = None, tree = None)
     tree.clear()
     files = load_project_resources(startpath, tree)
     return files
- 
-       
+        
 def search_tree_view(tree_widget, line_edit):
     search_query = line_edit.text().lower()
     for item in tree_widget.findItems("", QtCore.Qt.MatchContains):

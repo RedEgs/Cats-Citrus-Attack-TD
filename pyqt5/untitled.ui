@@ -20,146 +20,59 @@
    <string>Red Engine - {project name}</string>
   </property>
   <widget class="QWidget" name="central_widget">
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-     <widget class="QTabWidget" name="central_tabs">
-      <property name="minimumSize">
-       <size>
-        <width>1008</width>
-        <height>678</height>
-       </size>
-      </property>
+     <widget class="QTabWidget" name="central_tab">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
-      <property name="usesScrollButtons">
-       <bool>true</bool>
-      </property>
-      <property name="documentMode">
-       <bool>false</bool>
-      </property>
-      <widget class="QWidget" name="viewport_tab">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>assets/10125_icons/shell32_35.ico</normaloff>assets/10125_icons/shell32_35.ico</iconset>
-       </attribute>
+      <widget class="QWidget" name="preview_window">
        <attribute name="title">
-        <string>Game (Viewport)</string>
+        <string>Viewport</string>
        </attribute>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="0" column="1">
-         <widget class="QFrame" name="frame">
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Plain</enum>
-          </property>
-         </widget>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="start_button">
+            <property name="text">
+             <string>Start</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QWidget" name="pygame_widget" native="true"/>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="scripting_tab">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>assets/10125_icons/script.ico</normaloff>assets/10125_icons/script.ico</iconset>
-       </attribute>
+      <widget class="QWidget" name="scripting_window">
        <attribute name="title">
         <string>Scripting</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QTabWidget" name="script_tabs">
-          <property name="tabPosition">
-           <enum>QTabWidget::North</enum>
-          </property>
-          <property name="tabShape">
-           <enum>QTabWidget::Rounded</enum>
-          </property>
-          <property name="currentIndex">
-           <number>1</number>
-          </property>
-          <property name="elideMode">
-           <enum>Qt::ElideLeft</enum>
-          </property>
-          <property name="usesScrollButtons">
-           <bool>true</bool>
-          </property>
-          <property name="documentMode">
-           <bool>false</bool>
-          </property>
+         <widget class="QTabWidget" name="scripting_tab">
           <property name="tabsClosable">
            <bool>true</bool>
           </property>
           <property name="movable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="vscript_tab">
-           <attribute name="icon">
-            <iconset>
-             <normaloff>assets/10125_icons/imageres_5365.ico</normaloff>assets/10125_icons/imageres_5365.ico</iconset>
-           </attribute>
+          <widget class="QWidget" name="tab">
            <attribute name="title">
-            <string>Visual Script (VScript)</string>
+            <string>Tab 1</string>
            </attribute>
           </widget>
-          <widget class="QWidget" name="ide_tab">
-           <attribute name="icon">
-            <iconset>
-             <normaloff>assets/10125_icons/Text Document.ico</normaloff>assets/10125_icons/Text Document.ico</iconset>
-           </attribute>
+          <widget class="QWidget" name="tab_2">
            <attribute name="title">
-            <string>Script IDE</string>
+            <string>Tab 2</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QPlainTextEdit" name="script_edit">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <property name="lineWidth">
-               <number>0</number>
-              </property>
-              <property name="verticalScrollBarPolicy">
-               <enum>Qt::ScrollBarAsNeeded</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </widget>
         </item>
@@ -176,9 +89,15 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>320</width>
+     <height>237</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
-     <width>250</width>
+     <width>320</width>
      <height>524287</height>
     </size>
    </property>
@@ -309,9 +228,15 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>320</width>
+     <height>167</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
-     <width>250</width>
+     <width>320</width>
      <height>524287</height>
     </size>
    </property>
@@ -358,7 +283,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
@@ -397,6 +322,21 @@
    <addaction name="menuEdit"/>
    <addaction name="windows_button"/>
    <addaction name="help_button"/>
+  </widget>
+  <widget class="QDockWidget" name="console_dock">
+   <property name="windowTitle">
+    <string>Console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QTextEdit" name="textEdit"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionSave">
    <property name="icon">

@@ -1,26 +1,26 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QMainWindow
-from engine_design import Ui_main_window
+from PyQt5.QtWidgets import QWidget
+from PreviewWidget import Ui_Form
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-import os
+#import pygame_app, os
 
-class Pyredengine(QMainWindow):
+class PygameWindowWidget(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
        
-
-        self.ui = Ui_main_window()
+        self.ui = Ui_Form()
         self.ui.setupUi(self)
         
         
+      
         
 if __name__ == "__main__":
    app = QApplication([])
-   widget = Pyredengine()
+   widget = PygameWindowWidget()
    widget.show()
    
    app.exec_() 
