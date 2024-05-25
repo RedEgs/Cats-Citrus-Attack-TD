@@ -1,11 +1,90 @@
 
-import sys
+import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 import typing
+
+def load_recent_projects_from_json():
+    import json 
+    
+    file_path = 'recents.json'
+    
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+    else:
+        print(f"No such file: {file_path}")
+        return None
+
+    return data
+
+def add_to_recent_projects(project_name, project_json):
+    import json
+    file_path = 'recents.json'
+    
+    data = {}
+
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+        try:
+            # Read the existing file
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+        except json.JSONDecodeError:
+            # Handle case where the file is not a valid JSON
+            print("Warning: The file is not a valid JSON. Starting with an empty dictionary.")
+    
+    # Check if the project already exists
+    if project_name not in data:
+        data[project_name] = {"json": project_json}
+        
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+        print(f"Project '{project_name}' added.")
+    else:
+        print(f"Project '{project_name}' already exists.")
+        
+def generate_project_path(window, project_path, project_name, main_project_file = None):
+    from datetime import date
+    import json
+    
+    #print(project_path + "/project.json")
+    project_file_gen = {
+        "project_name": project_name,
+        "project_path": project_path,
+        "main_project_file": main_project_file, 
+        "date_created": str(date.today()),
+        "date_edited" : str(date.today())  
+    }
+
+    try:
+        os.mkdir(project_path + "/.redengine") # Error Handling ehre
+    except:
+        QMessageBox.critical(window, "Error", f"Project already exists.", QMessageBox.Ok)
+        return -1
+    
+    with open(project_path + "/.redengine/project.json", "w") as file:
+        json.dump(project_file_gen, file)
+
+    return project_path + "/.redengine/project.json"
+
+def save_project_json(window, project_path, project_name, main_project_file):
+    from datetime import date
+    import json
+    
+    #print(project_path + "/project.json")
+    project_file_gen = {
+        "project_name": project_name,
+        "project_path": project_path,
+        "main_project_file": main_project_file, 
+        "date_created": str(date.today()),
+        "date_edited" : str(date.today())  
+    }
+    
+    with open(project_path + "/.redengine/project.json", "w") as file:
+        json.dump(project_file_gen, file)
 
 class QIdeWindow(QWidget):
     def __init__(self, parent_tabs:QTabWidget, filepath = None, index = None):
@@ -14,7 +93,7 @@ class QIdeWindow(QWidget):
         self._filepath = filepath
         self._index = index
         
-        if self._filepath == None and self._index == None:
+        if self._filepath == None:
             self._saved = False
             self.tab_title = f"Script IDE - Untitled"
         else:
@@ -54,11 +133,17 @@ class QIdeWindow(QWidget):
         self.horizontalLayout.addWidget(self.script_edit)
         
         self.tab_index = parent_tabs.addTab(self.ide_tab, self.tab_title)
-        # self.load_file()
+        self.load_file()
         
-        # self.script_edit.textChanged.connect(self.mark_as_unsaved)
-        # self._parent_tabs.setCurrentIndex(self.tab_index)
+        self.script_edit.textChanged.connect(self.mark_as_unsaved)
+        self._parent_tabs.setCurrentIndex(self.tab_index)
         
+        self._parent_tabs.tabCloseRequested.connect(self.close_tab)
+    
+    def close_tab(self): 
+        current_widget = self._parent_tabs.indexOf(self.ide_tab)
+        if self._parent_tabs.currentIndex() == current_widget:
+            self._parent_tabs.removeTab(current_widget)
     
     def mark_as_unsaved(self):
         self._saved = False
@@ -79,14 +164,42 @@ class QIdeWindow(QWidget):
     
 
 def get_tree_parent_path(item):
-        parent = item.parent()
-        if parent is None:
-            return ""
-        else:
-            return get_tree_parent_path(parent) + "/" + parent.data(0, 0)
+    parent = item.parent()
+    if parent is None:
+        return ""
+    else:
+        return get_tree_parent_path(parent) + "/" + parent.data(0, 0)
 
 def get_tree_item_path(working_dir, item):
     return working_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
+
+
+def rename_file(parent, project_dir, split_name):
+    import os.path, os
+
+    file_name = split_name[0]
+    file_extension = "." + split_name[1]
+    working_dir = project_dir+f"/{file_name+file_extension}"
+
+    new_name, done = QtWidgets.QInputDialog.getText(
+        parent, 'Input Dialog', 'Rename to: ') 
+
+    
+
+    if done:
+        if os.path.isfile(f"{working_dir}"):
+            os.rename(f"{working_dir}", f"{project_dir}/{new_name+file_extension}")
+        
+        else:
+            QMessageBox.critical(
+                parent,
+                "File cannot be renamed",
+                f"{working_dir}",
+                buttons=QMessageBox.Discard,
+                defaultButton=QMessageBox.Discard,
+        )    
+            
+    
 
 def open_file(parent, selected_item):
     import os
@@ -128,6 +241,32 @@ def create_file(parent, working_dir):
                 buttons=QMessageBox.Discard,
                 defaultButton=QMessageBox.Discard,
         )
+  
+def create_py_file(parent, working_dir, filename = None):
+    import os.path
+
+
+    # Logic here for filling project up with classes and shi
+    
+    if filename == None:
+        filename, done = QtWidgets.QInputDialog.getText(
+            parent, 'Input Dialog', 'Filename: ') 
+
+    if done:
+        if not os.path.isfile(f"{working_dir}/" + filename+".py"):
+            file = open(f"{working_dir}/" + filename+".py", "w")
+            file.close()
+        
+        else:
+            QMessageBox.critical(
+                parent,
+                "File already exists.",
+                "File exists, try changing the name and try again.",
+                buttons=QMessageBox.Discard,
+                defaultButton=QMessageBox.Discard,
+        )
+    
+  
     
 def create_folder(parent, working_dir):
     import os
@@ -145,11 +284,13 @@ def create_folder(parent, working_dir):
                 buttons=QMessageBox.Discard,
                 defaultButton=QMessageBox.Discard,
         )
-      
+   
+def get_file_from_path(path):
+    return os.path.basename(path).split('/')[-1]   
       
 #SECTION - Treeview functions    
             
-def load_project_resources(startpath, tree):
+def load_project_resources(startpath, tree, main_file_name = None):
     """
     Load Project structure tree
     :param startpath: 
@@ -175,17 +316,21 @@ def load_project_resources(startpath, tree):
             parent_itm.setIcon(0, QIcon('assets/folder.ico'))
             
         else:
-           
-            if len(file_type) >= 2 and os.path.isfile(f'assets/{file_type[len(file_type)-1]}.ico'):
+            if element == main_file_name:
+                #print(element)
+                parent_itm.setIcon(0, QIcon('assets/icon32.png'))
+            elif len(file_type) >= 2 and os.path.isfile(f'assets/{file_type[len(file_type)-1]}.ico'):
                 parent_itm.setIcon(0, QIcon(f'assets/{file_type[len(file_type)-1]}.ico'))
             else:
                 parent_itm.setIcon(0, QIcon('assets/file.ico'))
+        
+        
                 
     return resources_items
 
-def reload_project_resources(previous_files=None, startpath = None, tree = None):    
+def reload_project_resources(previous_files=None, startpath = None, tree = None, main_file_name = None):    
     tree.clear()
-    files = load_project_resources(startpath, tree)
+    files = load_project_resources(startpath, tree, main_file_name)
     return files
         
 def search_tree_view(tree_widget, line_edit):

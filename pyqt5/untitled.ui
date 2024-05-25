@@ -17,14 +17,14 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Red Engine - {project name}</string>
+   <string>Red Engine - Empty Project</string>
   </property>
   <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="central_tab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="preview_window">
        <attribute name="title">
@@ -45,7 +45,7 @@
         <item row="1" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QWidget" name="pygame_widget" native="true"/>
+           <widget class="PygameWidget" name="pygame_widget" native="true"/>
           </item>
          </layout>
         </item>
@@ -64,12 +64,12 @@
           <property name="movable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="tab">
+          <widget class="QIdeWindow" name="tab">
            <attribute name="title">
             <string>Tab 1</string>
            </attribute>
           </widget>
-          <widget class="QWidget" name="tab_2">
+          <widget class="QIdeWindow" name="tab_2">
            <attribute name="title">
             <string>Tab 2</string>
            </attribute>
@@ -211,11 +211,16 @@
         <bool>false</bool>
        </property>
        <property name="columnCount">
-        <number>0</number>
+        <number>1</number>
        </property>
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>
+       <column>
+        <property name="text">
+         <string>Filename</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>
@@ -290,12 +295,51 @@
     <property name="title">
      <string>Project</string>
     </property>
+    <widget class="QMenu" name="menuRecent_Projects">
+     <property name="title">
+      <string>Recent Projects</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>assets/10125_icons/imageres_185.ico</normaloff>assets/10125_icons/imageres_185.ico</iconset>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuPreferences">
+     <property name="title">
+      <string>Preferences</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>assets/10125_icons/shell32_16826.ico</normaloff>assets/10125_icons/shell32_16826.ico</iconset>
+     </property>
+     <widget class="QMenu" name="menuThemes">
+      <property name="title">
+       <string>Themes</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>assets/10125_icons/imageres_117.ico</normaloff>assets/10125_icons/imageres_117.ico</iconset>
+      </property>
+      <addaction name="actionLoad_Themes"/>
+      <addaction name="actionRevert_Theme"/>
+     </widget>
+     <addaction name="actionSave_Layout"/>
+     <addaction name="actionLoad_Layout"/>
+     <addaction name="actionRevert_Layout"/>
+     <addaction name="separator"/>
+     <addaction name="menuThemes"/>
+     <addaction name="separator"/>
+     <addaction name="actionUser_Settings"/>
+     <addaction name="actionProject_Settings"/>
+    </widget>
     <addaction name="actionNew_Project"/>
     <addaction name="actionOpen_Project"/>
-    <addaction name="actionRecent_Projects"/>
+    <addaction name="menuRecent_Projects"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="separator"/>
+    <addaction name="menuPreferences"/>
    </widget>
    <widget class="QMenu" name="windows_button">
     <property name="title">
@@ -303,13 +347,15 @@
     </property>
     <addaction name="actionResources"/>
     <addaction name="actionAssets_Library"/>
-    <addaction name="actionProperties"/>
+    <addaction name="actionConsole"/>
    </widget>
    <widget class="QMenu" name="help_button">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionVisit_Source"/>
+    <addaction name="actionCredits"/>
+    <addaction name="actionDocumentation"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -317,6 +363,14 @@
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopt"/>
+    <addaction name="actionPaste"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind"/>
+    <addaction name="actionReplace"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="project_button"/>
    <addaction name="menuEdit"/>
@@ -380,15 +434,6 @@
     <string>Open Project</string>
    </property>
   </action>
-  <action name="actionRecent_Projects">
-   <property name="icon">
-    <iconset>
-     <normaloff>assets/10125_icons/imageres_185.ico</normaloff>assets/10125_icons/imageres_185.ico</iconset>
-   </property>
-   <property name="text">
-    <string>Recent Projects</string>
-   </property>
-  </action>
   <action name="actionRun_Project">
    <property name="icon">
     <iconset>
@@ -407,7 +452,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/Folder.ico</normaloff>assets/10125_icons/Folder.ico</iconset>
+     <normaloff>assets/10125_icons/imageres_1023.ico</normaloff>assets/10125_icons/imageres_1023.ico</iconset>
    </property>
    <property name="text">
     <string>Resources</string>
@@ -473,7 +518,7 @@
   <action name="actionNew_File">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/Add.ico</normaloff>assets/10125_icons/Add.ico</iconset>
+     <normaloff>assets/doc_add.ico</normaloff>assets/doc_add.ico</iconset>
    </property>
    <property name="text">
     <string>New File</string>
@@ -482,7 +527,7 @@
   <action name="actionNew_Folder">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/Add.ico</normaloff>assets/10125_icons/Add.ico</iconset>
+     <normaloff>assets/file_add.ico</normaloff>assets/file_add.ico</iconset>
    </property>
    <property name="text">
     <string>New Folder</string>
@@ -497,7 +542,184 @@
     <string>Delete Resource</string>
    </property>
   </action>
+  <action name="actionConsole">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_5323.ico</normaloff>assets/10125_icons/imageres_5323.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Console</string>
+   </property>
+  </action>
+  <action name="actionCredits">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_1010.ico</normaloff>assets/10125_icons/imageres_1010.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Credits</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/shell32_2.ico</normaloff>assets/10125_icons/shell32_2.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionSave_Layout">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_5350.ico</normaloff>assets/10125_icons/imageres_5350.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Save Layout</string>
+   </property>
+  </action>
+  <action name="actionLoad_Layout">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_132.ico</normaloff>assets/10125_icons/imageres_132.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Load Layout</string>
+   </property>
+  </action>
+  <action name="actionRevert_Layout">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_5301.ico</normaloff>assets/10125_icons/imageres_5301.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Revert Layout</string>
+   </property>
+  </action>
+  <action name="actionLoad_Themes">
+   <property name="text">
+    <string>Load Theme</string>
+   </property>
+  </action>
+  <action name="actionRevert_Theme">
+   <property name="text">
+    <string>Revert Theme</string>
+   </property>
+  </action>
+  <action name="actionUser_Settings">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_181.ico</normaloff>assets/10125_icons/imageres_181.ico</iconset>
+   </property>
+   <property name="text">
+    <string>User Settings</string>
+   </property>
+  </action>
+  <action name="actionProject_Settings">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_183.ico</normaloff>assets/10125_icons/imageres_183.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Project Settings</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/shell32_16762.ico</normaloff>assets/10125_icons/shell32_16762.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionCopt">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/shell32_243.ico</normaloff>assets/10125_icons/shell32_243.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/shell32_16763.ico</normaloff>assets/10125_icons/shell32_16763.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/mag glass.ico</normaloff>assets/10125_icons/mag glass.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Find</string>
+   </property>
+  </action>
+  <action name="actionReplace">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_5348.ico</normaloff>assets/10125_icons/imageres_5348.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Replace</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Main_py">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/py.png</normaloff>assets/py.png</iconset>
+   </property>
+   <property name="text">
+    <string>Generate Main.py</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Script">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/py1.png</normaloff>assets/py1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Generate Script</string>
+   </property>
+  </action>
+  <action name="actionRename">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_94.ico</normaloff>assets/10125_icons/imageres_94.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Rename</string>
+   </property>
+  </action>
+  <action name="actionSet_as_Main_py">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/py.ico</normaloff>assets/py.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Set as Main.py</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PygameWidget</class>
+   <extends>QWidget</extends>
+   <header>RedegsWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QIdeWindow</class>
+   <extends>QWidget</extends>
+   <header>WidgetsLib.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>resources_tree</tabstop>
  </tabstops>
