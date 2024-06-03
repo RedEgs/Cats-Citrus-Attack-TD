@@ -5,7 +5,48 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+
 import typing
+
+class FileChangeMonitor(QThread):
+    file_changed = pyqtSignal(bool)
+
+    def __init__(self, main_file, parent=None) -> None:
+        super().__init__(parent)
+        self.main_file = main_file
+
+    def run(self):
+        from watchgod import watch
+
+        for changes in watch(self.main_file):
+            self.file_changed.emit(True)
+  
+  
+
+
+class Browser(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('GitHub Page')
+        self.setGeometry(100, 100, 1024, 768)
+
+        layout = QVBoxLayout()
+        self.browser = QWebEngineView()
+        self.browser.setUrl(QUrl("https://github.com/RedEgs"))
+        layout.addWidget(self.browser)
+
+        self.setLayout(layout)
+
+
+
+
+
+
+
+
+
+
 
 def load_recent_projects_from_json():
     import json 
@@ -86,6 +127,7 @@ def save_project_json(window, project_path, project_name, main_project_file):
     with open(project_path + "/.redengine/project.json", "w") as file:
         json.dump(project_file_gen, file)
 
+        
 class QIdeWindow(QWidget):
     def __init__(self, parent_tabs:QTabWidget, filepath = None, index = None):
         super(QWidget, self).__init__(parent_tabs)
@@ -122,12 +164,14 @@ class QIdeWindow(QWidget):
         self.script_edit.setLexer(self.lexer)
 
         self.script_edit.setAutoCompletionSource(self.script_edit.AutoCompletionSource.AcsAll)
-        self.script_edit.setAutoCompletionThreshold(3)
+        self.script_edit.setAutoCompletionThreshold(2)
         self.script_edit.setAutoCompletionReplaceWord(True)
  
         self.script_edit.setLineWidth(0)
         self.script_edit.setUtf8(True) 
         self.script_edit.setTabWidth(4)
+        self.script_edit.setIndentationsUseTabs(True)
+        self.script_edit.setAutoIndent(True)
         self.script_edit.setIndentationGuides(True)  
         
         self.horizontalLayout.addWidget(self.script_edit)
@@ -245,16 +289,21 @@ def create_file(parent, working_dir):
 def create_py_file(parent, working_dir, filename = None):
     import os.path
 
-
     # Logic here for filling project up with classes and shi
-    
+   
     if filename == None:
         filename, done = QtWidgets.QInputDialog.getText(
             parent, 'Input Dialog', 'Filename: ') 
+    else:
+        done = True
 
     if done:
         if not os.path.isfile(f"{working_dir}/" + filename+".py"):
             file = open(f"{working_dir}/" + filename+".py", "w")
+            if filename == "main":
+                file.write(get_example_main())
+                file.close()
+                
             file.close()
         
         else:
@@ -286,7 +335,13 @@ def create_folder(parent, working_dir):
         )
    
 def get_file_from_path(path):
-    return os.path.basename(path).split('/')[-1]   
+    try:
+        return os.path.basename(path).split('/')[-1]   
+    except:
+        return None
+      
+
+      
       
 #SECTION - Treeview functions    
             
@@ -338,5 +393,69 @@ def search_tree_view(tree_widget, line_edit):
     for item in tree_widget.findItems("", QtCore.Qt.MatchContains):
         item.setHidden(search_query not in item.text(0).lower())
         
-#Se
+def get_example_main():
+    file = """
+import pygame, sys, os
+
+class MainGame():
+    def __init__(self) -> None:
+        print("hi")
+        pygame.init()
+        
+        print("hi")
+        self._init_display()
+        print("hello")
+        self.clock = pygame.Clock()
+        self.run = True
+        print("finito")
+
+    def _init_display(self):
+        self._hwnd = None
+        if len(sys.argv) > 1:
+            self._hwnd = int(sys.argv[1])
+            os.environ['SDL_WINDOWID'] = str(self._hwnd)
+        
+        self.display_width = 1280
+        self.display_height = 720
+        
+        
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (-1000, -1000)
+        self.display = pygame.display.set_mode((self.display_width, self.display_height), pygame.NOFRAME)
+        pygame.display.set_caption("Pygame Window")
+        
+    def send_key(self, key):
+        event = pygame.event.Event(pygame.KEYDOWN, key=key)
+        pygame.event.post(event)
+        
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.run = False
+
+    def update(self):
+        # Input updating logic here
+        pass
+    
+    def draw(self):
+        # Input drawing logic here
+        pygame.display.flip()
+    
+    def run_game(self):
+        while self.run:
+            self.clock.tick()
+            self.handle_events()
+            self.update()
+            self.draw()
+            
+            yield self.display
+
+        pygame.quit()
+        sys.exit()
+        
+    def close_game(self):
+        self.run = False
+        pygame.quit()
+    """
+    
+    return file
 

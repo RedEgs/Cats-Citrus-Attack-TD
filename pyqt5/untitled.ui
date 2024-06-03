@@ -118,9 +118,6 @@
    <property name="floating">
     <bool>false</bool>
    </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -226,69 +223,13 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="assets_library_dock">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>320</width>
-     <height>167</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>320</width>
-     <height>524287</height>
-    </size>
-   </property>
-   <property name="baseSize">
-    <size>
-     <width>250</width>
-     <height>350</height>
-    </size>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea|Qt::TopDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Assets Library</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="assets_library_dock_contents">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QLineEdit" name="assets_library_search_bar">
-       <property name="placeholderText">
-        <string>Search...</string>
-       </property>
-       <property name="clearButtonEnabled">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTableView" name="assets_library_listview">
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOn</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QMenuBar" name="menu_bar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
@@ -390,6 +331,44 @@
       <widget class="QTextEdit" name="textEdit"/>
      </item>
     </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="debug_menu_dock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>320</width>
+     <height>171</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>320</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>250</width>
+     <height>350</height>
+    </size>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea|Qt::TopDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Debug Menu</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="debug_menu_dock_contents">
+    <layout class="QHBoxLayout" name="horizontalLayout_4"/>
    </widget>
   </widget>
   <action name="actionSave">
@@ -703,6 +682,15 @@
    </property>
    <property name="text">
     <string>Set as Main.py</string>
+   </property>
+  </action>
+  <action name="actionOpen_in_File_Explorer">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/10125_icons/imageres_5332.ico</normaloff>assets/10125_icons/imageres_5332.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Open in File Explorer</string>
    </property>
   </action>
  </widget>

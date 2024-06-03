@@ -1,12 +1,12 @@
-from PyQt5.QtCore import Qt, QDir
-from PyQt5.QtWidgets import QWidget, QMainWindow, QFileDialog, QMessageBox
-from engine_design import Ui_main_window
+import importlib
 
+from engine_design import Ui_main_window
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 import os, json
+
 
 class Pyredengine(QMainWindow):
     def __init__(self, project_json_data = None, *args, **kwargs) -> None:
@@ -42,6 +42,9 @@ class Pyredengine(QMainWindow):
             
             self.ui.actionSet_as_Main_py.triggered.connect(self.set_main_project_file)
             self.ui.actionGenerate_Script.triggered.connect(self._generate_script_py)
+            self.ui.actionGenerate_Main_py.triggered.connect(self._generate_main_py)
+            self.ui.actionOpen_in_File_Explorer.triggered.connect(self._open_file_explorer)
+            
             
             self.ui.resources_tree.itemClicked.connect(self._select_item_resources_tree)
             self.ui.resources_tree.itemDoubleClicked.connect(self.open_file_in_editor)
@@ -52,9 +55,11 @@ class Pyredengine(QMainWindow):
             
             self.ui.actionResources.triggered.connect(self.ui.resources_dock.show)     
             self.ui.actionConsole.triggered.connect(self.ui.console_dock.show)
-            self.ui.actionAssets_Library.triggered.connect(self.ui.assets_library_dock.show)
+            self.ui.actionAssets_Library.triggered.connect(self.ui.debug_menu_dock.show)
 
+            self.ui.actionDocumentation.triggered.connect(self._open_online_docs)
 
+            self.ui.start_button.pressed.connect(self._run_game)
 
 
        
@@ -63,9 +68,12 @@ class Pyredengine(QMainWindow):
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         save_shortcut.activated.connect(self._save_project) 
         
+        reload_shortcut = QShortcut(QKeySequence("Ctrl+5"), self)
+        reload_shortcut.activated.connect(self._reload_project) 
+        
+        
     def _relaunch_window(self, data):
         self.close()
-        
         self.newWindow = Pyredengine(data)
         self.newWindow.show()
     
@@ -91,6 +99,22 @@ class Pyredengine(QMainWindow):
         self.ui.resource_search_bar.textChanged.connect(lambda: wl.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
 
         self.load_layout_settings()
+        
+        self._process_running = False
+      
+        self.monitor_thread = QThread()
+        self.monitor_worker = wl.FileChangeMonitor(self.project_main_file)
+        self.monitor_worker.moveToThread(self.monitor_thread)
+        self.monitor_thread.started.connect(self.monitor_worker.run)
+        self.monitor_worker.file_changed.connect(self.hot_reload_viewport)
+        self.monitor_worker.start()
+      
+      
+      
+      
+      
+      
+      
 
     def _load_project_folder(self, folder_path):
         try:
@@ -105,6 +129,7 @@ class Pyredengine(QMainWindow):
 
     def _load_project_file(self, fileName):
         try:
+            print(fileName)
             with open(fileName, 'r') as file:
                 data = file.read()
                 self._relaunch_window(data)
@@ -166,6 +191,11 @@ class Pyredengine(QMainWindow):
         self._reload_file_tree()
             # Implement logic for saving files and shi
        
+    def _reload_project(self):
+        self._reload_file_tree()
+        if self.ui.pygame_widget.can_run:
+            self.hot_reload_viewport()
+    
        
        
             
@@ -331,9 +361,80 @@ class Pyredengine(QMainWindow):
                 
         wl.create_py_file(self, path)
         self._reload_file_tree()     
+        
+    def _open_file_explorer(self):
+        import Libs.WidgetsLib as wl
+        import webbrowser, os
+    
+        webbrowser.open(os.path.realpath(self.project_dir))       
    
    
-                       
+   
+    def _run_game(self):
+        import Libs.WidgetsLib as wl
+        
+        
+        if self.project_main_file != None:
+            if not self.ui.pygame_widget.can_run:
+                import sys  
+
+                sys.path.insert(0, self.project_dir)
+                import main
+                
+                game = main.MainGame()
+                
+                self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
+                self.ui.start_button.setText("Stop")
+            else:
+                
+                self.ui.pygame_widget.close_process()
+                
+                self.ui.start_button.setText("Start")
+      
+    def hot_reload_viewport(self):
+        if self.project_main_file != None:
+            if self.ui.pygame_widget.can_run:
+                import sys 
+                sys.path.insert(0, self.project_dir)
+                import main
+
+                self.ui.pygame_widget.save_process_state()
+
+                
+                importlib.reload(main)
+
+                game = main.MainGame()
+
+                self.ui.pygame_widget.close_process()
+                
+                self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
+                self.ui.pygame_widget.load_process_state()
+   
+   
+   
+   
+   
+   
+   
+   
+    def _open_online_docs(self):
+        import Libs.WidgetsLib as wl
+        
+        self.window = wl.Browser()
+        self.window.exec_()
+    
+        
+        
+      
+        
+        
+        
+        
+        
+        
+        
+   
+           
     def _create_resources_context_menu(self, event):
         menu = QMenu(self.ui.resources_tree)
         
@@ -343,8 +444,10 @@ class Pyredengine(QMainWindow):
         item = self.resources_tree_selected_item_from_context
         
         if item:
-            if item.text(0).split(".")[1] == "py":
-                menu.addAction(self.ui.actionSet_as_Main_py)
+            try:
+                if item.text(0).split(".")[1] == "py":
+                    menu.addAction(self.ui.actionSet_as_Main_py)
+            except: pass
                
                 
             menu.addAction(self.ui.actionDelete_Resource)
@@ -356,6 +459,8 @@ class Pyredengine(QMainWindow):
             menu.addSeparator()
             menu.addAction(self.ui.actionNew_File)
             menu.addAction(self.ui.actionNew_Folder)
+            menu.addSeparator()
+            menu.addAction(self.ui.actionOpen_in_File_Explorer)
 
         # copy directory on context menu
 
