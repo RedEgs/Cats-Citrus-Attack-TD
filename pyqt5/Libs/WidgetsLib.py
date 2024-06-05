@@ -17,7 +17,7 @@ class FileChangeMonitor(QThread):
         self.main_file = main_file
 
     def run(self):
-        from watchgod import watch
+        from watchfiles import watch
 
         for changes in watch(self.main_file):
             self.file_changed.emit(True)

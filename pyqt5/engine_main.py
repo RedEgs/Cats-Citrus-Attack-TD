@@ -58,7 +58,7 @@ class Pyredengine(QMainWindow):
             
             self.ui.actionResources.triggered.connect(self.ui.resources_dock.show)     
             self.ui.actionConsole.triggered.connect(self.ui.console_dock.show)
-            self.ui.actionAssets_Library.triggered.connect(self.ui.debug_menu_dock.show)
+            self.ui.actionAssets_Library.triggered.connect(self.ui.inspector_dock.show)
 
             self.ui.actionDocumentation.triggered.connect(self._open_online_docs)
 
