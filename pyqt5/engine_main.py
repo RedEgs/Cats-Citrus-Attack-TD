@@ -6,7 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 import os, json
-
+import Libs.WidgetsLib as wl
 
 class Pyredengine(QMainWindow):
     def __init__(self, project_json_data = None, *args, **kwargs) -> None:
@@ -19,6 +19,9 @@ class Pyredengine(QMainWindow):
         
         self.ui = Ui_main_window()
         self.ui.setupUi(self)
+        
+        wl.check_recent_projects()
+        
         
         if self.project_json_data != None:
             self._load_project(self.project_json_data)
@@ -88,7 +91,9 @@ class Pyredengine(QMainWindow):
         self.project_name = project_json["project_name"]
         self.project_main_file = project_json["main_project_file"]
         self.project_main_file_name = wl.get_file_from_path(self.project_main_file)
+        
         wl.add_to_recent_projects(project_json["project_name"], project_json)
+
         self.ide_tabs = []
         # ---
         self.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - "+ project_json["project_name"], None))
@@ -196,7 +201,7 @@ class Pyredengine(QMainWindow):
         if self.ui.pygame_widget.can_run:
             self.hot_reload_viewport()
     
-       
+
        
             
     def save_layout_settings(self):      

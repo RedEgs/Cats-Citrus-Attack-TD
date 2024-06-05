@@ -77,6 +77,9 @@ def add_to_recent_projects(project_name, project_json):
             # Handle case where the file is not a valid JSON
             print("Warning: The file is not a valid JSON. Starting with an empty dictionary.")
     
+    
+    
+    
     # Check if the project already exists
     if project_name not in data:
         data[project_name] = {"json": project_json}
@@ -86,6 +89,32 @@ def add_to_recent_projects(project_name, project_json):
         print(f"Project '{project_name}' added.")
     else:
         print(f"Project '{project_name}' already exists.")
+    
+def check_recent_projects():
+    import json
+    file_path = 'recents.json'
+    
+    data = {}
+
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+        try:
+            # Read the existing file
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+        except json.JSONDecodeError:
+            # Handle case where the file is not a valid JSON
+            print("Warning: The file is not a valid JSON. Starting with an empty dictionary.")
+
+    if data != {}:
+        for key, value in data.items():
+            for x in value.items():
+                project_path = x[1]["project_path"]
+                project_name = x[1]["project_name"]
+                if not os.path.exists(project_path):
+                    with open(file_path, "w") as file:
+                        remove_value = data.pop(project_name)
+                        json.dump(data, file, indent=4  )                        
+
         
 def generate_project_path(window, project_path, project_name, main_project_file = None):
     from datetime import date

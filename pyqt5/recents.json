@@ -1,19 +1,11 @@
 {
-    "poo": {
+    "mine_proj": {
         "json": {
-            "project_name": "poo",
-            "project_path": "C:/Users/User/Desktop/Citrus Cats Dev/proj",
-            "date_created": "2024-05-22",
-            "date_edited": "2024-05-22"
-        }
-    },
-    "test_proj": {
-        "json": {
-            "project_name": "test_proj",
-            "project_path": "C:/Users/User/Desktop/A Level Proj/newproj",
+            "project_name": "mine_proj",
+            "project_path": "C:/Users/User/Desktop/Citrus Cats Dev/tets",
             "main_project_file": null,
-            "date_created": "2024-05-25",
-            "date_edited": "2024-05-25"
+            "date_created": "2024-06-05",
+            "date_edited": "2024-06-05"
         }
     }
 }
