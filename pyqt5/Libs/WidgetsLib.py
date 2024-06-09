@@ -19,9 +19,10 @@ class FileChangeMonitor(QThread):
     def run(self):
         from watchfiles import watch
 
-        for changes in watch(self.main_file):
-            self.file_changed.emit(True)
-  
+        if self.main_file != None and os.path.isfile(self.main_file):
+            for changes in watch(self.main_file):
+                self.file_changed.emit(True)
+    
   
 
 
@@ -106,6 +107,7 @@ def check_recent_projects():
             print("Warning: The file is not a valid JSON. Starting with an empty dictionary.")
 
     if data != {}:
+        deleted_entry = []
         for key, value in data.items():
             for x in value.items():
                 project_path = x[1]["project_path"]

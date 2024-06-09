@@ -1,11 +1,9 @@
-import importlib
-
 from engine_design import Ui_main_window
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-import os, json
+import os, json, importlib
 import Libs.WidgetsLib as wl
 
 class Pyredengine(QMainWindow):
@@ -407,7 +405,7 @@ class Pyredengine(QMainWindow):
 
                 
                 importlib.reload(main)
-
+    
                 game = main.MainGame()
 
                 self.ui.pygame_widget.close_process()

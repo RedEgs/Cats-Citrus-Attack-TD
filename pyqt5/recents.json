@@ -1,11 +1,11 @@
 {
-    "test_proj": {
+    "mine_proj": {
         "json": {
-            "project_name": "test_proj",
-            "project_path": "C:/Users/User/Desktop/A Level Proj/newproj",
-            "main_project_file": "C:/Users/User/Desktop/A Level Proj/newproj/main.py",
-            "date_created": "2024-05-25",
-            "date_edited": "2024-05-25"
+            "project_name": "mine_proj",
+            "project_path": "C:/Users/User/Desktop/Citrus Cats Dev/tets",
+            "main_project_file": null,
+            "date_created": "2024-06-05",
+            "date_edited": "2024-06-05"
         }
     }
 }

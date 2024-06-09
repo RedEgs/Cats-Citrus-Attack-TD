@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 
+
 import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from pathlib import Path
