@@ -2,12 +2,18 @@ from engine_design import Ui_main_window
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
-import os, json, importlib
-import Libs.WidgetsLib as wl
+import os, json, sys, importlib
+import sys
+import traceback
+
 
 class Pyredengine(QMainWindow):
     def __init__(self, project_json_data = None, *args, **kwargs) -> None:
+        import libs.project_management as pm
+        import libs.widgets as w
+        
         super().__init__(*args, **kwargs)
         self.project_json_data = project_json_data
         self.project_loaded = False    
@@ -18,11 +24,14 @@ class Pyredengine(QMainWindow):
         self.ui = Ui_main_window()
         self.ui.setupUi(self)
         
-        wl.check_recent_projects()
+        pm.check_recent_projects()
         
         
         if self.project_json_data != None:
-            self._load_project(self.project_json_data)
+            self._load_project(self.project_json_data)   
+
+        
+    
         else:
             self.save_default_settings()
             
@@ -56,30 +65,29 @@ class Pyredengine(QMainWindow):
             
             self.ui.actionResources.triggered.connect(self.ui.resources_dock.show)     
             self.ui.actionConsole.triggered.connect(self.ui.console_dock.show)
-            self.ui.actionAssets_Library.triggered.connect(self.ui.inspector_dock.show)
+            self.ui.actionAssets_Library.triggered.connect(self.ui.debug_menu_dock.show)
 
             self.ui.actionDocumentation.triggered.connect(self._open_online_docs)
 
             self.ui.start_button.pressed.connect(self._run_game)
-
-
-       
-       
+ 
     def _load_shortcuts(self):
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         save_shortcut.activated.connect(self._save_project) 
         
         reload_shortcut = QShortcut(QKeySequence("Ctrl+5"), self)
         reload_shortcut.activated.connect(self._reload_project) 
-        
-        
+          
     def _relaunch_window(self, data):
         self.close()
         self.newWindow = Pyredengine(data)
         self.newWindow.show()
     
     def _load_project(self, data):
-        import Libs.WidgetsLib as wl
+        import libs.project_management as pm
+        import libs.resource_management as rm
+        import libs.widgets as w
+        import libs.red_engine as red_engine
         
         project_json = json.loads(data)
         
@@ -88,34 +96,36 @@ class Pyredengine(QMainWindow):
         self.project_dir = project_json["project_path"]
         self.project_name = project_json["project_name"]
         self.project_main_file = project_json["main_project_file"]
-        self.project_main_file_name = wl.get_file_from_path(self.project_main_file)
+        self.project_main_file_name = rm.get_file_from_path(self.project_main_file)
         
-        wl.add_to_recent_projects(project_json["project_name"], project_json)
+        pm.add_to_recent_projects(project_json["project_name"], project_json)
 
         self.ide_tabs = []
         # ---
         self.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - "+ project_json["project_name"], None))
         
-        self.resources_tree_files = wl.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_main_file_name)
+        self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_main_file_name)
         self.ui.resources_tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.resources_tree.customContextMenuRequested.connect(self._create_resources_context_menu)
-        self.ui.resource_search_bar.textChanged.connect(lambda: wl.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
+        self.ui.resource_search_bar.textChanged.connect(lambda: w.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
 
         self.load_layout_settings()
         
         self._process_running = False
       
         self.monitor_thread = QThread()
-        self.monitor_worker = wl.FileChangeMonitor(self.project_main_file)
+        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file)
         self.monitor_worker.moveToThread(self.monitor_thread)
         self.monitor_thread.started.connect(self.monitor_worker.run)
         self.monitor_worker.file_changed.connect(self.hot_reload_viewport)
         self.monitor_worker.start()
       
+        self.console_output_stream = red_engine.ConsoleWrapper(self)
+        sys.stderr = self.console_output_stream
+        sys.stdout = self.console_output_stream  
       
-      
-      
-      
+        self.console_output_stream.signal.console_log.connect(self._print_to_log)
+
       
       
 
@@ -166,11 +176,11 @@ class Pyredengine(QMainWindow):
             QMessageBox.information(self, "No Folder Selected", "No folder was selected.", QMessageBox.Ok)
 
     def _prompt_project_name(self, folder_path):
-        import Libs.WidgetsLib as wl
+        import libs.project_management as pm
                 
         project_name, ok = QInputDialog.getText(self, "Project Name", "Enter the project name:")
         if ok and project_name:
-            json_path = wl.generate_project_path(self, folder_path, project_name)
+            json_path = pm.generate_project_path(self, folder_path, project_name)
             
             if json_path == -1:
                 self._load_project_file(folder_path + "/.redengine/project.json")
@@ -241,15 +251,15 @@ class Pyredengine(QMainWindow):
     
                       
     def open_file_in_editor(self, item):
-        import Libs.WidgetsLib as wl
+        import libs.widgets as w
         
-        path = wl.get_tree_item_path(self.project_dir, item).replace("//", "/")
+        path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
         self.resources_tree_dselected_item = [path , item.data(0,0)]
 
 
         if os.path.isfile(self.resources_tree_dselected_item[0]):
             self.ide_index =+ 1
-            new_ide_tab = wl.QIdeWindow(self.ui.scripting_tab, self.resources_tree_dselected_item, self.ide_index)
+            new_ide_tab = w.QIdeWindow(self.ui.scripting_tab, self.resources_tree_dselected_item, self.ide_index)
             text_edit = new_ide_tab.script_edit
             self.ide_tabs.append(new_ide_tab)
 
@@ -277,114 +287,116 @@ class Pyredengine(QMainWindow):
         self.resources_tree_selected_item = self.project_dir + "/" + item.data(0,0)
 
     def _rename_item_resources_tree(self, event):
-        import Libs.WidgetsLib as wl
+        import libs.widgets as w
+        import libs.resource_management as rm
         
         item = self.resources_tree_selected_item_from_context
         self._save_project()
         
         if item:
-            path = wl.get_tree_item_path(self.project_dir, item)
+            path = w.get_tree_item_path(self.project_dir, item)
             cur_name = item.text(0).split(".")
-            wl.rename_file(self, self.project_dir, cur_name)
+            rm.rename_file(self, self.project_dir, cur_name)
             self._reload_file_tree()
 
     def _delete_file_resources_tree(self, event):
-        import Libs.WidgetsLib as wl
+        import libs.widgets as w
+        import libs.resource_management as rm
         
         item = self.resources_tree_selected_item_from_context
         
         if item:
-            path = wl.get_tree_item_path(self.project_dir, item)
+            path = w.get_tree_item_path(self.project_dir, item)
 
-            wl.delete_file(self, path)
+            rm.delete_file(self, path)
             self._reload_file_tree()
         
     def _create_file_resources_tree(self, event=None):
-        import Libs.WidgetsLib as wl
+        import libs.widgets as w
+        import libs.resource_management as rm
                 
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
         
         if item != None:
             if not os.path.isfile(self.project_dir + f"/{item.data(0, 0)}"):
-                path = wl.get_tree_item_path(self.project_dir, item)
+                path = w.get_tree_item_path(self.project_dir, item)
                 
-        wl.create_file(self, path)
+        rm.create_file(self, path)
         self._reload_file_tree()
       
     def _create_folder_resources_tree(self, event):
-        import Libs.WidgetsLib as wl
-        
+        import libs.widgets as w
+        import libs.resource_management as rm
+                
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
         
         if item != None:
-            path = wl.get_tree_item_path(self.project_dir, item) #self.project_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
+            path = w.get_tree_item_path(self.project_dir, item) #self.project_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
             self.resources_tree.expandItem(item)
       
         
-        wl.create_folder(self, self.project_dir)
+        rm.create_folder(self, self.project_dir)
         self._reload_file_tree()
    
     def _reload_file_tree(self):
-        import Libs.WidgetsLib as wl
-        
-        self.resources_tree_files = wl.reload_project_resources(self.resources_tree_files, self.project_dir, self.ui.resources_tree, self.project_main_file_name)
+        import libs.widgets as w
+                
+        self.resources_tree_files = w.reload_project_resources(self.resources_tree_files, self.project_dir, self.ui.resources_tree, self.project_main_file_name)
 
     def set_main_project_file(self):
-        import Libs.WidgetsLib as wl
+        import libs.project_management as pm
         
         self.project_main_file = self.resources_tree_selected_item
-        
-        wl.save_project_json(self, self.project_dir, self.project_name, self.project_main_file)
+        pm.save_project_json(self, self.project_dir, self.project_name, self.project_main_file)
          
    
     def _generate_main_py(self):
-        import Libs.WidgetsLib as wl
+        import libs.widgets as w
+        import libs.resource_management as rm
                 
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
         
         if item != None:
             if not os.path.isfile(self.project_dir + f"/{item.data(0, 0)}"):
-                path = wl.get_tree_item_path(self.project_dir, item)
+                path = w.get_tree_item_path(self.project_dir, item)
                 
-        wl.create_py_file(self, path, "main")
+        rm.create_py_file(self, path, "main")
         self._reload_file_tree()   
     
     def _generate_script_py(self):
-        import Libs.WidgetsLib as wl
+        import libs.widgets as w
+        import libs.resource_management as rm
                 
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
         
         if item != None:
             if not os.path.isfile(self.project_dir + f"/{item.data(0, 0)}"):
-                path = wl.get_tree_item_path(self.project_dir, item)
+                path = w.get_tree_item_path(self.project_dir, item)
                 
-        wl.create_py_file(self, path)
+        rm.create_py_file(self, path)
         self._reload_file_tree()     
         
     def _open_file_explorer(self):
-        import Libs.WidgetsLib as wl
         import webbrowser, os
-    
         webbrowser.open(os.path.realpath(self.project_dir))       
    
    
-   
     def _run_game(self):
-        import Libs.WidgetsLib as wl
-        
+        import libs.process_wrapper as pw
         
         if self.project_main_file != None:
             if not self.ui.pygame_widget.can_run:
-                import sys  
-
+                import sys
                 sys.path.insert(0, self.project_dir)
                 import main
+
+                game = main.MainGame(self)
                 
-                game = main.MainGame()
+                self.process_wrapper = pw.ProcessWrapper(self, game)
                 
                 self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
                 self.ui.start_button.setText("Stop")
@@ -395,6 +407,7 @@ class Pyredengine(QMainWindow):
                 self.ui.start_button.setText("Start")
       
     def hot_reload_viewport(self):
+
         if self.project_main_file != None:
             if self.ui.pygame_widget.can_run:
                 import sys 
@@ -414,34 +427,26 @@ class Pyredengine(QMainWindow):
                 self.ui.pygame_widget.load_process_state()
    
    
+    def _print_to_log(self, text):
+        import libs.widgets as w
+        w.QLogItem(self.ui.scrollAreaWidgetContents, self.ui.verticalLayout, text)
    
-   
-   
+    
    
    
    
     def _open_online_docs(self):
-        import Libs.WidgetsLib as wl
+        import libs.red_engine as red_engine
         
-        self.window = wl.Browser()
+        self.window = red_engine.Browser()
         self.window.exec_()
-    
-        
-        
-      
-        
-        
-        
-        
-        
+
         
         
    
            
     def _create_resources_context_menu(self, event):
         menu = QMenu(self.ui.resources_tree)
-        
-        
         
         self.resources_tree_selected_item_from_context = self.ui.resources_tree.itemAt(event)
         item = self.resources_tree_selected_item_from_context
@@ -470,10 +475,9 @@ class Pyredengine(QMainWindow):
         menu.exec_(self.ui.resources_tree.mapToGlobal(event))
     
     def _create_recent_projects_context_menu(self):
-        import Libs.WidgetsLib as wl
-        import json
+        import libs.project_management as pm
         
-        r_projs = wl.load_recent_projects_from_json()
+        r_projs = pm.load_recent_projects_from_json()
         for project_name, project_details in r_projs.items():
             action = self.ui.menuRecent_Projects.addAction(project_name)
             
@@ -485,13 +489,22 @@ class Pyredengine(QMainWindow):
             self.save_layout_settings()
             self.check_unsaved_tabs()
             
-            
-            
         super().closeEvent(event)
         
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    print("Unhandled exception:", exc_value)
+    traceback.print_exception(exc_type, exc_value, exc_traceback)
+
+
 if __name__ == "__main__":
-   app = QApplication([])
-   widget = Pyredengine()
-   widget.show()
-   
-   app.exec_() 
+    os.chdir(os.getcwd()+"/redengine")
+    sys.excepthook = handle_exception
+
+    app = QApplication([])
+    widget = Pyredengine()
+    widget.show()
+    
+    app.exec_() 

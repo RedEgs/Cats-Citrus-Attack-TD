@@ -1,6 +1,9 @@
 from PyQt5.QtCore       import *
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui        import *
 from PyQt5.QtWidgets    import *
+from PyQt5.Qsci import *
+from PyQt5.QtWidgets import QWidget
     
 class PygameWidget(QWidget):
     def __init__(self, parent=None):
@@ -56,7 +59,7 @@ class PygameWidget(QWidget):
         if isinstance(event, QKeyEvent) and self.can_run:
             key_text = event.text()
             print(key_text)
-            self.game.send_event(key_text)
+            self.game._send_event(key_text)
             
     def mouseMoveEvent(self, event):
         """Catches mouse movement from the window/widget and sends to pygame.
@@ -87,7 +90,7 @@ class PygameWidget(QWidget):
                 image_x = relative_x * self.image.width() / scaled_image.width()
                 image_y = relative_y * self.image.height() / scaled_image.height()
                 
-                self.game.send_event(2, None, int(image_x), int(image_y))   
+                self.game._send_event(2, None, int(image_x), int(image_y))   
                   
     def redraw(self):
         """Handles the drawing of the screen to an image
@@ -117,8 +120,9 @@ class PygameWidget(QWidget):
             rect_height = rect.height()
             
             # Scale the image to fit the widget size
-            scaled_image = self.image.scaled(rect_width, rect_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            
+            try:
+                scaled_image = self.image.scaled(rect_width, rect_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            except: pass
             # Calculate the position to center the scaled image
             center_x = (rect_width - scaled_image.width()) // 2
             center_y = (rect_height - scaled_image.height()) // 2
@@ -186,3 +190,161 @@ class PygameWidget(QWidget):
         for name, value in state.items():
             setattr(self.game, name, value)
         print(f"Loaded game state from {f.name}")
+
+class QIdeWindow(QWidget):
+    def __init__(self, parent_tabs:QTabWidget, filepath = None, index = None):
+        super(QWidget, self).__init__(parent_tabs)
+        self._parent_tabs = parent_tabs
+        self._filepath = filepath
+        self._index = index
+        
+        if self._filepath == None:
+            self._saved = False
+            self.tab_title = f"Script IDE - Untitled"
+        else:
+            self._saved = False
+            self.tab_title = f"Script IDE - {filepath[1]}"
+        
+        self.ide_tab = QWidget()
+        self.ide_tab.setObjectName(f"ide_tab")
+            
+        self.horizontalLayout = QHBoxLayout(self.ide_tab)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        
+        self.script_edit = QsciScintilla(self.ide_tab)
+        self.script_edit.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.script_edit.setObjectName(u"script_edit")
+        self.script_edit.setGeometry(QRect(10, 9, 710, 611))
+        self.script_edit.setFrameShape(QFrame.StyledPanel)
+        self.script_edit.setFrameShadow(QFrame.Raised)
+
+        self.lexer = QsciLexerPython(self.script_edit)
+
+        self.script_edit.setMarginType(0, QsciScintilla.NumberMargin)
+        self.script_edit.setMarginWidth(0, "0000")
+        self.script_edit.setMarginsForegroundColor(QColor("#ff888888"))
+
+        self.script_edit.setLexer(self.lexer)
+
+        self.script_edit.setAutoCompletionSource(self.script_edit.AutoCompletionSource.AcsAll)
+        self.script_edit.setAutoCompletionThreshold(2)
+        self.script_edit.setAutoCompletionReplaceWord(True)
+ 
+        self.script_edit.setLineWidth(0)
+        self.script_edit.setUtf8(True) 
+        self.script_edit.setTabWidth(4)
+        self.script_edit.setIndentationsUseTabs(False)
+        self.script_edit.setAutoIndent(True)
+        self.script_edit.setIndentationGuides(True)  
+        
+        self.horizontalLayout.addWidget(self.script_edit)
+        
+        self.tab_index = parent_tabs.addTab(self.ide_tab, self.tab_title)
+        self.load_file()
+        
+        self.script_edit.textChanged.connect(self.mark_as_unsaved)
+        self._parent_tabs.setCurrentIndex(self.tab_index)
+        
+        self._parent_tabs.tabCloseRequested.connect(self.close_tab)
+    
+    def close_tab(self): 
+        current_widget = self._parent_tabs.indexOf(self.ide_tab)
+        if self._parent_tabs.currentIndex() == current_widget:
+            self._parent_tabs.removeTab(current_widget)
+    
+    def mark_as_unsaved(self):
+        self._saved = False
+        self._parent_tabs.setTabText(self.tab_index, self.tab_title+"*")
+    
+    def load_file(self):
+        # Load contents into file 
+        contents = open_file(self, self._filepath[0])
+        self.script_edit.setText(contents)
+        
+    def save_file(self):
+        file = open(self._filepath[0], "w")
+        file.write(self.script_edit.text())
+        file.close()
+        
+        self._saved = True
+        self._parent_tabs.setTabText(self.tab_index, self.tab_title)
+   
+class QLogItem(QLabel):
+    def __init__(self, parent: QWidget, verticalLayout = None, text = None) -> None:
+        super().__init__(parent)
+        
+
+        self.setText(text)
+        self.setMinimumSize(QSize(0, 50))
+        self.setAutoFillBackground(True)
+        self.setFrameShape(QFrame.Box)
+        self.setFrameShadow(QFrame.Raised)
+        self.setTextFormat(Qt.PlainText)
+        self.setScaledContents(False)
+        self.setWordWrap(False)
+        self.setMargin(10)
+        self.setIndent(0)
+
+        verticalLayout.addWidget(self)
+    
+   
+         
+def load_project_resources(startpath, tree, main_file_name = None):
+    """
+    Load Project structure tree
+    :param startpath: 
+    :param tree: 
+    :return: 
+    """
+    import os
+    from PyQt5.QtWidgets import QTreeWidgetItem
+    from PyQt5.QtGui import QIcon
+    
+    
+    resources_items = []
+    for element in os.listdir(startpath):
+        path_info = str(startpath) + "/" + element
+        parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
+        file_type = element.split(".")
+        
+        
+        
+        resources_items.append(element)
+        if os.path.isdir(path_info):
+            load_project_resources(path_info, parent_itm)
+            parent_itm.setIcon(0, QIcon('assets/folder.ico'))
+            
+        else:
+            if element == main_file_name:
+                #print(element)
+                parent_itm.setIcon(0, QIcon('assets/icon32.png'))
+            elif len(file_type) >= 2 and os.path.isfile(f'assets/{file_type[len(file_type)-1]}.ico'):
+                parent_itm.setIcon(0, QIcon(f'assets/{file_type[len(file_type)-1]}.ico'))
+            else:
+                parent_itm.setIcon(0, QIcon('assets/file.ico'))
+        
+        
+                
+    return resources_items
+
+def reload_project_resources(previous_files=None, startpath = None, tree = None, main_file_name = None):    
+    tree.clear()
+    files = load_project_resources(startpath, tree, main_file_name)
+    return files
+        
+def search_tree_view(tree_widget, line_edit):
+    search_query = line_edit.text().lower()
+    for item in tree_widget.findItems("", Qt.MatchContains):
+        item.setHidden(search_query not in item.text(0).lower())
+        
+def get_tree_parent_path(item):
+    parent = item.parent()
+    if parent is None:
+        return ""
+    else:
+        return get_tree_parent_path(parent) + "/" + parent.data(0, 0)
+
+def get_tree_item_path(working_dir, item):
+    return working_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
+  
+    

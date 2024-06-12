@@ -1,14 +1,9 @@
-from Libs.WidgetsLib import *
-from Libs.RedegsWidgets import PygameWidget
+from libs.widgets import PygameWidget
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 
-
-import sys, os
-from PyQt5 import QtCore, QtGui, QtWidgets
-from pathlib import Path
 
 
 
@@ -191,8 +186,8 @@ class Ui_main_window(object):
         self.actionOpen_in_File_Explorer.setIcon(icon31)
         self.central_widget = QWidget(main_window)
         self.central_widget.setObjectName(u"central_widget")
-        self.verticalLayout = QVBoxLayout(self.central_widget)
-        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.horizontalLayout_2 = QHBoxLayout(self.central_widget)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.central_tab = QTabWidget(self.central_widget)
         self.central_tab.setObjectName(u"central_tab")
         self.preview_window = QWidget()
@@ -234,7 +229,7 @@ class Ui_main_window(object):
 
         self.central_tab.addTab(self.scripting_window, "")
 
-        self.verticalLayout.addWidget(self.central_tab)
+        self.horizontalLayout_2.addWidget(self.central_tab)
 
         main_window.setCentralWidget(self.central_widget)
         self.resources_dock = QDockWidget(main_window)
@@ -311,7 +306,7 @@ class Ui_main_window(object):
         main_window.addDockWidget(Qt.LeftDockWidgetArea, self.resources_dock)
         self.menu_bar = QMenuBar(main_window)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1280, 22))
+        self.menu_bar.setGeometry(QRect(0, 0, 1280, 26))
         self.project_button = QMenu(self.menu_bar)
         self.project_button.setObjectName(u"project_button")
         self.menuRecent_Projects = QMenu(self.project_button)
@@ -340,87 +335,58 @@ class Ui_main_window(object):
         self.console_dock.setObjectName(u"console_dock")
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName(u"dockWidgetContents")
-        self.horizontalLayout_2 = QHBoxLayout(self.dockWidgetContents)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.textEdit = QTextEdit(self.dockWidgetContents)
-        self.textEdit.setObjectName(u"textEdit")
+        self.gridLayout_2 = QGridLayout(self.dockWidgetContents)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.consoleScrollArea = QScrollArea(self.dockWidgetContents)
+        self.consoleScrollArea.setObjectName(u"consoleScrollArea")
+        self.consoleScrollArea.setFrameShape(QFrame.Box)
+        self.consoleScrollArea.setFrameShadow(QFrame.Sunken)
+        self.consoleScrollArea.setLineWidth(1)
+        self.consoleScrollArea.setMidLineWidth(0)
+        self.consoleScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.consoleScrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1233, 85))
+        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setSizeConstraint(QLayout.SetFixedSize)
 
-        self.horizontalLayout_2.addWidget(self.textEdit)
+
+        self.consoleScrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        self.gridLayout_2.addWidget(self.consoleScrollArea, 1, 0, 1, 2)
+
+        self.clearLogBtn = QPushButton(self.dockWidgetContents)
+        self.clearLogBtn.setObjectName(u"clearLogBtn")
+
+        self.gridLayout_2.addWidget(self.clearLogBtn, 0, 0, 1, 1)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer, 0, 1, 1, 1)
+
+        self.consoleInput = QLineEdit(self.dockWidgetContents)
+        self.consoleInput.setObjectName(u"consoleInput")
+
+        self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 2)
 
         self.console_dock.setWidget(self.dockWidgetContents)
         main_window.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
-        self.inspector_dock = QDockWidget(main_window)
-        self.inspector_dock.setObjectName(u"inspector_dock")
-        sizePolicy.setHeightForWidth(self.inspector_dock.sizePolicy().hasHeightForWidth())
-        self.inspector_dock.setSizePolicy(sizePolicy)
-        self.inspector_dock.setMinimumSize(QSize(320, 172))
-        self.inspector_dock.setMaximumSize(QSize(320, 524287))
-        self.inspector_dock.setBaseSize(QSize(250, 350))
-        self.inspector_dock.setAllowedAreas(Qt.LeftDockWidgetArea|Qt.RightDockWidgetArea|Qt.TopDockWidgetArea)
-        self.inspector_dock_contents = QWidget()
-        self.inspector_dock_contents.setObjectName(u"inspector_dock_contents")
-        self.horizontalLayout_4 = QHBoxLayout(self.inspector_dock_contents)
+        self.debug_menu_dock = QDockWidget(main_window)
+        self.debug_menu_dock.setObjectName(u"debug_menu_dock")
+        sizePolicy.setHeightForWidth(self.debug_menu_dock.sizePolicy().hasHeightForWidth())
+        self.debug_menu_dock.setSizePolicy(sizePolicy)
+        self.debug_menu_dock.setMinimumSize(QSize(320, 171))
+        self.debug_menu_dock.setMaximumSize(QSize(320, 524287))
+        self.debug_menu_dock.setBaseSize(QSize(250, 350))
+        self.debug_menu_dock.setAllowedAreas(Qt.LeftDockWidgetArea|Qt.RightDockWidgetArea|Qt.TopDockWidgetArea)
+        self.debug_menu_dock_contents = QWidget()
+        self.debug_menu_dock_contents.setObjectName(u"debug_menu_dock_contents")
+        self.horizontalLayout_4 = QHBoxLayout(self.debug_menu_dock_contents)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.gridLayout_2 = QGridLayout()
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(-1, -1, 0, -1)
-        self.lineEdit = QLineEdit(self.inspector_dock_contents)
-        self.lineEdit.setObjectName(u"lineEdit")
-
-        self.gridLayout_2.addWidget(self.lineEdit, 2, 2, 1, 1)
-
-        self.checkBox = QCheckBox(self.inspector_dock_contents)
-        self.checkBox.setObjectName(u"checkBox")
-
-        self.gridLayout_2.addWidget(self.checkBox, 2, 1, 1, 1)
-
-        self.line = QFrame(self.inspector_dock_contents)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout_2.addWidget(self.line, 4, 1, 1, 2)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_2.addItem(self.verticalSpacer, 3, 1, 1, 1)
-
-        self.line_2 = QFrame(self.inspector_dock_contents)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShadow(QFrame.Sunken)
-        self.line_2.setLineWidth(1)
-        self.line_2.setFrameShape(QFrame.HLine)
-
-        self.gridLayout_2.addWidget(self.line_2, 1, 1, 1, 2)
-
-        self.label = QLabel(self.inspector_dock_contents)
-        self.label.setObjectName(u"label")
-        font1 = QFont()
-        font1.setPointSize(14)
-        font1.setItalic(False)
-        font1.setUnderline(True)
-        self.label.setFont(font1)
-        self.label.setScaledContents(False)
-        self.label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-        self.label.setOpenExternalLinks(False)
-
-        self.gridLayout_2.addWidget(self.label, 0, 1, 1, 2)
-
-        self.lineEdit_2 = QLineEdit(self.inspector_dock_contents)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
-
-        self.gridLayout_2.addWidget(self.lineEdit_2, 6, 2, 1, 1)
-
-        self.label_2 = QLabel(self.inspector_dock_contents)
-        self.label_2.setObjectName(u"label_2")
-
-        self.gridLayout_2.addWidget(self.label_2, 6, 1, 1, 1)
-
-
-        self.horizontalLayout_4.addLayout(self.gridLayout_2)
-
-        self.inspector_dock.setWidget(self.inspector_dock_contents)
-        main_window.addDockWidget(Qt.LeftDockWidgetArea, self.inspector_dock)
+        self.debug_menu_dock.setWidget(self.debug_menu_dock_contents)
+        main_window.addDockWidget(Qt.LeftDockWidgetArea, self.debug_menu_dock)
 
         self.menu_bar.addAction(self.project_button.menuAction())
         self.menu_bar.addAction(self.menuEdit.menuAction())
@@ -483,7 +449,7 @@ class Ui_main_window(object):
         self.actionOpen_Project.setText(QCoreApplication.translate("main_window", u"Open Project", None))
         self.actionRun_Project.setText(QCoreApplication.translate("main_window", u"Run Project", None))
         self.actionResources.setText(QCoreApplication.translate("main_window", u"Resources", None))
-        self.actionAssets_Library.setText(QCoreApplication.translate("main_window", u"Inspector", None))
+        self.actionAssets_Library.setText(QCoreApplication.translate("main_window", u"Assets Library", None))
         self.actionProperties.setText(QCoreApplication.translate("main_window", u"Properties", None))
         self.actionUndo.setText(QCoreApplication.translate("main_window", u"Undo", None))
         self.actionRedo.setText(QCoreApplication.translate("main_window", u"Redo", None))
@@ -530,10 +496,7 @@ class Ui_main_window(object):
         self.help_button.setTitle(QCoreApplication.translate("main_window", u"Help", None))
         self.menuEdit.setTitle(QCoreApplication.translate("main_window", u"Edit", None))
         self.console_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Console", None))
-        self.inspector_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Inspector", None))
-        self.lineEdit.setPlaceholderText(QCoreApplication.translate("main_window", u"Widget Name", None))
-        self.checkBox.setText(QCoreApplication.translate("main_window", u"Enabled", None))
-        self.label.setText(QCoreApplication.translate("main_window", u"Inspector", None))
-        self.label_2.setText(QCoreApplication.translate("main_window", u"Example", None))
+        self.clearLogBtn.setText(QCoreApplication.translate("main_window", u"Clear Log", None))
+        self.debug_menu_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Debug Menu", None))
     # retranslateUi
 
