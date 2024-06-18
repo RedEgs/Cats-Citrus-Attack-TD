@@ -3,7 +3,7 @@ import pygame, sys, os
 
 
 class MainGame():
-    def __init__(self) -> None:
+    def __init__(self, parent) -> None:
         pygame.init()
 
         self._init_display()
@@ -82,7 +82,7 @@ class MainGame():
             self.update()
             self.draw()
             
-            #yield self.display
+            yield self.display
 
         pygame.quit()
         sys.exit()

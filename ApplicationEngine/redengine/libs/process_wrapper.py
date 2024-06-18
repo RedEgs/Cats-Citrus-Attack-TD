@@ -1,23 +1,32 @@
-from contextlib import contextmanager
 import libs.classes.main_game as mg  
 import sys, importlib
+
+import pyredengine as pyr
+
 
 class GameHandler():
     def __init__(self, main_file_path: str, project_file_path: str) -> None:
         self.main_file_path = main_file_path
         self.project_file_path = project_file_path
         self.process_attached = False
+        self.is_app_process = False
     
     def start_process(self):
         sys.path.insert(0, self.project_file_path) # Makes the project directory importable
         import main # Import the main project file
+        importlib.reload(main) # Reload imports, which will update new code
         self.game = main.MainGame(self) # Instance the game within the handler
+        
+        if issubclass(main.MainGame, pyr.App):
+            self.is_app_process = True
+
         self.process_attached = True
 
 
     def stop_process(self):
         self.game.close_game()
         self.process_attached = False
+        self.is_app_process = False
         
     def hot_reload(self):
         if not self.process_attached:
@@ -31,14 +40,23 @@ class GameHandler():
         self.load_process_state()
 
     def send_event(self, event):
-        print(event)
-        if type(event) == str:
-            self.game._send_event(event)
-        elif type(event) == tuple:
-            self.game._send_event(2, None, int(event[0]), int(event[1]))   
+        if not self.is_app_process:
+            if type(event) == str:
+                self.game._send_event(event)
+            elif type(event) == tuple:
+                self.game._send_event(2, None, int(event[0]), int(event[1]))   
+        else:
+            if type(event) == str:
+                self.game.send_key(event)
+            elif type(event) == tuple:
+                pass
+                #self.game._send_event(2, None, int(event[0]), int(event[1]))   
             
     def run_game(self):
-        return self.game.run_game()
+        if self.is_app_process:
+            return self.game.qt_run()
+        else:
+            return self.game.run_game()
 
     def get_game_process(self):
         return self.game

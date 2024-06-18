@@ -30,6 +30,19 @@ class ConsoleWrapper():
     def __init__(self, main):
         self.main = main
         self.signal = ConsoleLog()
+        self.console_list = []
+
+    def append_object(self, obj):
+        if len(self.console_list) > 30:
+            self.console_list[len(self.console_list)-1].deleteLater()
+            self.console_list.pop(len(self.console_list)-1)
+            
+        self.console_list.append(obj)
+
+    def empty_objects(self):
+        for i in self.console_list:
+            i.deleteLater()
+            self.console_list.remove(i)
 
 
     def write(self, text):

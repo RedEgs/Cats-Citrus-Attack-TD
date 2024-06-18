@@ -219,10 +219,9 @@ class QIdeWindow(QWidget):
         self._parent_tabs.setTabText(self.tab_index, self.tab_title)
    
 class QLogItem(QLabel):
-    def __init__(self, parent: QWidget, verticalLayout = None, text = None) -> None:
+    def __init__(self, parent: QWidget, verticalLayout=None, text=None) -> None:
         super().__init__(parent)
         
-
         self.setText(text)
         self.setMinimumSize(QSize(0, 50))
         self.setAutoFillBackground(True)
@@ -230,10 +229,13 @@ class QLogItem(QLabel):
         self.setFrameShadow(QFrame.Raised)
         self.setTextFormat(Qt.PlainText)
         self.setScaledContents(False)
-        self.setWordWrap(False)
+        self.setWordWrap(True)  # Set word wrap to true to handle long text
         self.setMargin(10)
         self.setIndent(0)
 
+        # Set size policy to expanding
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        
         verticalLayout.addWidget(self)
     
    

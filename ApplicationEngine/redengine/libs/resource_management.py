@@ -82,7 +82,7 @@ def create_file(parent, working_dir):
         )
   
 def create_py_file(parent, working_dir, filename = None):
-    import script_generation
+    import libs.script_generation as script_generation
 
     if filename == None:
         filename, done = QInputDialog.getText(

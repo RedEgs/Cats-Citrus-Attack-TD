@@ -70,6 +70,8 @@ class Pyredengine(QMainWindow):
             self.ui.actionDocumentation.triggered.connect(self._open_online_docs)
 
             self.ui.start_button.pressed.connect(self._run_game)
+            
+            self.ui.clearLogBtn.pressed.connect(self._clear_log)
  
     def _load_shortcuts(self):
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
@@ -419,11 +421,20 @@ class Pyredengine(QMainWindow):
                 # self.ui.pygame_widget.load_process_state()
    
    
-    def _print_to_log(self, text):
+    def _print_to_log(self, text: str):
         import libs.widgets as w
-        w.QLogItem(self.ui.scrollAreaWidgetContents, self.ui.verticalLayout, text)
+        if bool(text.strip()):
+            obj = w.QLogItem(self.ui.scrollAreaWidgetContents, self.ui.verticalLayout, text)
+            self.console_output_stream.append_object(obj)
+            self._autoscroll_console()
    
-    
+    def _autoscroll_console(self):
+        scroll_bar = self.ui.consoleScrollArea.verticalScrollBar()
+        scroll_bar.setValue(scroll_bar.maximum())
+
+    def _clear_log(self):
+        self.console_output_stream.empty_objects()
+   
    
    
    
