@@ -11,7 +11,6 @@ from cctd.script.scenes.example import ExampleScene
 from cctd.script.scenes.menu import Menu
 from cctd.script.scenes.lobby import LobbyScene
 from cctd.script.scenes.game import EndlessGameScene
-  
 pygame.init()
 pygame.mixer.init()
 
