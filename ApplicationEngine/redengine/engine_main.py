@@ -390,41 +390,33 @@ class Pyredengine(QMainWindow):
         
         if self.project_main_file != None:
             if not self.ui.pygame_widget.can_run:
-                import sys
-                sys.path.insert(0, self.project_dir)
-                import main
+                self.ui.pygame_widget.set_process(self.project_main_file, self.project_dir)
+                self.ui.start_button.setText("Stop") 
 
-                game = main.MainGame(self)
-                
-                self.process_wrapper = pw.ProcessWrapper(self, game)
-                
-                self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
-                self.ui.start_button.setText("Stop")
             else:
-                
                 self.ui.pygame_widget.close_process()
-                
                 self.ui.start_button.setText("Start")
-      
-    def hot_reload_viewport(self):
-
-        if self.project_main_file != None:
-            if self.ui.pygame_widget.can_run:
-                import sys 
-                sys.path.insert(0, self.project_dir)
-                import main
-
-                self.ui.pygame_widget.save_process_state()
-
-                
-                importlib.reload(main)
     
-                game = main.MainGame()
-
-                self.ui.pygame_widget.close_process()
+    def hot_reload_viewport(self):
+        print("reload")
+        if self.project_main_file != None and self.ui.pygame_widget.can_run:
+            self.ui.pygame_widget.reload_process() 
                 
-                self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
-                self.ui.pygame_widget.load_process_state()
+                # import sys 
+                # sys.path.insert(0, self.project_dir)
+                # import main
+
+                # self.ui.pygame_widget.save_process_state()
+
+                
+                # importlib.reload(main)
+    
+                # game = main.MainGame()
+
+                # self.ui.pygame_widget.close_process()
+                
+                # self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
+                # self.ui.pygame_widget.load_process_state()
    
    
     def _print_to_log(self, text):
@@ -500,7 +492,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 
 if __name__ == "__main__":
-    os.chdir(os.getcwd()+"/redengine")
+    os.chdir(os.getcwd())
     sys.excepthook = handle_exception
 
     app = QApplication([])

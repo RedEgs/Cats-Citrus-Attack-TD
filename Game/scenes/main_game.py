@@ -3,7 +3,7 @@ from enum import Enum
 
 import engine.libs.Maths as Maths
 import engine.libs.Utils as utils
-import engine.libs.EntityService as EntityService 
+ 
 import engine.libs.SceneService as SceneService 
 import engine.libs.GuiService as GuiService 
 import engine.libs.TweenService as TweenService

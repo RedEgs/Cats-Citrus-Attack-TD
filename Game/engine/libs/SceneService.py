@@ -33,8 +33,6 @@ class SceneService(Service):
             self.scenes.update({str(name): scene})
             self.all_scenes.append(scene)
         
-            
-
     def get_scene_by_name(self, name):
         if name in self.scenes:
             return self.scenes.get(name)

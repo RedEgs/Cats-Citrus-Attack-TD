@@ -1,2 +1,0 @@
-### <u>How are cards given and handed out?</u>
-At the start of your run, you will be handed 1 of your selected cards, regardless of rarity etc, you will then periodically be handed out any card of any choice, again whether that be attack, support etc. Every 5 rounds you will be gauranteed a tower card which will have a chance to be a higher rarity the further you are in the game. This is to prevent getting extremely low rarity cards later in the game. Although the hero card can only be handed out once.

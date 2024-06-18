@@ -1,8 +1,5 @@
-import logging, random, pygame, json, os, sys
-from colorama import Fore, Back, Style
-import cProfile, asyncio
+import pygame, json, os, sys
 
-import engine.libs.EntityService as EntityService
 import engine.libs.SceneService as SceneService
 import engine.libs.GuiService as GuiService
 import engine.libs.TweenService as TweenService
@@ -10,23 +7,16 @@ import engine.libs.TransitionService as TransitionService
 import engine.libs.DebugService as DebugService
 import engine.libs.ViewportModule as ViewportModule
  
-class EngineLogger:
-    def __init__(self):
-        logging.basicConfig(filename="recent.log", filemode="w", 
-                            format="%(asctime)s | %(levelname)s - %(message)s",                            
-                            level=logging.INFO)
-        self.engine_logger = logging.getLogger()
-        logging.info("Initialised the logger!")
-        
+
         
 class App:
     """
     Main game/app loop class for the PyRed Engine.
     """
 
-    def __init__(self, override_config = False, qt_mode = False):
+    def __init__(self, override_config = False, preview_mode = False):
         self._override_config = override_config
-        self._qt_mode = qt_mode
+        self._preview_mode = preview_mode
         self._override_config_text = """{
             "app": {
                 "settings": {
@@ -66,14 +56,10 @@ class App:
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
-        self.engine_logger = EngineLogger().engine_logger
- 
+
         self.load_engine()
         self.load_services()
-       
-
         self.load_scenes()
-        #self.gui_service.load_scene_elements()
 
     def load_config(self):
         """
@@ -138,8 +124,6 @@ class App:
     def send_key(self, key):
         event = pygame.event.Event(pygame.KEYDOWN, key=key)
         pygame.event.post(event)
-        print("sent event:" + str(event))   
-
         
 
     def run(self):
@@ -194,10 +178,6 @@ class App:
     def draw(self):
         self.scene_service.draw_scene(self.viewport.get_main_camera_surface())
         self.gui_service.draw(self.get_screen(), self.viewport, self.get_current_scene())
-        
-
-
-
         self.viewport.draw()
 
     def get_gui_service(self):

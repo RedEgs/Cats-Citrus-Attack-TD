@@ -1,7 +1,7 @@
 import pytweening, pygame, sys, os, math
 
 import engine.libs.Utils as utils
-import engine.libs.EntityService as EntityService 
+ 
 import engine.libs.SceneService as SceneService 
 import engine.libs.GuiService as GuiService 
 import engine.libs.TweenService as TweenService
