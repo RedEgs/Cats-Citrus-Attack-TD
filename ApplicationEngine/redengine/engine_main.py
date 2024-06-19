@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import os, json, sys, importlib
-import sys
 import traceback
 
 
@@ -116,7 +115,7 @@ class Pyredengine(QMainWindow):
         self._process_running = False
       
         self.monitor_thread = QThread()
-        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file)
+        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file, self.project_dir)
         self.monitor_worker.moveToThread(self.monitor_thread)
         self.monitor_thread.started.connect(self.monitor_worker.run)
         self.monitor_worker.file_changed.connect(self.hot_reload_viewport)
@@ -403,24 +402,7 @@ class Pyredengine(QMainWindow):
         print("reload")
         if self.project_main_file != None and self.ui.pygame_widget.can_run:
             self.ui.pygame_widget.reload_process() 
-                
-                # import sys 
-                # sys.path.insert(0, self.project_dir)
-                # import main
 
-                # self.ui.pygame_widget.save_process_state()
-
-                
-                # importlib.reload(main)
-    
-                # game = main.MainGame()
-
-                # self.ui.pygame_widget.close_process()
-                
-                # self.ui.pygame_widget.set_process(game.run_game(), game, self.project_main_file)
-                # self.ui.pygame_widget.load_process_state()
-   
-   
     def _print_to_log(self, text: str):
         import libs.widgets as w
         if bool(text.strip()):
@@ -446,32 +428,50 @@ class Pyredengine(QMainWindow):
 
         
         
-   
+        
+    def _create_creation_context_menu(self, menu):   
+        creation_context_menu = QMenu(menu)
+        creation_context_menu.setTitle("Create")
+        menu.addMenu(creation_context_menu)
+        
+        creation_context_menu.addActions([self.ui.actionNew_File, self.ui.actionNew_Folder])
+        creation_context_menu.addSeparator()
+        creation_context_menu.addActions([self.ui.actionEmpty_App, self.ui.actionEmpty_Main, self.ui.actionEmpty_Scene, self.ui.actionEmpty_Script])
+        creation_context_menu.addSeparator()
+        creation_context_menu.addActions([self.ui.actionExample_App, self.ui.actionExample_Main, self.ui.actionExample_Scene, self.ui.actionExample_Script])
+        
+        
+        
+        
            
     def _create_resources_context_menu(self, event):
-        menu = QMenu(self.ui.resources_tree)
+        menu= QMenu(self.ui.resources_tree)
         
         self.resources_tree_selected_item_from_context = self.ui.resources_tree.itemAt(event)
         item = self.resources_tree_selected_item_from_context
         
+        
+
+        menu.addAction(self.ui.actionOpen_in_File_Explorer)
+        menu.addAction(self.ui.actionCopy_Path)
+        menu.addSeparator()
+
         if item:
+            print(item.data(0, 5))
             try:
                 if item.text(0).split(".")[1] == "py":
                     menu.addAction(self.ui.actionSet_as_Main_py)
+                if item.data(0, 5) == "Folder":
+                    self._create_creation_context_menu(menu)
+                    
             except: pass
                
                 
             menu.addAction(self.ui.actionDelete_Resource)
             menu.addAction(self.ui.actionRename)
-            #menu.addAction(self.ui.acren)
         else:
-            menu.addAction(self.ui.actionGenerate_Main_py)
-            menu.addAction(self.ui.actionGenerate_Script)
-            menu.addSeparator()
-            menu.addAction(self.ui.actionNew_File)
-            menu.addAction(self.ui.actionNew_Folder)
-            menu.addSeparator()
-            menu.addAction(self.ui.actionOpen_in_File_Explorer)
+            self._create_creation_context_menu(menu)
+
 
         # copy directory on context menu
 

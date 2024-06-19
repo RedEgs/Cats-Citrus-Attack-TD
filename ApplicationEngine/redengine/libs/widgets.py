@@ -260,20 +260,25 @@ def load_project_resources(startpath, tree, main_file_name = None):
         
         
         
+        
         resources_items.append(element)
         if os.path.isdir(path_info):
             load_project_resources(path_info, parent_itm)
+            parent_itm.setData(0, 5, "Folder")
             parent_itm.setIcon(0, QIcon('assets/folder.ico'))
             
         else:
             if element == main_file_name:
                 #print(element)
                 parent_itm.setIcon(0, QIcon('assets/icon32.png'))
+                parent_itm.setData(0, 5, file_type[1])
+                parent_itm.setData(0, 2, "Main")
             elif len(file_type) >= 2 and os.path.isfile(f'assets/{file_type[len(file_type)-1]}.ico'):
                 parent_itm.setIcon(0, QIcon(f'assets/{file_type[len(file_type)-1]}.ico'))
+                parent_itm.setData(0, 5, file_type[1])
             else:
                 parent_itm.setIcon(0, QIcon('assets/file.ico'))
-        
+                parent_itm.setData(0, 5, "Empty")
         
                 
     return resources_items

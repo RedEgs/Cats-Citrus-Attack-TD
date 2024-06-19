@@ -6,16 +6,31 @@ import os
 class FileChangeMonitor(QThread):
     file_changed = pyqtSignal(bool)
 
-    def __init__(self, main_file, parent=None) -> None:
+    def __init__(self, main_file, project_dir, parent=None) -> None:
         super().__init__(parent)
         self.main_file = main_file
+        self.project_dir = project_dir
+
+        self.watched_paths = []
+        
+        if self.main_file != None and os.path.isfile(self.main_file):
+            self.watched_paths.append(self.main_file)
+        
+        if self.
+
 
     def run(self):
         from watchfiles import watch
-        if self.main_file != None and os.path.isfile(self.main_file):
-            for changes in watch(self.main_file):
-                self.file_changed.emit(True)
-                
+        for changes in watch(f"{self.project_dir}/scenes"):
+            if self.main_file in changes:
+                print("main file changed")
+            self.file_changed.emit(True)
+            
+            
+
+
+
+
 
 def rename_file(parent, project_dir, split_name):
     file_name = split_name[0]

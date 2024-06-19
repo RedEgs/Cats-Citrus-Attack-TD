@@ -313,9 +313,15 @@
     <addaction name="actionReplace"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuBuild">
+    <property name="title">
+     <string>Build</string>
+    </property>
+   </widget>
    <addaction name="project_button"/>
    <addaction name="menuEdit"/>
    <addaction name="windows_button"/>
+   <addaction name="menuBuild"/>
    <addaction name="help_button"/>
   </widget>
   <widget class="QDockWidget" name="console_dock">
@@ -785,6 +791,66 @@
    </property>
    <property name="text">
     <string>Open in File Explorer</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Files">
+   <property name="text">
+    <string>File</string>
+   </property>
+  </action>
+  <action name="actionCreate_Context">
+   <property name="text">
+    <string>Create</string>
+   </property>
+  </action>
+  <action name="actionCopy_Path">
+   <property name="text">
+    <string>Copy Path</string>
+   </property>
+  </action>
+  <action name="actionExample_Script">
+   <property name="text">
+    <string>Example Script</string>
+   </property>
+  </action>
+  <action name="actionExample_Scene">
+   <property name="text">
+    <string>Example Scene</string>
+   </property>
+  </action>
+  <action name="actionExample_App">
+   <property name="text">
+    <string>Example App</string>
+   </property>
+  </action>
+  <action name="actionExample_Main">
+   <property name="text">
+    <string>Example Main</string>
+   </property>
+  </action>
+  <action name="actionEmpty_Script">
+   <property name="text">
+    <string>Empty Script</string>
+   </property>
+  </action>
+  <action name="actionEmpty_Scene">
+   <property name="text">
+    <string>Empty Scene</string>
+   </property>
+  </action>
+  <action name="actionEmpty_App">
+   <property name="text">
+    <string>Empty App</string>
+   </property>
+  </action>
+  <action name="actionEmpty_Main">
+   <property name="text">
+    <string>Empty Main</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>Reload</string>
    </property>
   </action>
  </widget>
