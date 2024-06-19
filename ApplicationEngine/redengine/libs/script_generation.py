@@ -18,6 +18,4 @@ class ScriptGenerator:
         
     def get_generated_script(self):
         template = self.env.get_template(self.template_file)
-        script_content = template.render(self.replacements)
-        
-        return script_content
+        return template.render(self.replacements)

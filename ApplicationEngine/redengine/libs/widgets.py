@@ -63,6 +63,7 @@ class PygameWidget(QWidget):
         self.start_game_clock()
         self.game = pw.GameHandler(file_path, project_file_path)
         self.game.start_process()
+
         
 
     def close_process(self):
@@ -77,6 +78,7 @@ class PygameWidget(QWidget):
     def reload_process(self):
         if hasattr(self, 'game'):
             self.game.hot_reload()
+            print("returned focus")
 
     def keyPressEvent(self, event):
         """Catches input from the window/widget and sends to pygame.
@@ -85,6 +87,7 @@ class PygameWidget(QWidget):
         if isinstance(event, QKeyEvent) and self.can_run:
             key_text = event.text()
             self.game.send_event(key_text)
+            print("key pressed within widget: " + key_text)
             
     def mouseMoveEvent(self, event):
         """Catches mouse movement from the window/widget and sends to pygame.
@@ -240,7 +243,7 @@ class QLogItem(QLabel):
     
    
          
-def load_project_resources(startpath, tree, main_file_name = None):
+def load_project_resources(startpath, tree, main_file_name = None, scenes_dir_path = None):
     """
     Load Project structure tree
     :param startpath: 
@@ -258,11 +261,15 @@ def load_project_resources(startpath, tree, main_file_name = None):
         parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
         file_type = element.split(".")
         
-        
-        
-        
         resources_items.append(element)
-        if os.path.isdir(path_info):
+        
+        if scenes_dir_path != None and path_info == scenes_dir_path:
+            load_project_resources(path_info, parent_itm)
+            parent_itm.setIcon(0, QIcon('assets/scenes_home.png'))
+            parent_itm.setData(0, 5, "Folder")
+            parent_itm.setData(0, 6, "Scenes")
+                
+        elif os.path.isdir(path_info):
             load_project_resources(path_info, parent_itm)
             parent_itm.setData(0, 5, "Folder")
             parent_itm.setIcon(0, QIcon('assets/folder.ico'))
@@ -272,7 +279,9 @@ def load_project_resources(startpath, tree, main_file_name = None):
                 #print(element)
                 parent_itm.setIcon(0, QIcon('assets/icon32.png'))
                 parent_itm.setData(0, 5, file_type[1])
-                parent_itm.setData(0, 2, "Main")
+                parent_itm.setData(0, 6, "Main")
+
+            
             elif len(file_type) >= 2 and os.path.isfile(f'assets/{file_type[len(file_type)-1]}.ico'):
                 parent_itm.setIcon(0, QIcon(f'assets/{file_type[len(file_type)-1]}.ico'))
                 parent_itm.setData(0, 5, file_type[1])

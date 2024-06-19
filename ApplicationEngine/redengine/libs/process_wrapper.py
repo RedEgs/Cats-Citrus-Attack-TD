@@ -1,8 +1,7 @@
 import libs.classes.main_game as mg  
-import sys, importlib
+import sys, importlib, pickle, re, os
 
 import pyredengine as pyr
-
 
 class GameHandler():
     def __init__(self, main_file_path: str, project_file_path: str) -> None:
@@ -10,6 +9,8 @@ class GameHandler():
         self.project_file_path = project_file_path
         self.process_attached = False
         self.is_app_process = False
+        
+
     
     def start_process(self):
         sys.path.insert(0, self.project_file_path) # Makes the project directory importable
@@ -29,29 +30,26 @@ class GameHandler():
         self.is_app_process = False
         
     def hot_reload(self):
-        if not self.process_attached:
-            pass # Add an exception here
-                
+        print("started hot reload")
+
         sys.path.insert(0, self.project_file_path) # Makes the project directory importable
+
+        
         import main # Import the main project file
         self.save_process_state() # Save the process state 
         importlib.reload(main) # Reload imports, which will update new code
-        self.game = main.MainGame(self) # Reinstance game
+
+        self.game = main.MainGame(self)
+        
         self.load_process_state()
+        print("function finished")
 
     def send_event(self, event):
-        if not self.is_app_process:
-            if type(event) == str:
-                self.game._send_event(event)
-            elif type(event) == tuple:
-                self.game._send_event(2, None, int(event[0]), int(event[1]))   
-        else:
-            if type(event) == str:
-                self.game.send_key(event)
-            elif type(event) == tuple:
-                pass
-                #self.game._send_event(2, None, int(event[0]), int(event[1]))   
-            
+        if type(event) == str:
+            self.game._send_event(event)
+        elif type(event) == tuple or type(event) == list:
+            self.game._send_event(2, None, int(event[0]), int(event[1]))   
+
     def run_game(self):
         if self.is_app_process:
             return self.game.qt_run()
@@ -64,6 +62,11 @@ class GameHandler():
     def get_main_display(self):
         return self.game.display
     
+    def save_process_state(self):
+        self.hotsave_manager.save_process_state()
+        
+    def load_process_state(self):
+        self.hotsave_manager.load_process_state()
 
     def _get_marked_lines(self, file):
         import pickle, inspect, re

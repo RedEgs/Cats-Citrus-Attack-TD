@@ -1,32 +1,38 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-import os
+import os, asyncio
     
 class FileChangeMonitor(QThread):
     file_changed = pyqtSignal(bool)
 
-    def __init__(self, main_file, project_dir, parent=None) -> None:
+    def __init__(self, main_file, project_dir, scenes_dir, parent=None) -> None:
         super().__init__(parent)
         self.main_file = main_file
         self.project_dir = project_dir
+        self.scenes_dir = scenes_dir
 
         self.watched_paths = []
-        
-        if self.main_file != None and os.path.isfile(self.main_file):
-            self.watched_paths.append(self.main_file)
-        
-        if self.
 
+        if self.main_file is not None and os.path.isfile(self.main_file):
+            self.watched_paths.append(self.main_file)
+
+        if self.scenes_dir is not None and os.path.isdir(self.scenes_dir):
+            self.watched_paths.append(f"{self.project_dir}/scenes")
 
     def run(self):
-        from watchfiles import watch
-        for changes in watch(f"{self.project_dir}/scenes"):
-            if self.main_file in changes:
-                print("main file changed")
+        # Create an asyncio event loop in the new thread
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        # Run the asynchronous task in the new event loop
+        loop.run_until_complete(self.async_run())
+        loop.close()
+
+    async def async_run(self):
+        from watchfiles import awatch
+        async for changes in awatch(*self.watched_paths):
             self.file_changed.emit(True)
-            
-            
 
 
 

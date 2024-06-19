@@ -229,7 +229,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
@@ -272,6 +272,8 @@
      <addaction name="separator"/>
      <addaction name="actionUser_Settings"/>
      <addaction name="actionProject_Settings"/>
+     <addaction name="separator"/>
+     <addaction name="actionClear_All_Recent_Projects"/>
     </widget>
     <addaction name="actionNew_Project"/>
     <addaction name="actionOpen_Project"/>
@@ -358,8 +360,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1233</width>
-          <height>85</height>
+          <width>1241</width>
+          <height>69</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -804,6 +806,10 @@
    </property>
   </action>
   <action name="actionCopy_Path">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/10125_icons/imageres_5302.ico</normaloff>../redengine/assets/10125_icons/imageres_5302.ico</iconset>
+   </property>
    <property name="text">
     <string>Copy Path</string>
    </property>
@@ -849,8 +855,30 @@
    </property>
   </action>
   <action name="actionReload">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/10125_icons/Refresh.ico</normaloff>../redengine/assets/10125_icons/Refresh.ico</iconset>
+   </property>
    <property name="text">
     <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionSet_as_Main_Scenes">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/scenes_home.png</normaloff>../redengine/assets/scenes_home.png</iconset>
+   </property>
+   <property name="text">
+    <string>Set as Main Scenes</string>
+   </property>
+  </action>
+  <action name="actionClear_All_Recent_Projects">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/10125_icons/Delete.ico</normaloff>../redengine/assets/10125_icons/Delete.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Clear All Recent Projects</string>
    </property>
   </action>
  </widget>

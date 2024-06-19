@@ -38,10 +38,13 @@ class Pyredengine(QMainWindow):
         self._create_recent_projects_context_menu()
 
     def _load_menu_bar_actions(self):
+        import libs.project_management as pm
+        
         self.ui.actionNew_Project.triggered.connect(self._save_project_as)    
         self.ui.actionOpen_Project.triggered.connect(self._load_project_from_folder)
         self.ui.actionSave_as.triggered.connect(self._save_project_as)
         self.ui.actionSave.triggered.connect(self._save_project)
+        self.ui.actionClear_All_Recent_Projects.triggered.connect(self._clear_recent_projects)
         
         if self.project_loaded:
             self.ui.actionDelete_Resource.triggered.connect(self._delete_file_resources_tree)
@@ -50,10 +53,11 @@ class Pyredengine(QMainWindow):
             self.ui.actionRename.triggered.connect(self._rename_item_resources_tree)
             
             self.ui.actionSet_as_Main_py.triggered.connect(self.set_main_project_file)
+            self.ui.actionSet_as_Main_Scenes.triggered.connect(self.set_scenes_dir)
             self.ui.actionGenerate_Script.triggered.connect(self._generate_script_py)
             self.ui.actionGenerate_Main_py.triggered.connect(self._generate_main_py)
             self.ui.actionOpen_in_File_Explorer.triggered.connect(self._open_file_explorer)
-            
+            self.ui.actionReload.triggered.connect(self._reload_project)
             
             self.ui.resources_tree.itemClicked.connect(self._select_item_resources_tree)
             self.ui.resources_tree.itemDoubleClicked.connect(self.open_file_in_editor)
@@ -98,6 +102,8 @@ class Pyredengine(QMainWindow):
         self.project_name = project_json["project_name"]
         self.project_main_file = project_json["main_project_file"]
         self.project_main_file_name = rm.get_file_from_path(self.project_main_file)
+        self.project_scenes_dir = project_json["project_scenes"]
+
         
         pm.add_to_recent_projects(project_json["project_name"], project_json)
 
@@ -105,7 +111,7 @@ class Pyredengine(QMainWindow):
         # ---
         self.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - "+ project_json["project_name"], None))
         
-        self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_main_file_name)
+        self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_main_file_name, self.project_scenes_dir)
         self.ui.resources_tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.resources_tree.customContextMenuRequested.connect(self._create_resources_context_menu)
         self.ui.resource_search_bar.textChanged.connect(lambda: w.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
@@ -115,7 +121,7 @@ class Pyredengine(QMainWindow):
         self._process_running = False
       
         self.monitor_thread = QThread()
-        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file, self.project_dir)
+        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file, self.project_dir, self.project_scenes_dir)
         self.monitor_worker.moveToThread(self.monitor_thread)
         self.monitor_thread.started.connect(self.monitor_worker.run)
         self.monitor_worker.file_changed.connect(self.hot_reload_viewport)
@@ -132,13 +138,15 @@ class Pyredengine(QMainWindow):
 
     def _load_project_folder(self, folder_path):
         try:
-            if os.path.exists(folder_path + "/.redengine"):
-                path = folder_path + "/.redengine"
-                self._load_project_file(path + "/project.json")
-                
+            if os.path.exists(f"{folder_path}/.redengine"):
+                path = f"{folder_path}/.redengine"
+                self._load_project_file(f"{path}/project.json")
+
             else: 
-                QMessageBox.critical(self, "Error", f"Not a valid project directory", QMessageBox.Ok)    
-        except Exception as e:
+                QMessageBox.critical(
+                    self, "Error", "Not a valid project directory", QMessageBox.Ok
+                )
+        except (Exception, Exception) as e:
             QMessageBox.critical(self, "Error", f"Failed to load file: {str(e)}", QMessageBox.Ok)
 
     def _load_project_file(self, fileName):
@@ -165,34 +173,30 @@ class Pyredengine(QMainWindow):
     def _save_project_as(self):        
         options = QFileDialog.Options()
         options |= QFileDialog.ShowDirsOnly
-        folder_path = QFileDialog.getExistingDirectory(
-            self,
-            "Select Folder",
-            QDir.homePath(),
-            options=options
-        )
-        if folder_path:
+        if folder_path := QFileDialog.getExistingDirectory(
+            self, "Select Folder", QDir.homePath(), options=options
+        ):
             self._prompt_project_name(folder_path)
         else:
             QMessageBox.information(self, "No Folder Selected", "No folder was selected.", QMessageBox.Ok)
 
     def _prompt_project_name(self, folder_path):
         import libs.project_management as pm
-                
+
         project_name, ok = QInputDialog.getText(self, "Project Name", "Enter the project name:")
         if ok and project_name:
             json_path = pm.generate_project_path(self, folder_path, project_name)
-            
+
             if json_path == -1:
-                self._load_project_file(folder_path + "/.redengine/project.json")
-                
+                self._load_project_file(f"{folder_path}/.redengine/project.json")
+
             else:     
                 with open(json_path) as file:
                     self._relaunch_window(file.read())
-                
-                
+
+
         else:
-            QMessageBox.information(self, "No Project Name", "No project name was provided.", QMessageBox.Ok)
+            QMessageBox.information(self, "No Project Name", "No project name was   provided.", QMessageBox.Ok)
 
     def _save_project(self):
         if not self.project_loaded:
@@ -209,9 +213,14 @@ class Pyredengine(QMainWindow):
         self._reload_file_tree()
         if self.ui.pygame_widget.can_run:
             self.hot_reload_viewport()
-    
+
 
        
+    def _clear_recent_projects(self):
+        import libs.project_management as pm
+        
+        pm.clear_recent_projects()
+        self._create_recent_projects_context_menu()
             
     def save_layout_settings(self):      
         settings = QSettings(self.project_name, "RedEngine")
@@ -269,12 +278,15 @@ class Pyredengine(QMainWindow):
     def check_unsaved_tabs(self):
         for tab in self.ide_tabs:
             if tab._saved == False:
-                response = QMessageBox.critical(self, f"Theres unsaved progress in {tab._filepath[1]}", f"Your changes will be lost if you don't save them.", QMessageBox.Save |  QMessageBox.Cancel)   
-                
+                response = QMessageBox.critical(
+                    self,
+                    f"Theres unsaved progress in {tab._filepath[1]}",
+                    "Your changes will be lost if you don't save them.",
+                    QMessageBox.Save | QMessageBox.Cancel,
+                )   
+
                 if response == QMessageBox.Save:
-                    tab.save_file() 
-                else:
-                    pass     
+                    tab.save_file()     
       
       
       
@@ -285,7 +297,7 @@ class Pyredengine(QMainWindow):
       
       
     def _select_item_resources_tree(self, item:QTreeWidgetItem):
-        self.resources_tree_selected_item = self.project_dir + "/" + item.data(0,0)
+        self.resources_tree_selected_item = f"{self.project_dir}/{item.data(0, 0)}"
 
     def _rename_item_resources_tree(self, event):
         import libs.widgets as w
@@ -303,10 +315,8 @@ class Pyredengine(QMainWindow):
     def _delete_file_resources_tree(self, event):
         import libs.widgets as w
         import libs.resource_management as rm
-        
-        item = self.resources_tree_selected_item_from_context
-        
-        if item:
+
+        if item := self.resources_tree_selected_item_from_context:
             path = w.get_tree_item_path(self.project_dir, item)
 
             rm.delete_file(self, path)
@@ -315,14 +325,14 @@ class Pyredengine(QMainWindow):
     def _create_file_resources_tree(self, event=None):
         import libs.widgets as w
         import libs.resource_management as rm
-                
+
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
-        
+
         if item != None:
-            if not os.path.isfile(self.project_dir + f"/{item.data(0, 0)}"):
+            if not os.path.isfile(f"{self.project_dir}/{item.data(0, 0)}"):
                 path = w.get_tree_item_path(self.project_dir, item)
-                
+
         rm.create_file(self, path)
         self._reload_file_tree()
       
@@ -346,38 +356,58 @@ class Pyredengine(QMainWindow):
                 
         self.resources_tree_files = w.reload_project_resources(self.resources_tree_files, self.project_dir, self.ui.resources_tree, self.project_main_file_name)
 
-    def set_main_project_file(self):
+    def set_main_project_file(self):  # sourcery skip: use-contextlib-suppress
+        import libs.widgets as w
         import libs.project_management as pm
-        
-        self.project_main_file = self.resources_tree_selected_item
-        pm.save_project_json(self, self.project_dir, self.project_name, self.project_main_file)
-         
+
+        if project_main_dir := self.resources_tree_selected_item_from_context:
+            try:
+                if project_main_dir.data(0, 5) == "py":
+                    pm.generate_project_path(self, self.project_dir, self.project_name, w.get_tree_item_path(self.project_dir, project_main_dir).replace("//", "/"))
+                    self._reload_file_tree()
+            except Exception:
+                pass    
+    
+    def set_scenes_dir(self):
+        import libs.widgets as w
+        import libs.project_management as pm
+
+        if project_scenes_dir := self.resources_tree_selected_item_from_context:
+            try:
+                if project_scenes_dir.data(0, 5) == "Folder":
+                    pm.generate_project_path(self, self.project_dir, self.project_name, project_scenes= w.get_tree_item_path(self.project_dir, project_scenes_dir).replace("//", "/"))
+                    self._reload_file_tree()
+            except Exception:
+                pass        
+
+                    
+
    
     def _generate_main_py(self):
         import libs.widgets as w
         import libs.resource_management as rm
-                
+
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
-        
+
         if item != None:
-            if not os.path.isfile(self.project_dir + f"/{item.data(0, 0)}"):
+            if not os.path.isfile(f"{self.project_dir}/{item.data(0, 0)}"):
                 path = w.get_tree_item_path(self.project_dir, item)
-                
+
         rm.create_py_file(self, path, "main")
         self._reload_file_tree()   
     
     def _generate_script_py(self):
         import libs.widgets as w
         import libs.resource_management as rm
-                
+
         item = self.resources_tree_selected_item_from_context
         path = self.project_dir
-        
+
         if item != None:
-            if not os.path.isfile(self.project_dir + f"/{item.data(0, 0)}"):
+            if not os.path.isfile(f"{self.project_dir}/{item.data(0, 0)}"):
                 path = w.get_tree_item_path(self.project_dir, item)
-                
+
         rm.create_py_file(self, path)
         self._reload_file_tree()     
         
@@ -388,15 +418,14 @@ class Pyredengine(QMainWindow):
    
     def _run_game(self):
         import libs.process_wrapper as pw
-        
-        if self.project_main_file != None:
-            if not self.ui.pygame_widget.can_run:
-                self.ui.pygame_widget.set_process(self.project_main_file, self.project_dir)
-                self.ui.start_button.setText("Stop") 
 
-            else:
+        if self.project_main_file != None:
+            if self.ui.pygame_widget.can_run:
                 self.ui.pygame_widget.close_process()
                 self.ui.start_button.setText("Start")
+            else:
+                self.ui.pygame_widget.set_process(self.project_main_file, self.project_dir)
+                self.ui.start_button.setText("Stop")
     
     def hot_reload_viewport(self):
         print("reload")
@@ -440,6 +469,7 @@ class Pyredengine(QMainWindow):
         creation_context_menu.addSeparator()
         creation_context_menu.addActions([self.ui.actionExample_App, self.ui.actionExample_Main, self.ui.actionExample_Scene, self.ui.actionExample_Script])
         
+        return creation_context_menu
         
         
         
@@ -455,22 +485,26 @@ class Pyredengine(QMainWindow):
         menu.addAction(self.ui.actionOpen_in_File_Explorer)
         menu.addAction(self.ui.actionCopy_Path)
         menu.addSeparator()
+        menu.addAction(self.ui.actionReload)
+        menu.addSeparator()
+        
 
         if item:
-            print(item.data(0, 5))
-            try:
-                if item.text(0).split(".")[1] == "py":
-                    menu.addAction(self.ui.actionSet_as_Main_py)
-                if item.data(0, 5) == "Folder":
-                    self._create_creation_context_menu(menu)
-                    
-            except: pass
-               
+            
+                        
+            if item.data(0, 5) == "py":
+                menu.addAction(self.ui.actionSet_as_Main_py)
+                menu.addSeparator()
+            if item.data(0, 5) == "Folder":
+                menu.addAction(self.ui.actionSet_as_Main_Scenes)
+                menu.addSeparator()
+                self._create_creation_context_menu(menu)
                 
             menu.addAction(self.ui.actionDelete_Resource)
             menu.addAction(self.ui.actionRename)
+            menu.addSeparator()
         else:
-            self._create_creation_context_menu(menu)
+            cc_menu = self._create_creation_context_menu(menu)
 
 
         # copy directory on context menu
