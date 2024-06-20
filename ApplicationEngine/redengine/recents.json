@@ -2,11 +2,11 @@
     "tarkov inventory": {
         "json": {
             "project_name": "tarkov inventory",
-            "project_path": "C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/Tarkov inventory",
+            "project_path": "C:/Users/User/Desktop/Citrus Cats Dev/Cats-Citrus-Attack-TD/ApplicationEngine/tests/Tarkov inventory - Copy",
             "date_created": "2024-06-19",
             "date_edited": "2024-06-19",
-            "main_project_file": null,
-            "project_scenes": null
+            "main_project_file": "C:/Users/User/Desktop/Citrus Cats Dev/Cats-Citrus-Attack-TD/ApplicationEngine/tests/Tarkov inventory - Copy/main.py",
+            "project_scenes": "C:/Users/User/Desktop/Citrus Cats Dev/Cats-Citrus-Attack-TD/ApplicationEngine/tests/Tarkov inventory - Copy/scenes"
         }
     }
 }

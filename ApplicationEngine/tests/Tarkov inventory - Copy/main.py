@@ -1,6 +1,23 @@
 # Main project file
-import pygame, sys, os
+import pygame, sys, os, random
+import pyredengine as pyr
 
+import scenes.example_scene as example_scene
+
+
+class Item:
+    def __init__(self, position: pygame.Vector2) -> None:
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        self.position = position
+        self.path = "gun.png"
+        self.image = pygame.image.load(self.path).convert_alpha()
+        self.image.get_rect(center= position )
+        self.image.fill((0, 255, 0))
+        
+    def draw(self, display: pygame.Surface):
+        display.blit(self.image, self.image.get_rect(center=self.position))
+
+    
 
 class MainGame():
     def __init__(self, parent) -> None:
@@ -9,36 +26,42 @@ class MainGame():
         self._init_display()
         self.clock = pygame.time.Clock()
         self.run = True
-        
         self.mouse_pos = (0,0) 
-
-
+        self.mouse_rect = pygame.Rect(self.mouse_pos[0], self.mouse_pos[1], 10, 10)
         
-    def _init_display(self, resolution = [1280, 720], caption = "Pygame Window"): # Don't touch 
+        self.dragging = False
+        
+        self.draw_buffer = []
+        self.rect_buffer = []
+        
+        for i in range(3):
+            item = Item((random.randint(0, 1280), random.randint(0, 720)))
+            self.draw_buffer.append(item)
+            self.rect_buffer.append(item.image.get_rect(center=item.position))
+        
+        
+        
+    def _init_display(self): # Don't touch 
         """Initialises the display to be rendered within the viewport window of the engine"""
         self._hwnd = None
         if len(sys.argv) > 1:
             self._hwnd = int(sys.argv[1])
             os.environ['SDL_WINDOWID'] = str(self._hwnd)
         
-        self.display_width = resolution[0]
-        self.display_height = resolution[1]
+        self.display_width = 1280
+        self.display_height = 720
         
-        #os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (-1000, -1000)
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (-1000, -1000)
         self.display = pygame.display.set_mode((self.display_width, self.display_height), pygame.NOFRAME)
-        pygame.display.set_caption(caption)
+        pygame.display.set_caption("Pygame Window")
         
-    def _send_event(self, type, key = None, mouse = None):
-        """Manages event handling between viewport window and the game
-           Mouse = x, y, button_down(type)
-        
-        """
+    def _send_event(self, type, key = None, mouse_x = None, mouse_y = None):
+        """Manages event handling between viewport window and the game"""
     
         if type == 1:
             event = pygame.event.Event(pygame.KEYDOWN, key=key)
             pygame.event.post(event)
         elif type == 2:
-            mouse_x, mouse_y, mouse_down = mouse
             last_pos = (mouse_x, mouse_y)
             
             if last_pos:
@@ -65,10 +88,47 @@ class MainGame():
             
     def update(self):
         """Put all your custom logic here"""
-        pass
-    
+        
+        self.mouse_rect.center = self.mouse_pos
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def draw(self):
         """Custom drawing logic here"""
+        import math
+        
+        
+        self.display.fill((255, 255, 255))
+        for i in self.draw_buffer:
+            i.draw(self.display)
+
+        for r in self.rect_buffer:
+            if self.mouse_rect.colliderect(r):
+                if pygame.mouse.get_pressed(1):
+                    pygame.draw.rect(self.display, (255, 0, 0), self.mouse_rect, 10)
+        
+        
+        pygame.draw.rect(self.display, (255, 0, 0), self.mouse_rect, 10)
+        
+        
         pygame.display.flip()
     
     def run_game(self):
