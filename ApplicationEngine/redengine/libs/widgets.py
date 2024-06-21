@@ -1,6 +1,7 @@
 from PyQt5.QtCore       import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui        import *
+from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets    import *
 from PyQt5.Qsci import *
 from PyQt5.QtWidgets import QWidget
@@ -12,6 +13,7 @@ class PygameWidget(QWidget):
         self.setFocusPolicy(Qt.StrongFocus)
         
         self.can_run = False
+        self.can_draw = True
 
     def start_game_clock(self):
         self.timer = QTimer(self)
@@ -19,6 +21,7 @@ class PygameWidget(QWidget):
         self.timer.timeout.connect(self.redraw)
         self.timer.start()
         self.setMouseTracking(True)
+        self.can_draw = True
       
     def stop_game_clock(self):
         self.timer.stop()
@@ -32,8 +35,9 @@ class PygameWidget(QWidget):
         rect_height = rect.height()
         
         # Scale the image to fit the widget size
-        scaled_image = self.image.scaled(rect_width, rect_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        
+        try:
+            scaled_image = self.image.scaled(rect_width, rect_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        except: pass
         # Calculate the position to center the scaled image
         center_x = (rect_width - scaled_image.width()) // 2
         center_y = (rect_height - scaled_image.height()) // 2
@@ -59,10 +63,14 @@ class PygameWidget(QWidget):
         self.file_path = file_path
         self.project_file_path = project_file_path
         self.can_run = True
-        
-        self.start_game_clock()
+    
+        self.start_game_clock() 
+        print("started clock")
         self.game = pw.GameHandler(file_path, project_file_path)
-        self.game.start_process()
+        print("init game")
+        self.game.start_process()   
+        print("started game")
+
 
         
 
@@ -86,7 +94,7 @@ class PygameWidget(QWidget):
         
         if isinstance(event, QKeyEvent) and self.can_run:
             key_text = event.text()
-            self.game.send_event(key_text)
+            self.game.send_event("k", key_text)
             print("key pressed within widget: " + key_text)
             
     def mouseMoveEvent(self, event):
@@ -96,25 +104,65 @@ class PygameWidget(QWidget):
             pos = event.pos()
             coords = self.convert_mouse_coords(pos.x(),  pos.y())
             if coords != [pos.x(), pos.y()]:
-                self.game.send_event(coords)   
+                self.game.send_event("mm", [coords[0], coords[1], 0])   
+           
+    def mousePressEvent(self, event):
+        if self.can_run and hasattr(self, 'image'):
+            if event.button() == Qt.MouseButton.LeftButton:
+                pos = event.pos()
+                coords = self.convert_mouse_coords(pos.x(),  pos.y())
+                if coords != [pos.x(), pos.y()]:
+                    self.game.send_event("md", [coords[0], coords[1], 1])   
+            elif event.button() == Qt.MouseButton.RightButton:
+                pos = event.pos()
+                coords = self.convert_mouse_coords(pos.x(),  pos.y())
+                if coords != [pos.x(), pos.y()]:
+                    self.game.send_event("md", [coords[0], coords[1], 2])   
+            elif event.button() == Qt.MouseButton.MiddleButton:
+                pos = event.pos()
+                coords = self.convert_mouse_coords(pos.x(),  pos.y())
+                if coords != [pos.x(), pos.y()]:
+                    self.game.send_event("md", [coords[0], coords[1], 3])   
+            
+    def mouseReleaseEvent(self, event):
+        if self.can_run and hasattr(self, 'image'):
+            if event.button() == Qt.MouseButton.LeftButton:
+                pos = event.pos()
+                coords = self.convert_mouse_coords(pos.x(),  pos.y())
+                if coords != [pos.x(), pos.y()]:
+                    self.game.send_event("mu", [coords[0], coords[1], 0])   
+            elif event.button() == Qt.MouseButton.RightButton:
+                pos = event.pos()
+                coords = self.convert_mouse_coords(pos.x(),  pos.y())
+                if coords != [pos.x(), pos.y()]:
+                    self.game.send_event("mu", [coords[0], coords[1], 0])   
+            elif event.button() == Qt.MouseButton.MiddleButton:
+                pos = event.pos()
+                coords = self.convert_mouse_coords(pos.x(),  pos.y())
+                if coords != [pos.x(), pos.y()]:
+                    self.game.send_event("mu", [coords[0], coords[1], 0])   
+            
+            
+            
+           
                   
     def redraw(self):
         """Handles the drawing of the screen to an image
         """
-        try:
+        #print("No game exists")
+        if self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game'):
             surface = next(self.game.run_game())
             w=surface.get_width()
             h=surface.get_height()
             self.data=surface.get_buffer().raw
             self.image= QImage(self.data,w,h, QImage.Format_RGB32)
             
-            self.repaint()
-        except: pass
+        self.repaint()
   
     def paintEvent(self,event):
         qp = QPainter(self)
         try:
-            if self.can_run:
+            if self.can_run and self.can_draw and hasattr(self, 'game') and hasattr(self.game, 'game') and hasattr(self, 'image'):
                 qp.fillRect(self.rect(), QColor(0, 0, 0))  # Fill the screen with black
 
                 # Get the size of the widget (black rectangle)
@@ -123,7 +171,8 @@ class PygameWidget(QWidget):
                 rect_height = rect.height()
 
                 # Scale the image to fit the widget size
-                scaled_image = self.image.scaled(rect_width, rect_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                if hasattr(self, 'image'):
+                    scaled_image = self.image.scaled(rect_width, rect_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
                 # Calculate the position to center the scaled image
                 center_x = (rect_width - scaled_image.width()) // 2

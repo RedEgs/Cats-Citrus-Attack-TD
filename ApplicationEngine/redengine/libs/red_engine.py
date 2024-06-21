@@ -33,7 +33,7 @@ class ConsoleWrapper():
         self.console_list = []
 
     def append_object(self, obj):
-        if len(self.console_list) > 30:
+        if len(self.console_list) > 100:
             self.console_list[len(self.console_list)-1].deleteLater()
             self.console_list.pop(len(self.console_list)-1)
             

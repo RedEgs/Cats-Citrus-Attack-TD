@@ -1,28 +1,47 @@
-import libs.classes.main_game as mg  
 import sys, importlib, pickle, re, os
 
-import pyredengine as pyr
+from pyredengine import PreviewMain
 
 class GameHandler():
     def __init__(self, main_file_path: str, project_file_path: str) -> None:
         self.main_file_path = main_file_path
         self.project_file_path = project_file_path
         self.process_attached = False
-        self.is_app_process = False
         
-
+        print("intialised handler succesfulay ")
     
     def start_process(self):
-        sys.path.insert(0, self.project_file_path) # Makes the project directory importable
-        import main # Import the main project file
-        importlib.reload(main) # Reload imports, which will update new code
-        self.game = main.MainGame(self) # Instance the game within the handler
+        import importlib.util
         
-        if issubclass(main.MainGame, pyr.App):
-            self.is_app_process = True
+        
+        print("Starting Process")
+        try:
+            print("Before inserting path")
+            sys.path.append(self.project_file_path) # Makes the project directory importable
+            print("Importing Path: " + self.project_file_path)
+
+            try:
+                import main  # Import the main project file
+                print("Importing File")
+            except Exception as e:
+                print(f"Error importing main: {e}")
+
+            try:
+                importlib.reload(main)  # Reload imports, which will update new code
+                print("Reloading Import")
+            except Exception as e:
+                print(f"Error reloading main: {e}")
+        except Exception as e:
+            print(f"Error in setup: {e}")
+        
+        print("Before Instancing Game")
+        self.game: PreviewMain.MainGame = main.Main() # Instance the game within the handler
+        print("After Instancing Game")
+
 
         self.process_attached = True
 
+        print("Started Process ")
 
     def stop_process(self):
         self.game.close_game()
@@ -39,22 +58,25 @@ class GameHandler():
         self.save_process_state() # Save the process state 
         importlib.reload(main) # Reload imports, which will update new code
 
-        self.game = main.MainGame(self)
+        self.game: PreviewMain.MainGame = main.Main()
         
         self.load_process_state()
         print("function finished")
 
-    def send_event(self, event):
-        if type(event) == str:
+    def send_event(self, id, event):
+        if type(event) == str and id == "k":
             self.game._send_event(event)
-        elif type(event) == tuple or type(event) == list:
-            self.game._send_event(2, None, int(event[0]), int(event[1]))   
+        elif type(event) == tuple or type(event) == list and id == "mm":
+            self.game._send_event(2, None, [int(event[0]), int(event[1]), int(event[2])])   
+        if type(event) == tuple or type(event) == list and id == "md":
+            self.game._send_event(3, None, [int(event[0]), int(event[1]), int(event[2])])   
+        elif type(event) == tuple or type(event) == list and id == "mu":
+            self.game._send_event(4, None, [int(event[0]), int(event[1]), 0])   
+
+
 
     def run_game(self):
-        if self.is_app_process:
-            return self.game.qt_run()
-        else:
-            return self.game.run_game()
+        return self.game.run_game()
 
     def get_game_process(self):
         return self.game

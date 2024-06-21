@@ -117,7 +117,7 @@ class Pyredengine(QMainWindow):
         self.ui.resource_search_bar.textChanged.connect(lambda: w.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
 
         self.load_layout_settings()
-        
+         
         self._process_running = False
       
         self.monitor_thread = QThread()
