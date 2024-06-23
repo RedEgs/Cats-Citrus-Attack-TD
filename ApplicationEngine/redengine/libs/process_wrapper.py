@@ -1,5 +1,5 @@
-import sys, importlib, pickle, re, os
-
+import sys, importlib, dill, re, os
+import libs.serializers as serializers
 from pyredengine import PreviewMain
 
 class GameHandler():
@@ -65,7 +65,7 @@ class GameHandler():
 
     def send_event(self, id, event):
         if type(event) == str and id == "k":
-            self.game._send_event(event)
+            self.game._send_event(1, event)
         elif type(event) == tuple or type(event) == list and id == "mm":
             self.game._send_event(2, None, [int(event[0]), int(event[1]), int(event[2])])   
         if type(event) == tuple or type(event) == list and id == "md":
@@ -90,8 +90,9 @@ class GameHandler():
     def load_process_state(self):
         self.hotsave_manager.load_process_state()
 
+
     def _get_marked_lines(self, file):
-        import pickle, inspect, re
+        import inspect, re
         
         with open(file, 'r') as file:
             line_numbers = []
@@ -100,9 +101,9 @@ class GameHandler():
                     if re.search(r'\b{}\b'.format(re.escape("HOTSAVE")), line):
                         line_numbers.append(line_num)
         return line_numbers
-    
+
     def _get_marked_vars(self, line_numbers, file_path):
-        import inspect 
+        import inspect, pygame
         
         variables = {}
         with open(file_path, 'r') as file:
@@ -114,29 +115,36 @@ class GameHandler():
                     line = source_lines[line_index].strip()
                     if line.startswith('self.'):
                         variable_name = line.split('=')[0].strip().split('self.')[1]
-                        variables[variable_name] = getattr(self.game, variable_name)
+                        value = getattr(self.game, variable_name)
+                        if isinstance(value, pygame.Surface):
+                            print("found pygame surface")
+                            variables[variable_name] = serializers.serialize_surface(value)
+                        else:
+                            variables[variable_name] = value
         return variables
-      
+
     def save_process_state(self):
-        import pickle
-        # state = {
-        #     'mouse_pos': self.mouse_pos,
-        #     # Add other variables you want to save here
-        # }
+        import dill  # Use dill instead of pickle
         
+        self.game.on_save()
+
         m_lines = self._get_marked_lines(self.main_file_path)
         state = self._get_marked_vars(m_lines, self.main_file_path)
 
         with open("hotdump.pkl", 'wb') as f:
-            pickle.dump(state, f)
+            dill.dump(state, f)  # Use dill.dump instead of pickle.dump
         print(f"Saved game state to {f.name}")
-
+        
     def load_process_state(self):
-        import pickle
+        import dill  # Use dill instead of pickle
         
         with open("hotdump.pkl", 'rb') as f:
-            state = pickle.load(f)
+            state = dill.load(f)  # Use dill.load instead of pickle.load
         for name, value in state.items():
-            setattr(self.game, name, value)
+            if isinstance(value, tuple) and len(value) == 2 and isinstance(value[1], tuple):
+                # Check if the value looks like a serialized Pygame surface
+                setattr(self.game, name, serializers.deserialize_surface(value))
+            else:
+                setattr(self.game, name, value)
         print(f"Loaded game state from {f.name}")
-
+        self.game.on_reload()

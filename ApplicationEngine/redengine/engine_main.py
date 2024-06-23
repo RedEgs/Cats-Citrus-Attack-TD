@@ -128,8 +128,8 @@ class Pyredengine(QMainWindow):
         self.monitor_worker.start()
       
         self.console_output_stream = red_engine.ConsoleWrapper(self)
-        sys.stderr = self.console_output_stream
-        sys.stdout = self.console_output_stream  
+        # sys.stderr = self.console_output_stream
+        # sys.stdout = self.console_output_stream  
       
         self.console_output_stream.signal.console_log.connect(self._print_to_log)
 
