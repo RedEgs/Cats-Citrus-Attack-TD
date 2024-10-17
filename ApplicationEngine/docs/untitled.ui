@@ -229,7 +229,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
@@ -319,6 +319,10 @@
     <property name="title">
      <string>Build</string>
     </property>
+    <addaction name="actionCompile_Project"/>
+    <addaction name="actionCompile_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionCompilation_Test"/>
    </widget>
    <addaction name="project_button"/>
    <addaction name="menuEdit"/>
@@ -360,8 +364,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1241</width>
-          <height>69</height>
+          <width>1244</width>
+          <height>68</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -879,6 +883,21 @@
    </property>
    <property name="text">
     <string>Clear All Recent Projects</string>
+   </property>
+  </action>
+  <action name="actionCompile_Project">
+   <property name="text">
+    <string>Compile Project</string>
+   </property>
+  </action>
+  <action name="actionCompile_As">
+   <property name="text">
+    <string>Compile As (...)</string>
+   </property>
+  </action>
+  <action name="actionCompilation_Test">
+   <property name="text">
+    <string>Compilation Test</string>
    </property>
   </action>
  </widget>

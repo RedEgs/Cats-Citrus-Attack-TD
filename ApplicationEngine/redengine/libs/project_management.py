@@ -109,7 +109,8 @@ def generate_project_path(window, project_path, project_name, main_project_file=
         "project_name": project_name,
         "project_path": project_path,
         "date_created": str(date.today()),
-        "date_edited": str(date.today())
+        "date_edited": str(date.today()),
+        "user": os.getlogin(),
     }
 
     # Create the project directory if it doesn't exist
@@ -155,7 +156,8 @@ def save_project_json(window, project_path, project_name, main_project_file, pro
         "project_scenes": project_scenes,
         "main_project_file": main_project_file, 
         "date_created": str(date.today()),
-        "date_edited" : str(date.today())  
+        "date_edited" : str(date.today()),
+        "user": os.getlogin(),
     }
     
     with open(project_path + "/.redengine/project.json", "w") as file:

@@ -6,7 +6,6 @@ from PyQt5.Qsci import *
 
 
 
-
 class Ui_main_window(object):
     def setupUi(self, main_window):
         if not main_window.objectName():
@@ -223,6 +222,12 @@ class Ui_main_window(object):
         icon35 = QIcon()
         icon35.addFile(u"../redengine/assets/10125_icons/Delete.ico", QSize(), QIcon.Normal, QIcon.Off)
         self.actionClear_All_Recent_Projects.setIcon(icon35)
+        self.actionCompile_Project = QAction(main_window)
+        self.actionCompile_Project.setObjectName(u"actionCompile_Project")
+        self.actionCompile_As = QAction(main_window)
+        self.actionCompile_As.setObjectName(u"actionCompile_As")
+        self.actionCompilation_Test = QAction(main_window)
+        self.actionCompilation_Test.setObjectName(u"actionCompilation_Test")
         self.central_widget = QWidget(main_window)
         self.central_widget.setObjectName(u"central_widget")
         self.horizontalLayout_2 = QHBoxLayout(self.central_widget)
@@ -345,7 +350,7 @@ class Ui_main_window(object):
         main_window.addDockWidget(Qt.LeftDockWidgetArea, self.resources_dock)
         self.menu_bar = QMenuBar(main_window)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1280, 21))
+        self.menu_bar.setGeometry(QRect(0, 0, 1280, 29))
         self.project_button = QMenu(self.menu_bar)
         self.project_button.setObjectName(u"project_button")
         self.menuRecent_Projects = QMenu(self.project_button)
@@ -388,7 +393,7 @@ class Ui_main_window(object):
         self.consoleScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1241, 69))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1244, 68))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setSizeConstraint(QLayout.SetFixedSize)
@@ -482,6 +487,10 @@ class Ui_main_window(object):
         self.menuEdit.addAction(self.actionFind)
         self.menuEdit.addAction(self.actionReplace)
         self.menuEdit.addSeparator()
+        self.menuBuild.addAction(self.actionCompile_Project)
+        self.menuBuild.addAction(self.actionCompile_As)
+        self.menuBuild.addSeparator()
+        self.menuBuild.addAction(self.actionCompilation_Test)
 
         self.retranslateUi(main_window)
 
@@ -547,8 +556,11 @@ class Ui_main_window(object):
         self.actionReload.setText(QCoreApplication.translate("main_window", u"Reload", None))
         self.actionSet_as_Main_Scenes.setText(QCoreApplication.translate("main_window", u"Set as Main Scenes", None))
         self.actionClear_All_Recent_Projects.setText(QCoreApplication.translate("main_window", u"Clear All Recent Projects", None))
+        self.actionCompile_Project.setText(QCoreApplication.translate("main_window", u"Compile Project", None))
+        self.actionCompile_As.setText(QCoreApplication.translate("main_window", u"Compile As (...)", None))
+        self.actionCompilation_Test.setText(QCoreApplication.translate("main_window", u"Compilation Test", None))
         self.start_button.setText(QCoreApplication.translate("main_window", u"Start", None))
-        self.central_tab.setTabText(self.central_tab.indexOf(self.preview_window), QCoreApplication.translate("main_window", u"Viewport", None))
+        self.central_tab.setTabText(self.central_tab.indexOf(self.preview_window), QCoreApplication.translate("main_window", u"Viewport", None)) 
         self.central_tab.setTabText(self.central_tab.indexOf(self.scripting_window), QCoreApplication.translate("main_window", u"Scripting", None))
         self.resources_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Resources", None))
         self.sort_resource_button_group.setTitle(QCoreApplication.translate("main_window", u"Sort Types (Sort by)", None))
@@ -571,4 +583,5 @@ class Ui_main_window(object):
         self.clearLogBtn.setText(QCoreApplication.translate("main_window", u"Clear Log", None))
         self.debug_menu_dock.setWindowTitle(QCoreApplication.translate("main_window", u"Debug Menu", None))
     # retranslateUi
+
 

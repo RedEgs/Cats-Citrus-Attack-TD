@@ -1,8 +1,8 @@
-from PyQt5.QtCore       import *
+from PyQt5.QtCore import *
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui        import *
+from PyQt5.QtGui import *
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets    import *
+from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 from PyQt5.QtWidgets import QWidget
 import libs.process_wrapper as pw  
@@ -14,6 +14,7 @@ class PygameWidget(QWidget):
         
         self.can_run = False
         self.can_draw = True
+        self.parent = parent
 
     def start_game_clock(self):
         self.timer = QTimer(self)
@@ -64,12 +65,19 @@ class PygameWidget(QWidget):
         self.project_file_path = project_file_path
         self.can_run = True
     
-        self.start_game_clock() 
-        print("started clock")
-        self.game = pw.GameHandler(file_path, project_file_path)
-        print("init game")
-        self.game.start_process()   
-        print("started game")
+
+        try:
+            self.start_game_clock() 
+            print("started clock")
+            self.game = pw.GameHandler(file_path, project_file_path)
+            print("init game")
+            self.game.start_process()   
+            print("started game")
+
+        except Exception as e:
+            QMessageBox.critical(self.parent, "Error within script", f"{e}", QMessageBox.Ok)
+
+
 
 
         
@@ -150,13 +158,19 @@ class PygameWidget(QWidget):
         """Handles the drawing of the screen to an image
         """
         #print("No game exists")
-        if self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game'):
-            surface = next(self.game.run_game())
-            w=surface.get_width()
-            h=surface.get_height()
-            self.data=surface.get_buffer().raw
-            self.image= QImage(self.data,w,h, QImage.Format_RGB32)
-            
+        try:
+            if self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game'):
+                surface = next(self.game.run_game())
+                w=surface.get_width()
+                h=surface.get_height()
+                self.data=surface.get_buffer().raw
+                self.image= QImage(self.data,w,h, QImage.Format_RGB32)
+        except Exception as e:
+            QMessageBox.critical(self.parent, "Error within script", "Fatal Exception within main script: " + str(e), QMessageBox.Ok)
+            self.close_process()            
+            self.parent.parent().parent().parent().parent().ui.start_button.setText("Start")
+
+
         self.repaint()
   
     def paintEvent(self,event):
@@ -361,4 +375,23 @@ def get_tree_parent_path(item):
 def get_tree_item_path(working_dir, item):
     return working_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
   
-    
+
+
+
+def info_box(parent, title, text):
+    QMessageBox.information(parent, title, text, QMessageBox.Ok)
+
+def error_box(parent, title, text):
+    QMessageBox.critical(parent, title, text, QMessageBox.Ok)
+
+
+
+
+
+
+
+
+
+
+
+

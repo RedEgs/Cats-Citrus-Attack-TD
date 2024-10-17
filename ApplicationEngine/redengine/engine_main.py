@@ -4,14 +4,14 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
-import os, json, sys, importlib
-import traceback
+import os, json, sys, importlib, platform, traceback
 
 
 class Pyredengine(QMainWindow):
     def __init__(self, project_json_data = None, *args, **kwargs) -> None:
         import libs.project_management as pm
         import libs.widgets as w
+        import libs.compiler as cmp
         
         super().__init__(*args, **kwargs)
         self.project_json_data = project_json_data
@@ -25,15 +25,16 @@ class Pyredengine(QMainWindow):
         
         pm.check_recent_projects()
         
-        
+        self._support_message()
         if self.project_json_data != None:
             self._load_project(self.project_json_data)   
-
+            
+            
         
     
         else:
             self.save_default_settings()
-            
+        
         self._load_menu_bar_actions()
         self._create_recent_projects_context_menu()
 
@@ -70,6 +71,8 @@ class Pyredengine(QMainWindow):
             self.ui.actionConsole.triggered.connect(self.ui.console_dock.show)
             self.ui.actionAssets_Library.triggered.connect(self.ui.debug_menu_dock.show)
 
+            self.ui.actionCompile_Project.triggered.connect(self._compile_game)
+
             self.ui.actionDocumentation.triggered.connect(self._open_online_docs)
 
             self.ui.start_button.pressed.connect(self._run_game)
@@ -102,6 +105,7 @@ class Pyredengine(QMainWindow):
         self.project_name = project_json["project_name"]
         self.project_main_file = project_json["main_project_file"]
         self.project_main_file_name = rm.get_file_from_path(self.project_main_file)
+
         self.project_scenes_dir = project_json["project_scenes"]
 
         
@@ -117,7 +121,7 @@ class Pyredengine(QMainWindow):
         self.ui.resource_search_bar.textChanged.connect(lambda: w.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
 
         self.load_layout_settings()
-         
+
         self._process_running = False
       
         self.monitor_thread = QThread()
@@ -128,8 +132,8 @@ class Pyredengine(QMainWindow):
         self.monitor_worker.start()
       
         self.console_output_stream = red_engine.ConsoleWrapper(self)
-        # sys.stderr = self.console_output_stream
-        # sys.stdout = self.console_output_stream  
+        sys.stderr = self.console_output_stream
+        sys.stdout = self.console_output_stream  
       
         self.console_output_stream.signal.console_log.connect(self._print_to_log)
 
@@ -142,11 +146,21 @@ class Pyredengine(QMainWindow):
                 path = f"{folder_path}/.redengine"
                 self._load_project_file(f"{path}/project.json")
 
-            else: 
-                QMessageBox.critical(
-                    self, "Error", "Not a valid project directory", QMessageBox.Ok
-                )
+            else: # Add the option to create project here
+                response = QMessageBox.critical(
+                    self,
+                    f"Not valid project directory",
+                    "Not a valid project, would you like to make it one instead?",
+                    QMessageBox.Save | QMessageBox.Discard,
+                )   
+
+                if response:
+                    self._prompt_project_name(folder_path)
+
+
+
         except (Exception, Exception) as e:
+            print(f"failed to load folder {e}")
             QMessageBox.critical(self, "Error", f"Failed to load file: {str(e)}", QMessageBox.Ok)
 
     def _load_project_file(self, fileName):
@@ -158,6 +172,8 @@ class Pyredengine(QMainWindow):
                 
                 QMessageBox.information(self, "File Loaded", f"File {fileName} loaded successfully!", QMessageBox.Ok)
         except Exception as e:
+            print(f"failed to load file, {e}")
+            print(fileName)
             QMessageBox.critical(self, "Error", f"Failed to load file: {str(e)}", QMessageBox.Ok)
 
     def _load_project_from_folder(self):
@@ -178,7 +194,10 @@ class Pyredengine(QMainWindow):
         ):
             self._prompt_project_name(folder_path)
         else:
-            QMessageBox.information(self, "No Folder Selected", "No folder was selected.", QMessageBox.Ok)
+           QMessageBox.information(self, "No Folder Selected", "No folder was selected.", QMessageBox.Ok)
+
+    def _save_project_as_nodialog(self, folder_path):
+        self.prompt_project_name(folder_path)
 
     def _prompt_project_name(self, folder_path):
         import libs.project_management as pm
@@ -198,6 +217,7 @@ class Pyredengine(QMainWindow):
         else:
             QMessageBox.information(self, "No Project Name", "No project name was   provided.", QMessageBox.Ok)
 
+
     def _save_project(self):
         if not self.project_loaded:
             self._save_project_as()
@@ -211,8 +231,7 @@ class Pyredengine(QMainWindow):
        
     def _reload_project(self):
         self._reload_file_tree()
-        if self.ui.pygame_widget.can_run:
-            self.hot_reload_viewport()
+        self.hot_reload_viewport()
 
 
        
@@ -410,7 +429,22 @@ class Pyredengine(QMainWindow):
 
         rm.create_py_file(self, path)
         self._reload_file_tree()     
-        
+    
+    def _compile_game(self):
+        import libs.compiler as cmplr
+        import libs.widgets as widgets
+
+        def message():
+            widgets.info_box(self, "Compile Finished", "Project executable finished compilation")
+
+        widgets.info_box(self, "Compilation Started", "Compilation has started")
+
+        self.compileWorker = cmplr.CompilerWorker(self)                  
+        self.compileWorker.started.connect(self.compileWorker.compile_to_exe)    
+        self.compileWorker.signalCompileFinished.connect(message)
+        self.compileWorker.start()
+
+
     def _open_file_explorer(self):
         import webbrowser, os
         webbrowser.open(os.path.realpath(self.project_dir))       
@@ -428,7 +462,6 @@ class Pyredengine(QMainWindow):
                 self.ui.start_button.setText("Stop")
     
     def hot_reload_viewport(self):
-        print("reload")
         if self.project_main_file != None and self.ui.pygame_widget.can_run:
             self.ui.pygame_widget.reload_process() 
 
@@ -441,12 +474,16 @@ class Pyredengine(QMainWindow):
    
     def _autoscroll_console(self):
         scroll_bar = self.ui.consoleScrollArea.verticalScrollBar()
-        scroll_bar.setValue(scroll_bar.maximum())
+        #scroll_bar.setValue(scroll_bar.maximum())
 
     def _clear_log(self):
         self.console_output_stream.empty_objects()
    
-   
+    def _support_message(self):
+        if platform.system() != "Windows":
+            QMessageBox.information(self, "Partially Unsupported", "Linux support is partial, Program may behave unexpectedly.", QMessageBox.Ok)
+
+       
    
    
     def _open_online_docs(self):
@@ -515,12 +552,14 @@ class Pyredengine(QMainWindow):
         import libs.project_management as pm
         
         r_projs = pm.load_recent_projects_from_json()
-        for project_name, project_details in r_projs.items():
-            action = self.ui.menuRecent_Projects.addAction(project_name)
-            
-            proj_json = project_details["json"]
-            action.triggered.connect(lambda: self._load_project_folder(proj_json["project_path"]))
-        
+
+        if r_projs is not None:
+            for project_name, project_details in r_projs.items():
+                action = self.ui.menuRecent_Projects.addAction(project_name)
+
+                proj_json = project_details["json"]
+                action.triggered.connect(lambda: self._load_project_folder(proj_json["project_path"]))
+
     def closeEvent(self, event):
         if self.project_loaded:
             self.save_layout_settings()
