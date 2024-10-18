@@ -132,10 +132,10 @@ class Pyredengine(QMainWindow):
         self.monitor_worker.start()
       
         self.console_output_stream = red_engine.ConsoleWrapper(self)
-        sys.stderr = self.console_output_stream
-        sys.stdout = self.console_output_stream  
+        #sys.stderr = self.console_output_stream
+        #sys.stdout = self.console_output_stream  
       
-        self.console_output_stream.signal.console_log.connect(self._print_to_log)
+        #self.console_output_stream.signal.console_log.connect(self._print_to_log)
 
       
       
@@ -434,16 +434,10 @@ class Pyredengine(QMainWindow):
         import libs.compiler as cmplr
         import libs.widgets as widgets
 
-        def message():
-            widgets.info_box(self, "Compile Finished", "Project executable finished compilation")
-
         widgets.info_box(self, "Compilation Started", "Compilation has started")
 
-        self.compileWorker = cmplr.CompilerWorker(self)                  
-        self.compileWorker.started.connect(self.compileWorker.compile_to_exe)    
-        self.compileWorker.signalCompileFinished.connect(message)
-        self.compileWorker.start()
-
+        comp_dialogue = cmplr.CompileDialog(self._get_main_file(), self.project_dir)
+        comp_dialogue.exec_()
 
     def _open_file_explorer(self):
         import webbrowser, os
@@ -566,6 +560,12 @@ class Pyredengine(QMainWindow):
             self.check_unsaved_tabs()
             
         super().closeEvent(event)
+    
+    def _get_main_file(self):
+        return self.project_main_file
+        
+        
+        
         
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
@@ -573,6 +573,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         return
     print("Unhandled exception:", exc_value)
     traceback.print_exception(exc_type, exc_value, exc_traceback)
+
+
 
 
 if __name__ == "__main__":
