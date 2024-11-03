@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>main_window</class>
  <widget class="QMainWindow" name="main_window">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>752</height>
+    <width>1283</width>
+    <height>945</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,8 +22,21 @@
   <property name="windowTitle">
    <string>Red Engine - Empty Project</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../redengine/assets/icon32.png</normaloff>../redengine/assets/icon32.png</iconset>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
   <widget class="QWidget" name="central_widget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_7">
     <item>
      <widget class="QTabWidget" name="central_tab">
       <property name="currentIndex">
@@ -30,24 +46,188 @@
        <attribute name="title">
         <string>Viewport</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QPushButton" name="start_button">
-            <property name="text">
-             <string>Start</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <widget class="PygameWidget" name="pygame_widget" native="true"/>
-          </item>
-         </layout>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="QFrame" name="frame_6">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="lineWidth">
+           <number>0</number>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_16">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QFrame" name="frame">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="midLineWidth">
+              <number>0</number>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::MinimumExpanding</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="start_button">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>28</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../redengine/assets/icons/control.png</normaloff>../redengine/assets/icons/control.png</iconset>
+                </property>
+                <property name="flat">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pause_button">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../redengine/assets/icons/control-pause.png</normaloff>../redengine/assets/icons/control-pause.png</iconset>
+                </property>
+                <property name="default">
+                 <bool>false</bool>
+                </property>
+                <property name="flat">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="stop_button">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../redengine/assets/icons/control-stop.png</normaloff>../redengine/assets/icons/control-stop.png</iconset>
+                </property>
+                <property name="flat">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="reload_button">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../redengine/assets/icons/arrow-circle-double.png</normaloff>../redengine/assets/icons/arrow-circle-double.png</iconset>
+                </property>
+                <property name="flat">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::MinimumExpanding</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="PygameWidget" name="pygame_widget" native="true">
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -64,16 +244,6 @@
           <property name="movable">
            <bool>true</bool>
           </property>
-          <widget class="QIdeWindow" name="tab">
-           <attribute name="title">
-            <string>Tab 1</string>
-           </attribute>
-          </widget>
-          <widget class="QIdeWindow" name="tab_2">
-           <attribute name="title">
-            <string>Tab 2</string>
-           </attribute>
-          </widget>
          </widget>
         </item>
        </layout>
@@ -84,7 +254,7 @@
   </widget>
   <widget class="QDockWidget" name="resources_dock">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -92,7 +262,7 @@
    <property name="minimumSize">
     <size>
      <width>320</width>
-     <height>237</height>
+     <height>200</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -104,13 +274,16 @@
    <property name="baseSize">
     <size>
      <width>250</width>
-     <height>350</height>
+     <height>100</height>
     </size>
    </property>
    <property name="font">
     <font>
      <underline>false</underline>
     </font>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
    </property>
    <property name="autoFillBackground">
     <bool>true</bool>
@@ -141,36 +314,6 @@
      <property name="topMargin">
       <number>5</number>
      </property>
-     <item>
-      <widget class="QGroupBox" name="sort_resource_button_group">
-       <property name="title">
-        <string>Sort Types (Sort by)</string>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <widget class="QPushButton" name="sort_resource_type_button">
-          <property name="text">
-           <string>Type</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="sort_resource_name_button">
-          <property name="text">
-           <string>Name</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="sort_resource_date_button">
-          <property name="text">
-           <string>Date</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
      <item>
       <widget class="QLineEdit" name="resource_search_bar">
        <property name="placeholderText">
@@ -223,13 +366,1330 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="console_dock">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>382</width>
+     <height>244</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
+   </property>
+   <property name="windowTitle">
+    <string>Console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QFrame" name="frame_2">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QFrame {
+	background-color: rgb(40, 40, 40);
+}</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="clear_log_button">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Clear Log Button</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+          <property name="default">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_5">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QFrame {
+	background-color: rgb(29, 29, 29); 
+	border-radius: 5px;
+}</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap>../redengine/assets/icons/information-balloon.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="log_count_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_4">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QFrame {
+	background-color: rgb(29, 29, 29); 
+	border-radius: 5px;
+}</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap>../redengine/assets/icons/exclamation.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="warning_count_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QFrame {
+	background-color: rgb(29, 29, 29); 
+	border-radius: 5px;
+}</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap>../redengine/assets/icons/exclamation-red.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="error_count_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTextEdit" name="console">
+       <property name="font">
+        <font>
+         <family>Consolas</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QTextEdit {
+	background-color: rgb(0, 0, 0);
+	color: rgb(255, 255, 255);
+	border: 1px solid rgb(27, 27, 27);
+}
+</string>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLineEdit" name="console_command_line">
+       <property name="font">
+        <font>
+         <family>Consolas</family>
+        </font>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="placeholderText">
+        <string>&gt;&gt; Python Commands</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="debug_menu_dock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>320</width>
+     <height>300</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>250</width>
+     <height>300</height>
+    </size>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
+   </property>
+   <property name="windowIcon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/bug.png</normaloff>../redengine/assets/icons/bug.png</iconset>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string>Debug Menu</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="debug_menu_dock_contents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QToolBox" name="debug_menu_toolbox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QToolBox {
+	
+	background-color: rgb(29, 29, 29);
+}</string>
+       </property>
+       <widget class="QWidget" name="toolBoxPage1">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>294</width>
+          <height>528</height>
+         </rect>
+        </property>
+        <attribute name="icon">
+         <iconset>
+          <normaloff>../redengine/assets/icons/computer.png</normaloff>../redengine/assets/icons/computer.png</iconset>
+        </attribute>
+        <attribute name="label">
+         <string>Machine Information</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QGroupBox" name="resource_monitor_group">
+           <property name="title">
+            <string>Resource Monitor</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QLabel" name="cpu_usage_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>CPU Usage: 0%</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="cpu_usage_label_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>CPU Usage (Process): 0%</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="ram_usage_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>RAM Usage: 0%</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="memory_usage_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>Memory Usage: 0000 MB / 0000 MB</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="memory_pusage_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>Memory Usage (Process): 0000 MB</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="gpu_usage_label">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>GPU Usage: 0%</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Plaform Information</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <widget class="QListWidget" name="platform_debug_list">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <pointsize>10</pointsize>
+                <stylestrategy>PreferAntialias</stylestrategy>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QListWidget {
+	
+	background-color: rgb(27, 27, 27);
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarAlwaysOn</enum>
+              </property>
+              <property name="showDropIndicator" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>false</bool>
+              </property>
+              <property name="spacing">
+               <number>3</number>
+              </property>
+              <property name="uniformItemSizes">
+               <bool>true</bool>
+              </property>
+              <property name="selectionRectVisible">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="text">
+               <string>Export Platform Snapshot (.json)</string>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normaloff>../redengine/assets/icons/computer--arrow.png</normaloff>../redengine/assets/icons/computer--arrow.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="toolBoxPage2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>302</width>
+          <height>509</height>
+         </rect>
+        </property>
+        <attribute name="icon">
+         <iconset>
+          <normaloff>../redengine/assets/icons/application-block.png</normaloff>../redengine/assets/icons/application-block.png</iconset>
+        </attribute>
+        <attribute name="label">
+         <string>Pygame Debug Information</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="delta_time_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Consolas</family>
+             <bold>false</bold>
+             <underline>false</underline>
+             <kerning>false</kerning>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <property name="text">
+            <string>Delta Time: 0ms</string>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="fps_group_box">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
+           <property name="title">
+            <string>FPS</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="fps_low_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>Low: 0</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="fps_average_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>Avg: 0</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="fps_high_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <bold>false</bold>
+                <underline>false</underline>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>High: 0</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="blit_calls_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Consolas</family>
+             <bold>false</bold>
+             <underline>false</underline>
+             <kerning>false</kerning>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <property name="text">
+            <string>Blit Calls (Per Tick): 0</string>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="draw_calls_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Consolas</family>
+             <bold>false</bold>
+             <underline>false</underline>
+             <kerning>false</kerning>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <property name="text">
+            <string>All Draw Calls (Per Tick): 0</string>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="active_surfaces_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Consolas</family>
+             <bold>false</bold>
+             <underline>false</underline>
+             <kerning>false</kerning>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel {
+	border: 1px solid rgb(48, 48, 48);
+	background-color: rgb(48, 48, 48);
+	border-radius: 4px;
+
+}</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <property name="text">
+            <string>Active Surfaces : 0 / 0</string>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Pygame Information</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>9</number>
+            </property>
+            <property name="topMargin">
+             <number>6</number>
+            </property>
+            <property name="rightMargin">
+             <number>9</number>
+            </property>
+            <property name="bottomMargin">
+             <number>9</number>
+            </property>
+            <item>
+             <widget class="QListWidget" name="pygame_debug_list">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Consolas</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>false</bool>
+              </property>
+              <property name="spacing">
+               <number>3</number>
+              </property>
+              <property name="uniformItemSizes">
+               <bool>true</bool>
+              </property>
+              <property name="selectionRectVisible">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="toolBoxPage3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>302</width>
+          <height>509</height>
+         </rect>
+        </property>
+        <attribute name="icon">
+         <iconset>
+          <normaloff>../redengine/assets/icons/application-monitor.png</normaloff>../redengine/assets/icons/application-monitor.png</iconset>
+        </attribute>
+        <attribute name="label">
+         <string>Python Debug Information</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menu_bar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1280</width>
-     <height>29</height>
+     <width>1283</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
@@ -237,21 +1697,37 @@
      <string>Project</string>
     </property>
     <widget class="QMenu" name="menuRecent_Projects">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>-1</y>
+       <width>135</width>
+       <height>50</height>
+      </rect>
+     </property>
      <property name="title">
       <string>Recent Projects</string>
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>assets/10125_icons/imageres_185.ico</normaloff>assets/10125_icons/imageres_185.ico</iconset>
+       <normaloff>../redengine/assets/icons-shadowless/blue-folder-horizontal-open.png</normaloff>../redengine/assets/icons-shadowless/blue-folder-horizontal-open.png</iconset>
      </property>
     </widget>
     <widget class="QMenu" name="menuPreferences">
+     <property name="geometry">
+      <rect>
+       <x>497</x>
+       <y>317</y>
+       <width>202</width>
+       <height>231</height>
+      </rect>
+     </property>
      <property name="title">
       <string>Preferences</string>
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>assets/10125_icons/shell32_16826.ico</normaloff>assets/10125_icons/shell32_16826.ico</iconset>
+       <normaloff>../redengine/assets/icons-shadowless/wrench.png</normaloff>../redengine/assets/icons-shadowless/wrench.png</iconset>
      </property>
      <widget class="QMenu" name="menuThemes">
       <property name="title">
@@ -259,10 +1735,19 @@
       </property>
       <property name="icon">
        <iconset>
-        <normaloff>assets/10125_icons/imageres_117.ico</normaloff>assets/10125_icons/imageres_117.ico</iconset>
+        <normaloff>../redengine/assets/icons-shadowless/paint-brush.png</normaloff>../redengine/assets/icons-shadowless/paint-brush.png</iconset>
       </property>
-      <addaction name="actionLoad_Themes"/>
-      <addaction name="actionRevert_Theme"/>
+      <widget class="QMenu" name="menuLoad_Themes">
+       <property name="title">
+        <string>Load Themes</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../redengine/assets/icons/paint-brush--arrow.png</normaloff>../redengine/assets/icons/paint-brush--arrow.png</iconset>
+       </property>
+      </widget>
+      <addaction name="menuLoad_Themes"/>
+      <addaction name="actionRevert_Themes"/>
      </widget>
      <addaction name="actionSave_Layout"/>
      <addaction name="actionLoad_Layout"/>
@@ -283,22 +1768,26 @@
     <addaction name="actionSave_as"/>
     <addaction name="separator"/>
     <addaction name="menuPreferences"/>
+    <addaction name="separator"/>
+    <addaction name="actionReturnLauncher"/>
    </widget>
    <widget class="QMenu" name="windows_button">
     <property name="title">
-     <string>Windows</string>
+     <string>Tools</string>
     </property>
     <addaction name="actionResources"/>
-    <addaction name="actionAssets_Library"/>
+    <addaction name="separator"/>
     <addaction name="actionConsole"/>
+    <addaction name="actionPropertiesWindow"/>
    </widget>
    <widget class="QMenu" name="help_button">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionVisit_Source"/>
-    <addaction name="actionCredits"/>
     <addaction name="actionDocumentation"/>
+    <addaction name="separator"/>
+    <addaction name="actionCredits"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -311,176 +1800,238 @@
     <addaction name="actionCopt"/>
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
-    <addaction name="actionFind"/>
-    <addaction name="actionReplace"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuBuild">
     <property name="title">
-     <string>Build</string>
+     <string>Game</string>
     </property>
-    <addaction name="actionCompile_Project"/>
-    <addaction name="actionCompile_As"/>
+    <addaction name="actionRun_Project"/>
+    <addaction name="actionRun_In_Fullscreen"/>
+    <addaction name="actionPopout_Viewport"/>
     <addaction name="separator"/>
-    <addaction name="actionCompilation_Test"/>
+    <addaction name="actionCompile_Project"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_in_File_Explorer"/>
    </widget>
    <addaction name="project_button"/>
    <addaction name="menuEdit"/>
-   <addaction name="windows_button"/>
    <addaction name="menuBuild"/>
+   <addaction name="windows_button"/>
    <addaction name="help_button"/>
   </widget>
-  <widget class="QDockWidget" name="console_dock">
+  <widget class="QToolBar" name="toolBar">
+   <property name="font">
+    <font>
+     <underline>true</underline>
+    </font>
+   </property>
    <property name="windowTitle">
-    <string>Console</string>
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="separator"/>
+   <addaction name="actionOpen_Project"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionCopt"/>
+   <addaction name="actionPaste"/>
+   <addaction name="actionRun_In_Fullscreen"/>
+   <addaction name="actionPopout_Viewport"/>
+   <addaction name="actionCompile_Project"/>
+   <addaction name="actionAssets_Library"/>
+   <addaction name="actionOpen_in_File_Explorer"/>
+   <addaction name="separator"/>
+   <addaction name="actionResources"/>
+   <addaction name="actionConsole"/>
+   <addaction name="separator"/>
+   <addaction name="actionDocumentation"/>
+  </widget>
+  <widget class="QDockWidget" name="Properties_dock">
+   <property name="minimumSize">
+    <size>
+     <width>318</width>
+     <height>452</height>
+    </size>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>8</number>
+    <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0" colspan="2">
-      <widget class="QScrollArea" name="consoleScrollArea">
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QVBoxLayout" name="verticalLayout_12">
+     <item>
+      <widget class="QTabWidget" name="properties_tabs">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="lineWidth">
-        <number>1</number>
-       </property>
-       <property name="midLineWidth">
+       <property name="currentIndex">
         <number>0</number>
        </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOn</enum>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>1244</width>
-          <height>68</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetFixedSize</enum>
-         </property>
+       <widget class="QWidget" name="properties_tab_1">
+        <attribute name="icon">
+         <iconset>
+          <normaloff>../redengine/assets/icons/magnifier.png</normaloff>../redengine/assets/icons/magnifier.png</iconset>
+        </attribute>
+        <attribute name="title">
+         <string>Inspector</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_14">
          <item>
-          <widget class="QLabel" name="label">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+          <widget class="QLineEdit" name="properties_search_bar">
+           <property name="inputMask">
+            <string>0</string>
            </property>
            <property name="text">
-            <string>Example Item</string>
+            <string/>
            </property>
-           <property name="textFormat">
-            <enum>Qt::PlainText</enum>
+           <property name="frame">
+            <bool>true</bool>
            </property>
-           <property name="scaledContents">
-            <bool>false</bool>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="margin">
-            <number>10</number>
-           </property>
-           <property name="indent">
-            <number>0</number>
+           <property name="placeholderText">
+            <string>Search Properties...</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mainScriptPropertiesGroup">
+           <property name="title">
+            <string>Main Script </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
+            <item>
+             <widget class="QTableWidget" name="PropertiesTable">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="textElideMode">
+               <enum>Qt::ElideRight</enum>
+              </property>
+              <property name="gridStyle">
+               <enum>Qt::NoPen</enum>
+              </property>
+              <attribute name="horizontalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>28</number>
+              </attribute>
+              <attribute name="verticalHeaderHighlightSections">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="properties_tab_2">
+        <attribute name="icon">
+         <iconset>
+          <normaloff>../redengine/assets/icons/gear.png</normaloff>../redengine/assets/icons/gear.png</iconset>
+        </attribute>
+        <attribute name="title">
+         <string>Inspector Settings</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_15">
+         <item>
+          <widget class="QCheckBox" name="properties_options_1">
+           <property name="text">
+            <string>Display all attributes</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="clearLogBtn">
-       <property name="text">
-        <string>Clear Log</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QLineEdit" name="consoleInput"/>
-     </item>
     </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="debug_menu_dock">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>320</width>
-     <height>171</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>320</width>
-     <height>524287</height>
-    </size>
-   </property>
-   <property name="baseSize">
-    <size>
-     <width>250</width>
-     <height>350</height>
-    </size>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea|Qt::TopDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Debug Menu</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="debug_menu_dock_contents">
-    <layout class="QHBoxLayout" name="horizontalLayout_4"/>
    </widget>
   </widget>
   <action name="actionSave">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_28.ico</normaloff>assets/10125_icons/imageres_28.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/disk-black.png</normaloff>../redengine/assets/icons-shadowless/disk-black.png</iconset>
    </property>
    <property name="text">
     <string>Save </string>
@@ -492,7 +2043,7 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_29.ico</normaloff>assets/10125_icons/imageres_29.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/disk.png</normaloff>../redengine/assets/icons-shadowless/disk.png</iconset>
    </property>
    <property name="text">
     <string>Save as</string>
@@ -504,7 +2055,7 @@
   <action name="actionNew_Project">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/shell32_264.ico</normaloff>assets/10125_icons/shell32_264.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/folder-horizontal.png</normaloff>../redengine/assets/icons-shadowless/folder-horizontal.png</iconset>
    </property>
    <property name="text">
     <string>New Project</string>
@@ -513,7 +2064,7 @@
   <action name="actionOpen_Project">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_1025.ico</normaloff>assets/10125_icons/imageres_1025.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/folder-horizontal-open.png</normaloff>../redengine/assets/icons-shadowless/folder-horizontal-open.png</iconset>
    </property>
    <property name="text">
     <string>Open Project</string>
@@ -522,7 +2073,7 @@
   <action name="actionRun_Project">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/Play.ico</normaloff>assets/10125_icons/Play.ico</iconset>
+     <normaloff>../redengine/assets/icons/control.png</normaloff>../redengine/assets/icons/control.png</iconset>
    </property>
    <property name="text">
     <string>Run Project</string>
@@ -537,10 +2088,10 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_1023.ico</normaloff>assets/10125_icons/imageres_1023.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/application-documents.png</normaloff>../redengine/assets/icons-shadowless/application-documents.png</iconset>
    </property>
    <property name="text">
-    <string>Resources</string>
+    <string>Resources...</string>
    </property>
   </action>
   <action name="actionAssets_Library">
@@ -552,10 +2103,10 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/rar.ico</normaloff>assets/10125_icons/rar.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/bug.png</normaloff>../redengine/assets/icons-shadowless/bug.png</iconset>
    </property>
    <property name="text">
-    <string>Assets Library</string>
+    <string>Debug Menu </string>
    </property>
   </action>
   <action name="actionProperties">
@@ -576,7 +2127,7 @@
   <action name="actionUndo">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5315.ico</normaloff>assets/10125_icons/imageres_5315.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/arrow-circle-225-left.png</normaloff>../redengine/assets/icons-shadowless/arrow-circle-225-left.png</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -585,7 +2136,7 @@
   <action name="actionRedo">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5311.ico</normaloff>assets/10125_icons/imageres_5311.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/arrow-circle-225.png</normaloff>../redengine/assets/icons-shadowless/arrow-circle-225.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -594,7 +2145,7 @@
   <action name="actionVisit_Source">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/link.ico</normaloff>assets/10125_icons/link.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/chain.png</normaloff>../redengine/assets/icons-shadowless/chain.png</iconset>
    </property>
    <property name="text">
     <string>Visit Source</string>
@@ -603,7 +2154,7 @@
   <action name="actionNew_File">
    <property name="icon">
     <iconset>
-     <normaloff>assets/doc_add.ico</normaloff>assets/doc_add.ico</iconset>
+     <normaloff>../redengine/assets/icons/document--plus.png</normaloff>../redengine/assets/icons/document--plus.png</iconset>
    </property>
    <property name="text">
     <string>New File</string>
@@ -612,7 +2163,7 @@
   <action name="actionNew_Folder">
    <property name="icon">
     <iconset>
-     <normaloff>assets/file_add.ico</normaloff>assets/file_add.ico</iconset>
+     <normaloff>../redengine/assets/icons/folder--plus.png</normaloff>../redengine/assets/icons/folder--plus.png</iconset>
    </property>
    <property name="text">
     <string>New Folder</string>
@@ -621,25 +2172,31 @@
   <action name="actionDelete_Resource">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/Delete.ico</normaloff>assets/10125_icons/Delete.ico</iconset>
+     <normaloff>../redengine/assets/icons/cross.png</normaloff>../redengine/assets/icons/cross.png</iconset>
    </property>
    <property name="text">
     <string>Delete Resource</string>
    </property>
   </action>
   <action name="actionConsole">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5323.ico</normaloff>assets/10125_icons/imageres_5323.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/terminal.png</normaloff>../redengine/assets/icons-shadowless/terminal.png</iconset>
    </property>
    <property name="text">
-    <string>Console</string>
+    <string>Console...</string>
    </property>
   </action>
   <action name="actionCredits">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_1010.ico</normaloff>assets/10125_icons/imageres_1010.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/thumb-up.png</normaloff>../redengine/assets/icons-shadowless/thumb-up.png</iconset>
    </property>
    <property name="text">
     <string>Credits</string>
@@ -648,7 +2205,7 @@
   <action name="actionDocumentation">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/shell32_2.ico</normaloff>assets/10125_icons/shell32_2.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/book-open.png</normaloff>../redengine/assets/icons-shadowless/book-open.png</iconset>
    </property>
    <property name="text">
     <string>Documentation</string>
@@ -657,7 +2214,7 @@
   <action name="actionSave_Layout">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5350.ico</normaloff>assets/10125_icons/imageres_5350.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/disk--pencil.png</normaloff>../redengine/assets/icons-shadowless/disk--pencil.png</iconset>
    </property>
    <property name="text">
     <string>Save Layout</string>
@@ -666,7 +2223,7 @@
   <action name="actionLoad_Layout">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_132.ico</normaloff>assets/10125_icons/imageres_132.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/disk--arrow.png</normaloff>../redengine/assets/icons-shadowless/disk--arrow.png</iconset>
    </property>
    <property name="text">
     <string>Load Layout</string>
@@ -675,26 +2232,16 @@
   <action name="actionRevert_Layout">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5301.ico</normaloff>assets/10125_icons/imageres_5301.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/disk--minus.png</normaloff>../redengine/assets/icons-shadowless/disk--minus.png</iconset>
    </property>
    <property name="text">
     <string>Revert Layout</string>
    </property>
   </action>
-  <action name="actionLoad_Themes">
-   <property name="text">
-    <string>Load Theme</string>
-   </property>
-  </action>
-  <action name="actionRevert_Theme">
-   <property name="text">
-    <string>Revert Theme</string>
-   </property>
-  </action>
   <action name="actionUser_Settings">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_181.ico</normaloff>assets/10125_icons/imageres_181.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/user.png</normaloff>../redengine/assets/icons-shadowless/user.png</iconset>
    </property>
    <property name="text">
     <string>User Settings</string>
@@ -703,7 +2250,7 @@
   <action name="actionProject_Settings">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_183.ico</normaloff>assets/10125_icons/imageres_183.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/gear.png</normaloff>../redengine/assets/icons-shadowless/gear.png</iconset>
    </property>
    <property name="text">
     <string>Project Settings</string>
@@ -712,7 +2259,7 @@
   <action name="actionCut">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/shell32_16762.ico</normaloff>assets/10125_icons/shell32_16762.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/scissors-blue.png</normaloff>../redengine/assets/icons-shadowless/scissors-blue.png</iconset>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -721,7 +2268,7 @@
   <action name="actionCopt">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/shell32_243.ico</normaloff>assets/10125_icons/shell32_243.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/blue-document-copy.png</normaloff>../redengine/assets/icons-shadowless/blue-document-copy.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -730,7 +2277,7 @@
   <action name="actionPaste">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/shell32_16763.ico</normaloff>assets/10125_icons/shell32_16763.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/clipboard.png</normaloff>../redengine/assets/icons-shadowless/clipboard.png</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -739,7 +2286,7 @@
   <action name="actionFind">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/mag glass.ico</normaloff>assets/10125_icons/mag glass.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/magnifier.png</normaloff>../redengine/assets/icons-shadowless/magnifier.png</iconset>
    </property>
    <property name="text">
     <string>Find</string>
@@ -748,7 +2295,7 @@
   <action name="actionReplace">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5348.ico</normaloff>assets/10125_icons/imageres_5348.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/arrow-circle-double.png</normaloff>../redengine/assets/icons-shadowless/arrow-circle-double.png</iconset>
    </property>
    <property name="text">
     <string>Replace</string>
@@ -775,7 +2322,7 @@
   <action name="actionRename">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_94.ico</normaloff>assets/10125_icons/imageres_94.ico</iconset>
+     <normaloff>../redengine/assets/icons/application-rename.png</normaloff>../redengine/assets/icons/application-rename.png</iconset>
    </property>
    <property name="text">
     <string>Rename</string>
@@ -784,7 +2331,7 @@
   <action name="actionSet_as_Main_py">
    <property name="icon">
     <iconset>
-     <normaloff>assets/py.ico</normaloff>assets/py.ico</iconset>
+     <normaloff>../redengine/assets/icons/red-python.png</normaloff>../redengine/assets/icons/red-python.png</iconset>
    </property>
    <property name="text">
     <string>Set as Main.py</string>
@@ -793,7 +2340,7 @@
   <action name="actionOpen_in_File_Explorer">
    <property name="icon">
     <iconset>
-     <normaloff>assets/10125_icons/imageres_5332.ico</normaloff>assets/10125_icons/imageres_5332.ico</iconset>
+     <normaloff>../redengine/assets/icons/folder--arrow.png</normaloff>../redengine/assets/icons/folder--arrow.png</iconset>
    </property>
    <property name="text">
     <string>Open in File Explorer</string>
@@ -805,6 +2352,10 @@
    </property>
   </action>
   <action name="actionCreate_Context">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/document--plus.png</normaloff>../redengine/assets/icons/document--plus.png</iconset>
+   </property>
    <property name="text">
     <string>Create</string>
    </property>
@@ -812,28 +2363,26 @@
   <action name="actionCopy_Path">
    <property name="icon">
     <iconset>
-     <normaloff>../redengine/assets/10125_icons/imageres_5302.ico</normaloff>../redengine/assets/10125_icons/imageres_5302.ico</iconset>
+     <normaloff>../redengine/assets/icons/document-copy.png</normaloff>../redengine/assets/icons/document-copy.png</iconset>
    </property>
    <property name="text">
     <string>Copy Path</string>
    </property>
   </action>
   <action name="actionExample_Script">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/document-py.png</normaloff>../redengine/assets/icons/document-py.png</iconset>
+   </property>
    <property name="text">
     <string>Example Script</string>
    </property>
   </action>
-  <action name="actionExample_Scene">
-   <property name="text">
-    <string>Example Scene</string>
-   </property>
-  </action>
-  <action name="actionExample_App">
-   <property name="text">
-    <string>Example App</string>
-   </property>
-  </action>
   <action name="actionExample_Main">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/document-mainpy.png</normaloff>../redengine/assets/icons/document-mainpy.png</iconset>
+   </property>
    <property name="text">
     <string>Example Main</string>
    </property>
@@ -841,16 +2390,6 @@
   <action name="actionEmpty_Script">
    <property name="text">
     <string>Empty Script</string>
-   </property>
-  </action>
-  <action name="actionEmpty_Scene">
-   <property name="text">
-    <string>Empty Scene</string>
-   </property>
-  </action>
-  <action name="actionEmpty_App">
-   <property name="text">
-    <string>Empty App</string>
    </property>
   </action>
   <action name="actionEmpty_Main">
@@ -861,43 +2400,82 @@
   <action name="actionReload">
    <property name="icon">
     <iconset>
-     <normaloff>../redengine/assets/10125_icons/Refresh.ico</normaloff>../redengine/assets/10125_icons/Refresh.ico</iconset>
+     <normaloff>../redengine/assets/icons/arrow-circle-135.png</normaloff>../redengine/assets/icons/arrow-circle-135.png</iconset>
    </property>
    <property name="text">
     <string>Reload</string>
    </property>
   </action>
-  <action name="actionSet_as_Main_Scenes">
-   <property name="icon">
-    <iconset>
-     <normaloff>../redengine/assets/scenes_home.png</normaloff>../redengine/assets/scenes_home.png</iconset>
-   </property>
-   <property name="text">
-    <string>Set as Main Scenes</string>
-   </property>
-  </action>
   <action name="actionClear_All_Recent_Projects">
    <property name="icon">
     <iconset>
-     <normaloff>../redengine/assets/10125_icons/Delete.ico</normaloff>../redengine/assets/10125_icons/Delete.ico</iconset>
+     <normaloff>../redengine/assets/icons-shadowless/cross.png</normaloff>../redengine/assets/icons-shadowless/cross.png</iconset>
    </property>
    <property name="text">
     <string>Clear All Recent Projects</string>
    </property>
   </action>
   <action name="actionCompile_Project">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons-shadowless/hammer-screwdriver.png</normaloff>../redengine/assets/icons-shadowless/hammer-screwdriver.png</iconset>
+   </property>
    <property name="text">
-    <string>Compile Project</string>
+    <string>Build Project (.exe)</string>
    </property>
   </action>
-  <action name="actionCompile_As">
+  <action name="actionPause_Project">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/control-pause.png</normaloff>../redengine/assets/icons/control-pause.png</iconset>
+   </property>
    <property name="text">
-    <string>Compile As (...)</string>
+    <string>Pause Project</string>
    </property>
   </action>
-  <action name="actionCompilation_Test">
+  <action name="actionRun_In_Fullscreen">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/controller-d-pad.png</normaloff>../redengine/assets/icons/controller-d-pad.png</iconset>
+   </property>
    <property name="text">
-    <string>Compilation Test</string>
+    <string>Run In Fullscreen</string>
+   </property>
+  </action>
+  <action name="actionPropertiesWindow">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/application-detail.png</normaloff>../redengine/assets/icons/application-detail.png</iconset>
+   </property>
+   <property name="text">
+    <string>Properties...</string>
+   </property>
+  </action>
+  <action name="actionPopout_Viewport">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/application-export.png</normaloff>../redengine/assets/icons/application-export.png</iconset>
+   </property>
+   <property name="text">
+    <string>Popout Viewport</string>
+   </property>
+  </action>
+  <action name="actionReturnLauncher">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/rocket--arrow.png</normaloff>../redengine/assets/icons/rocket--arrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Return To Launcher </string>
+   </property>
+  </action>
+  <action name="actionRevert_Themes">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icons/paint-brush--minus.png</normaloff>../redengine/assets/icons/paint-brush--minus.png</iconset>
+   </property>
+   <property name="text">
+    <string>Revert To Default</string>
    </property>
   </action>
  </widget>
@@ -908,16 +2486,7 @@
    <header>RedegsWidgets.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>QIdeWindow</class>
-   <extends>QWidget</extends>
-   <header>WidgetsLib.h</header>
-   <container>1</container>
-  </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>resources_tree</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

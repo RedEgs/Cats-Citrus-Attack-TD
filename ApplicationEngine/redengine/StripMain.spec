@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/test windows/StripMain.py'],
+    ['C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/example/.redengine/build/StripMain.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -29,7 +29,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,

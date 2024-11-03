@@ -3,16 +3,15 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-def load_recent_projects_from_json():
+def load_recent_projects_from_json(application_path):
     import json 
     
-    file_path = 'recents.json'
+    file_path = application_path + '/recents.json'
     
     if os.path.exists(file_path):
         with open(file_path, 'r') as file:
             data = json.load(file)
     else:
-        print(f"No such file: {file_path}")
         return None
 
     return data
@@ -41,9 +40,6 @@ def add_to_recent_projects(project_name, project_json):
         
         with open(file_path, 'w') as file:
             json.dump(data, file, indent=4)
-        print(f"Project '{project_name}' added.")
-    else:
-        print(f"Project '{project_name}' already exists.")
     
 def clear_recent_projects():
     import json
@@ -64,7 +60,16 @@ def clear_recent_projects():
         with open(file_path, 'w') as file:
             json.dump({}, file, indent=4)
 
+def remove_from_recent_projects(app_path, project_name):
+    import json
     
+    data = load_recent_projects_from_json(app_path)
+    data.pop(project_name)
+    
+    with open(app_path+"/recents.json", 'w') as file:
+        json.dump(data, file, indent=4)
+        
+
     
 def check_recent_projects():
     import json
