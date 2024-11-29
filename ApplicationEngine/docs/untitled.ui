@@ -486,12 +486,6 @@
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QFrame {
-	background-color: rgb(29, 29, 29); 
-	border-radius: 5px;
-}</string>
-          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -542,12 +536,6 @@
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QFrame {
-	background-color: rgb(29, 29, 29); 
-	border-radius: 5px;
-}</string>
-          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -597,12 +585,6 @@
           </property>
           <property name="autoFillBackground">
            <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QFrame {
-	background-color: rgb(29, 29, 29); 
-	border-radius: 5px;
-}</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -725,7 +707,7 @@ color: rgb(255, 255, 255);</string>
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::AllDockWidgetAreas</set>
@@ -749,19 +731,13 @@ color: rgb(255, 255, 255);</string>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
-       <property name="styleSheet">
-        <string notr="true">QToolBox {
-	
-	background-color: rgb(29, 29, 29);
-}</string>
-       </property>
        <widget class="QWidget" name="toolBoxPage1">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>294</width>
-          <height>528</height>
+          <width>298</width>
+          <height>545</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -801,6 +777,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -808,14 +785,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -854,6 +823,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -861,14 +831,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -907,6 +869,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -914,14 +877,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -960,6 +915,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -967,14 +923,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1013,6 +961,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1020,14 +969,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1069,6 +1010,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1076,14 +1018,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1135,12 +1069,6 @@ color: rgb(255, 255, 255);</string>
                 <stylestrategy>PreferAntialias</stylestrategy>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QListWidget {
-	
-	background-color: rgb(27, 27, 27);
-}</string>
-              </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
@@ -1186,7 +1114,7 @@ color: rgb(255, 255, 255);</string>
           <x>0</x>
           <y>0</y>
           <width>302</width>
-          <height>509</height>
+          <height>504</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -1214,6 +1142,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1221,14 +1150,6 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="autoFillBackground">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -1291,6 +1212,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1298,14 +1220,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1344,6 +1258,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1351,14 +1266,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1397,6 +1304,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1404,14 +1312,6 @@ color: rgb(255, 255, 255);</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1453,6 +1353,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1460,14 +1361,6 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="autoFillBackground">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -1506,6 +1399,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1513,14 +1407,6 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="autoFillBackground">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -1559,6 +1445,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1566,14 +1453,6 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="autoFillBackground">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel {
-	border: 1px solid rgb(48, 48, 48);
-	background-color: rgb(48, 48, 48);
-	border-radius: 4px;
-
-}</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -1667,7 +1546,7 @@ color: rgb(255, 255, 255);</string>
           <x>0</x>
           <y>0</y>
           <width>302</width>
-          <height>509</height>
+          <height>504</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -1701,7 +1580,7 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>0</x>
        <y>-1</y>
-       <width>135</width>
+       <width>142</width>
        <height>50</height>
       </rect>
      </property>
@@ -1718,7 +1597,7 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>497</x>
        <y>317</y>
-       <width>202</width>
+       <width>233</width>
        <height>231</height>
       </rect>
      </property>
@@ -1869,7 +1748,7 @@ color: rgb(255, 255, 255);</string>
   <widget class="QDockWidget" name="Properties_dock">
    <property name="minimumSize">
     <size>
-     <width>318</width>
+     <width>320</width>
      <height>452</height>
     </size>
    </property>

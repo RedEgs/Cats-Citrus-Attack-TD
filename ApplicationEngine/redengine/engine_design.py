@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 
 
+
 class Ui_main_window(object):
     def setupUi(self, main_window):
         if not main_window.objectName():
@@ -472,10 +473,6 @@ class Ui_main_window(object):
         sizePolicy6.setHeightForWidth(self.frame_5.sizePolicy().hasHeightForWidth())
         self.frame_5.setSizePolicy(sizePolicy6)
         self.frame_5.setAutoFillBackground(False)
-        self.frame_5.setStyleSheet(u"QFrame {\n"
-"	background-color: rgb(29, 29, 29); \n"
-"	border-radius: 5px;\n"
-"}")
         self.frame_5.setFrameShape(QFrame.StyledPanel)
         self.frame_5.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_6 = QHBoxLayout(self.frame_5)
@@ -503,10 +500,6 @@ class Ui_main_window(object):
         sizePolicy6.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
         self.frame_4.setSizePolicy(sizePolicy6)
         self.frame_4.setAutoFillBackground(False)
-        self.frame_4.setStyleSheet(u"QFrame {\n"
-"	background-color: rgb(29, 29, 29); \n"
-"	border-radius: 5px;\n"
-"}")
         self.frame_4.setFrameShape(QFrame.StyledPanel)
         self.frame_4.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_5 = QHBoxLayout(self.frame_4)
@@ -534,10 +527,6 @@ class Ui_main_window(object):
         sizePolicy6.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
         self.frame_3.setSizePolicy(sizePolicy6)
         self.frame_3.setAutoFillBackground(False)
-        self.frame_3.setStyleSheet(u"QFrame {\n"
-"	background-color: rgb(29, 29, 29); \n"
-"	border-radius: 5px;\n"
-"}")
         self.frame_3.setFrameShape(QFrame.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.frame_3)
@@ -566,7 +555,7 @@ class Ui_main_window(object):
         self.console = QTextEdit(self.dockWidgetContents)
         self.console.setObjectName(u"console")
         font1 = QFont()
-        font1.setFamilies([u"Consolas"])
+        font1.setFamily(u"Consolas")
         font1.setPointSize(14)
         self.console.setFont(font1)
         self.console.setStyleSheet(u"QTextEdit {\n"
@@ -582,7 +571,7 @@ class Ui_main_window(object):
         self.console_command_line = QLineEdit(self.dockWidgetContents)
         self.console_command_line.setObjectName(u"console_command_line")
         font2 = QFont()
-        font2.setFamilies([u"Consolas"])
+        font2.setFamily(u"Consolas")
         self.console_command_line.setFont(font2)
         self.console_command_line.setAutoFillBackground(False)
         self.console_command_line.setStyleSheet(u"background-color: rgb(0, 0, 0);\n"
@@ -607,7 +596,7 @@ class Ui_main_window(object):
         icon47.addFile(u"../redengine/assets/icons/bug.png", QSize(), QIcon.Normal, QIcon.Off)
         self.debug_menu_dock.setWindowIcon(icon47)
         self.debug_menu_dock.setFloating(False)
-        self.debug_menu_dock.setFeatures(QDockWidget.DockWidgetClosable|QDockWidget.DockWidgetFloatable|QDockWidget.DockWidgetMovable)
+        self.debug_menu_dock.setFeatures(QDockWidget.AllDockWidgetFeatures)
         self.debug_menu_dock.setAllowedAreas(Qt.AllDockWidgetAreas)
         self.debug_menu_dock_contents = QWidget()
         self.debug_menu_dock_contents.setObjectName(u"debug_menu_dock_contents")
@@ -621,13 +610,9 @@ class Ui_main_window(object):
         sizePolicy8.setHeightForWidth(self.debug_menu_toolbox.sizePolicy().hasHeightForWidth())
         self.debug_menu_toolbox.setSizePolicy(sizePolicy8)
         self.debug_menu_toolbox.setAutoFillBackground(False)
-        self.debug_menu_toolbox.setStyleSheet(u"QToolBox {\n"
-"	\n"
-"	background-color: rgb(29, 29, 29);\n"
-"}")
         self.toolBoxPage1 = QWidget()
         self.toolBoxPage1.setObjectName(u"toolBoxPage1")
-        self.toolBoxPage1.setGeometry(QRect(0, 0, 294, 528))
+        self.toolBoxPage1.setGeometry(QRect(0, 0, 298, 545))
         self.verticalLayout_2 = QVBoxLayout(self.toolBoxPage1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.resource_monitor_group = QGroupBox(self.toolBoxPage1)
@@ -642,18 +627,13 @@ class Ui_main_window(object):
         self.cpu_usage_label.setSizePolicy(sizePolicy)
         self.cpu_usage_label.setMinimumSize(QSize(0, 30))
         font3 = QFont()
-        font3.setFamilies([u"Consolas"])
+        font3.setFamily(u"Consolas")
         font3.setBold(False)
         font3.setUnderline(False)
+        font3.setWeight(50)
         font3.setKerning(False)
         self.cpu_usage_label.setFont(font3)
         self.cpu_usage_label.setAutoFillBackground(False)
-        self.cpu_usage_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.cpu_usage_label.setFrameShape(QFrame.NoFrame)
         self.cpu_usage_label.setFrameShadow(QFrame.Plain)
         self.cpu_usage_label.setScaledContents(True)
@@ -669,12 +649,6 @@ class Ui_main_window(object):
         self.cpu_usage_label_2.setMinimumSize(QSize(0, 30))
         self.cpu_usage_label_2.setFont(font3)
         self.cpu_usage_label_2.setAutoFillBackground(False)
-        self.cpu_usage_label_2.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.cpu_usage_label_2.setFrameShape(QFrame.NoFrame)
         self.cpu_usage_label_2.setFrameShadow(QFrame.Plain)
         self.cpu_usage_label_2.setScaledContents(True)
@@ -690,12 +664,6 @@ class Ui_main_window(object):
         self.ram_usage_label.setMinimumSize(QSize(0, 30))
         self.ram_usage_label.setFont(font3)
         self.ram_usage_label.setAutoFillBackground(False)
-        self.ram_usage_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.ram_usage_label.setFrameShape(QFrame.NoFrame)
         self.ram_usage_label.setFrameShadow(QFrame.Plain)
         self.ram_usage_label.setScaledContents(True)
@@ -711,12 +679,6 @@ class Ui_main_window(object):
         self.memory_usage_label.setMinimumSize(QSize(0, 30))
         self.memory_usage_label.setFont(font3)
         self.memory_usage_label.setAutoFillBackground(False)
-        self.memory_usage_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.memory_usage_label.setFrameShape(QFrame.NoFrame)
         self.memory_usage_label.setFrameShadow(QFrame.Plain)
         self.memory_usage_label.setScaledContents(True)
@@ -732,12 +694,6 @@ class Ui_main_window(object):
         self.memory_pusage_label.setMinimumSize(QSize(0, 30))
         self.memory_pusage_label.setFont(font3)
         self.memory_pusage_label.setAutoFillBackground(False)
-        self.memory_pusage_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.memory_pusage_label.setFrameShape(QFrame.NoFrame)
         self.memory_pusage_label.setFrameShadow(QFrame.Plain)
         self.memory_pusage_label.setScaledContents(True)
@@ -754,12 +710,6 @@ class Ui_main_window(object):
         self.gpu_usage_label.setMinimumSize(QSize(0, 30))
         self.gpu_usage_label.setFont(font3)
         self.gpu_usage_label.setAutoFillBackground(False)
-        self.gpu_usage_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.gpu_usage_label.setFrameShape(QFrame.NoFrame)
         self.gpu_usage_label.setFrameShadow(QFrame.Plain)
         self.gpu_usage_label.setScaledContents(True)
@@ -782,14 +732,10 @@ class Ui_main_window(object):
         sizePolicy.setHeightForWidth(self.platform_debug_list.sizePolicy().hasHeightForWidth())
         self.platform_debug_list.setSizePolicy(sizePolicy)
         font4 = QFont()
-        font4.setFamilies([u"Consolas"])
+        font4.setFamily(u"Consolas")
         font4.setPointSize(10)
         font4.setStyleStrategy(QFont.PreferAntialias)
         self.platform_debug_list.setFont(font4)
-        self.platform_debug_list.setStyleSheet(u"QListWidget {\n"
-"	\n"
-"	background-color: rgb(27, 27, 27);\n"
-"}")
         self.platform_debug_list.setFrameShape(QFrame.NoFrame)
         self.platform_debug_list.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.platform_debug_list.setProperty("showDropIndicator", False)
@@ -816,7 +762,7 @@ class Ui_main_window(object):
         self.debug_menu_toolbox.addItem(self.toolBoxPage1, icon49, u"Machine Information")
         self.toolBoxPage2 = QWidget()
         self.toolBoxPage2.setObjectName(u"toolBoxPage2")
-        self.toolBoxPage2.setGeometry(QRect(0, 0, 302, 509))
+        self.toolBoxPage2.setGeometry(QRect(0, 0, 298, 475))
         self.verticalLayout_6 = QVBoxLayout(self.toolBoxPage2)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.delta_time_label = QLabel(self.toolBoxPage2)
@@ -826,12 +772,6 @@ class Ui_main_window(object):
         self.delta_time_label.setMinimumSize(QSize(0, 30))
         self.delta_time_label.setFont(font3)
         self.delta_time_label.setAutoFillBackground(False)
-        self.delta_time_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.delta_time_label.setFrameShape(QFrame.NoFrame)
         self.delta_time_label.setFrameShadow(QFrame.Plain)
         self.delta_time_label.setScaledContents(True)
@@ -860,12 +800,6 @@ class Ui_main_window(object):
         self.fps_low_label.setMinimumSize(QSize(0, 30))
         self.fps_low_label.setFont(font3)
         self.fps_low_label.setAutoFillBackground(False)
-        self.fps_low_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.fps_low_label.setFrameShape(QFrame.NoFrame)
         self.fps_low_label.setFrameShadow(QFrame.Plain)
         self.fps_low_label.setScaledContents(True)
@@ -881,12 +815,6 @@ class Ui_main_window(object):
         self.fps_average_label.setMinimumSize(QSize(0, 30))
         self.fps_average_label.setFont(font3)
         self.fps_average_label.setAutoFillBackground(False)
-        self.fps_average_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.fps_average_label.setFrameShape(QFrame.NoFrame)
         self.fps_average_label.setFrameShadow(QFrame.Plain)
         self.fps_average_label.setScaledContents(True)
@@ -902,12 +830,6 @@ class Ui_main_window(object):
         self.fps_high_label.setMinimumSize(QSize(0, 30))
         self.fps_high_label.setFont(font3)
         self.fps_high_label.setAutoFillBackground(False)
-        self.fps_high_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.fps_high_label.setFrameShape(QFrame.NoFrame)
         self.fps_high_label.setFrameShadow(QFrame.Plain)
         self.fps_high_label.setScaledContents(True)
@@ -926,12 +848,6 @@ class Ui_main_window(object):
         self.blit_calls_label.setMinimumSize(QSize(0, 30))
         self.blit_calls_label.setFont(font3)
         self.blit_calls_label.setAutoFillBackground(False)
-        self.blit_calls_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.blit_calls_label.setFrameShape(QFrame.NoFrame)
         self.blit_calls_label.setFrameShadow(QFrame.Plain)
         self.blit_calls_label.setScaledContents(True)
@@ -947,12 +863,6 @@ class Ui_main_window(object):
         self.draw_calls_label.setMinimumSize(QSize(0, 30))
         self.draw_calls_label.setFont(font3)
         self.draw_calls_label.setAutoFillBackground(False)
-        self.draw_calls_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.draw_calls_label.setFrameShape(QFrame.NoFrame)
         self.draw_calls_label.setFrameShadow(QFrame.Plain)
         self.draw_calls_label.setScaledContents(True)
@@ -968,12 +878,6 @@ class Ui_main_window(object):
         self.active_surfaces_label.setMinimumSize(QSize(0, 30))
         self.active_surfaces_label.setFont(font3)
         self.active_surfaces_label.setAutoFillBackground(False)
-        self.active_surfaces_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(48, 48, 48);\n"
-"	background-color: rgb(48, 48, 48);\n"
-"	border-radius: 4px;\n"
-"\n"
-"}")
         self.active_surfaces_label.setFrameShape(QFrame.NoFrame)
         self.active_surfaces_label.setFrameShadow(QFrame.Plain)
         self.active_surfaces_label.setScaledContents(True)
@@ -995,7 +899,7 @@ class Ui_main_window(object):
         sizePolicy.setHeightForWidth(self.pygame_debug_list.sizePolicy().hasHeightForWidth())
         self.pygame_debug_list.setSizePolicy(sizePolicy)
         font5 = QFont()
-        font5.setFamilies([u"Consolas"])
+        font5.setFamily(u"Consolas")
         font5.setPointSize(10)
         self.pygame_debug_list.setFont(font5)
         self.pygame_debug_list.setAutoFillBackground(False)
@@ -1015,7 +919,7 @@ class Ui_main_window(object):
         self.debug_menu_toolbox.addItem(self.toolBoxPage2, icon50, u"Pygame Debug Information")
         self.toolBoxPage3 = QWidget()
         self.toolBoxPage3.setObjectName(u"toolBoxPage3")
-        self.toolBoxPage3.setGeometry(QRect(0, 0, 302, 509))
+        self.toolBoxPage3.setGeometry(QRect(0, 0, 98, 28))
         icon51 = QIcon()
         icon51.addFile(u"../redengine/assets/icons/application-monitor.png", QSize(), QIcon.Normal, QIcon.Off)
         self.debug_menu_toolbox.addItem(self.toolBoxPage3, icon51, u"Python Debug Information")
@@ -1031,13 +935,13 @@ class Ui_main_window(object):
         self.project_button.setObjectName(u"project_button")
         self.menuRecent_Projects = QMenu(self.project_button)
         self.menuRecent_Projects.setObjectName(u"menuRecent_Projects")
-        self.menuRecent_Projects.setGeometry(QRect(0, -1, 135, 50))
+        self.menuRecent_Projects.setGeometry(QRect(0, -1, 142, 50))
         icon52 = QIcon()
         icon52.addFile(u"../redengine/assets/icons-shadowless/blue-folder-horizontal-open.png", QSize(), QIcon.Normal, QIcon.Off)
         self.menuRecent_Projects.setIcon(icon52)
         self.menuPreferences = QMenu(self.project_button)
         self.menuPreferences.setObjectName(u"menuPreferences")
-        self.menuPreferences.setGeometry(QRect(497, 317, 202, 231))
+        self.menuPreferences.setGeometry(QRect(497, 317, 233, 231))
         icon53 = QIcon()
         icon53.addFile(u"../redengine/assets/icons-shadowless/wrench.png", QSize(), QIcon.Normal, QIcon.Off)
         self.menuPreferences.setIcon(icon53)
@@ -1072,7 +976,7 @@ class Ui_main_window(object):
         main_window.addToolBar(Qt.TopToolBarArea, self.toolBar)
         self.Properties_dock = QDockWidget(main_window)
         self.Properties_dock.setObjectName(u"Properties_dock")
-        self.Properties_dock.setMinimumSize(QSize(318, 452))
+        self.Properties_dock.setMinimumSize(QSize(320, 452))
         self.Properties_dock.setFocusPolicy(Qt.StrongFocus)
         self.dockWidgetContents_3 = QWidget()
         self.dockWidgetContents_3.setObjectName(u"dockWidgetContents_3")

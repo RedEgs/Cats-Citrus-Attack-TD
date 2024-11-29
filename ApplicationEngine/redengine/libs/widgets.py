@@ -74,7 +74,7 @@ class PygameWidget(QWidget):
         except Exception as e:
             print(traceback.format_exc())
             QMessageBox.critical(self.parent, f"Fatal Error Starting Game Loop | {str(os.path.basename(traceback.extract_tb(sys.exc_info()[2])[-1].filename))}", 
-                                f"{traceback.format_exc()}", QMessageBox.Ok, QMessageBox)
+                                f"{traceback.format_exc()}", QMessageBox.Ok)
 
     # TODO Rename this here and in `set_process`
     def _launch_game(self, file_path, project_file_path):

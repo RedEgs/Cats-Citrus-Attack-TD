@@ -2,10 +2,9 @@ import engine_design, launcher_design
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtWebEngineWidgets import QWebEngineView
 from functools import partial
-import os, json, sys, importlib, platform, traceback
-
+import os, json, sys, importlib, platform, traceback, asyncio
+import concurrent.futures
 # Find out how to include images
 
 class Pyredengine(QMainWindow):
@@ -416,13 +415,18 @@ class Pyredengine(QMainWindow):
         self._reload_file_tree()
    
     def set_main_project_file(self, path = None):  # sourcery skip: use-contextlib-suppress
+        print("firing project main file setting")
         import libs.widgets as w
         import libs.project_management as pm
 
+        print("setting main file")
+
         if path is not None:
+            print(f"settings project main file as: {path}")
             pm.generate_project_path(self, self.project_dir, self.project_name, path)
             self._relaunch_window(self.project_json_data)
         elif project_main_dir := self.resources_tree_selected_item_from_context:
+            print(f"setting project path as {w.get_tree_item_path(self.project_dir, project_main_dir).replace("//", "/")}")
             try:
                 if project_main_dir.data(0, 5) == "py":
                     pm.generate_project_path(self, self.project_dir, self.project_name, w.get_tree_item_path(self.project_dir, project_main_dir).replace("//", "/"))
@@ -935,6 +939,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 class Launcher(QWidget):
     def __init__(self):
         super().__init__()
+
+        import threading
         self.ui = launcher_design.Ui_Form()
         self.ui.setupUi(self)
         self.application_path = os.path.dirname(os.path.abspath(__file__))
@@ -955,7 +961,7 @@ class Launcher(QWidget):
         self.populate_projects_table()
         #self._get_python_versions()
         self._versions_tab_loaded = False
-        self.ui.tabWidget.currentChanged.connect(self._get_python_versions)
+        threading.Thread(target=lambda: self._get_python_versions()).start()
         
 
 
@@ -1019,13 +1025,20 @@ class Launcher(QWidget):
 
 
         if projs is not None:
-            table.setRowCount(len(projs.items()))
+            table.setRowCount(10)
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
             for project_name, project_details in projs.items():
+                _project_data = project_details["json"]
+
+                if not os.path.exists(_project_data["project_path"]+"/.redengine/project.json"):
+                    print(f"file does not exist at {_project_data["project_path"]}")
+                    continue
+                print(f"file does exist at {_project_data["project_path"]}")
+
                 main_item = QTableWidgetItem(project_name)
                 main_item._project_data = project_details["json"]
-                
-                
+
+
                 table.setItem(self.table_items, 0, main_item)
                 table.setItem(self.table_items, 1, QTableWidgetItem("0.0.0"))
                 table.setItem(self.table_items, 2, QTableWidgetItem(project_details["json"]["project_path"]))
@@ -1036,6 +1049,8 @@ class Launcher(QWidget):
                     table.setItem(self.table_items, 3, QTableWidgetItem("Unknown Author"))
             
                 self.table_items +=1
+            table.setRowCount(self.table_items)
+
   
     def regenerate_table(self):                    
         for i in range(self.table_items):
@@ -1060,7 +1075,7 @@ class Launcher(QWidget):
                     self._project_data = json.load(file)
                     pm.add_to_recent_projects(self._project_data["project_name"], self._project_data)
                     
-                    
+                    print("added to recents")
                     for i in range(self.table_items):
                         self.ui.projects_table.removeRow(i)
                     
@@ -1103,9 +1118,9 @@ class Launcher(QWidget):
         self.ui.install_button.setEnabled(True)
         self.py_dl_link = self.ui.python_versions_table.item(item.row(), 0)._dl_link
         self.py_name = self.ui.python_versions_table.item(item.row(), 0)._py_name
-            
+
     def _get_python_versions(self):
-        import requests, urllib
+        import requests
         from bs4 import BeautifulSoup
 
         if self._versions_tab_loaded == True:
@@ -1161,6 +1176,8 @@ class Launcher(QWidget):
                 table.setItem(items_counter, 2, i3)
                 
                 items_counter += 1
+
+        
         
         
         self._versions_tab_loaded = True

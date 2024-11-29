@@ -4,7 +4,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
-from PyQt5.QtWebEngineWidgets import QWebEngineView
 import libs.widgets as w
 
 class ConsoleWrapper(io.StringIO):

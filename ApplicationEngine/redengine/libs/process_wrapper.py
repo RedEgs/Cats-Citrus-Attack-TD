@@ -21,13 +21,13 @@ class GameHandler():
     def start_process(self):  # sourcery skip: class-extract-method
         import importlib.util
 
-
+        print("starting handle")
         print("Starting Process")
         try:
             print("Before inserting path")
             sys.path.append(self.project_file_path) # Makes the project directory importable
             print(f"Importing Path: {self.project_file_path}")
-
+            
             try:
                 import main  # type: ignore # Import the main project file
                 print("Importing File")

@@ -124,7 +124,7 @@ def create_py_file(parent, working_dir, filename = None):
         if not os.path.isfile(f"{working_dir}/{filename}.py"):
             with open(f"{working_dir}/{filename}.py", "w") as file:
                 if filename == "main":
-                    _extracted_from_create_py_file_14(script_generation, file)
+                    _copy_main_template()
         else:
                 QMessageBox.critical(
                     parent,
@@ -136,16 +136,13 @@ def create_py_file(parent, working_dir, filename = None):
 
 
 # TODO Rename this here and in `create_py_file`
-def _extracted_from_create_py_file_14(script_generation, file):
-    template_dir = f"{os.getcwd()}/Libs/templates"
-    template_file = "main.template"
-    replacements = {}
+def _copy_main_template():
+    import shutil 
 
-    sgen = script_generation.ScriptGenerator(template_dir, template_file, replacements)
+    template_file = f"{os.getcwd()}/Libs/templates/main.template"
 
-
-    file.write(sgen.get_generated_script())
-    file.close()
+    shutil.copyfile()
+    
       
 def create_folder(parent, working_dir):
     import os

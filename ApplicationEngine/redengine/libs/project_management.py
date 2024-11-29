@@ -9,9 +9,11 @@ def load_recent_projects_from_json(application_path):
     file_path = application_path + '/recents.json'
     
     if os.path.exists(file_path):
+        print("path exists")
         with open(file_path, 'r') as file:
             data = json.load(file)
     else:
+        print("path does not exist")
         return None
 
     return data
@@ -140,7 +142,7 @@ def generate_project_path(window, project_path, project_name, main_project_file=
             existing_data[key] = value
 
     if "main_project_file" not in existing_data or main_project_file is not None:
-        existing_data["main_project_file"] = main_project_file
+        existing_data["main_project_file"] = f"{project_path}/main.py"
 
     if "project_scenes" not in existing_data or project_scenes is not None:
         existing_data["project_scenes"] = project_scenes
