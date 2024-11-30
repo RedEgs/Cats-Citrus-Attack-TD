@@ -397,7 +397,7 @@ def load_project_resources(startpath, tree, main_file_name=None, app_path=None):
             parent_itm.setIcon(0, QIcon('assets/icons/document-mainpy.png'))
             parent_itm.setData(0, 5, file_type[1])
             parent_itm.setData(0, 6, "Main")
-            parent_itm.setBackground(0, QColor.fromRgb(48, 48, 48, 255))
+            #parent_itm.setBackground(0, QColor.fromRgb(48, 48, 48, 255))
 
         elif len(file_type) >= 2 and os.path.isfile(f'assets/icons/document-{file_type[len(file_type)-1]}.png'):
             parent_itm.setIcon(0, QIcon(f'assets/icons/document-{file_type[len(file_type)-1]}.png'))

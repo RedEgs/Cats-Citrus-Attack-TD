@@ -128,7 +128,10 @@ class Pyredengine(QMainWindow):
           
         self.iconColorSwatch = QIcon()
         self.iconColorSwatch.addFile(u"../redengine/assets/icons/color-swatch.png", QSize(), QIcon.Normal, QIcon.Off)
-          
+
+        self.iconPlus = QIcon()
+        self.iconPlus.addFile(u"../redengine/assets/icons/plus.png", QSize(), QIcon.Normal, QIcon.Off)
+
           
     def _relaunch_window(self, data):
         self.newWindow = Pyredengine(data)
@@ -471,10 +474,17 @@ class Pyredengine(QMainWindow):
         
 
 
-    def _open_file_explorer(self):
-        import webbrowser, os
-        webbrowser.open(os.path.realpath(self.project_dir))       
-   
+    def _open_file_explorer(self):       
+        import os, subprocess
+
+        folder_path = os.path.realpath(self.project_dir)
+
+        if platform.system() == "Windows":
+            os.startfile(folder_path)
+        elif platform.system() == "Darwin":  # macOS
+            subprocess.run(["open", folder_path])
+        else:  # Linux
+            subprocess.run(["xdg-open", folder_path])
    
     def _main_file_disclaimer(self):
         import libs.resource_management as rm
@@ -815,6 +825,7 @@ class Pyredengine(QMainWindow):
     def _create_creation_context_menu(self, menu):   
         creation_context_menu = QMenu(menu)
         creation_context_menu.setTitle("Create")
+        creation_context_menu.setIcon(self.iconPlus)
         menu.addMenu(creation_context_menu)
         
         creation_context_menu.addActions([self.ui.actionNew_File, self.ui.actionNew_Folder])
@@ -848,7 +859,7 @@ class Pyredengine(QMainWindow):
                 menu.addAction(self.ui.actionSet_as_Main_py)
                 menu.addSeparator()
             if item.data(0, 5) == "Folder":
-                menu.addAction(self.ui.actionSet_as_Main_Scenes)
+                #menu.addAction(self.ui.actionSet_as_Main_Scenes)
                 menu.addSeparator()
                 self._create_creation_context_menu(menu)
                 

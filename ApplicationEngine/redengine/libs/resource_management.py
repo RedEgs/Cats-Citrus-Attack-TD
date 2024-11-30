@@ -1,3 +1,4 @@
+from io import DEFAULT_BUFFER_SIZE
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -124,7 +125,7 @@ def create_py_file(parent, working_dir, filename = None):
         if not os.path.isfile(f"{working_dir}/{filename}.py"):
             with open(f"{working_dir}/{filename}.py", "w") as file:
                 if filename == "main":
-                    _copy_main_template()
+                    _copy_main_template(working_dir)
         else:
                 QMessageBox.critical(
                     parent,
@@ -136,12 +137,11 @@ def create_py_file(parent, working_dir, filename = None):
 
 
 # TODO Rename this here and in `create_py_file`
-def _copy_main_template():
+def _copy_main_template(destination):
     import shutil 
 
-    template_file = f"{os.getcwd()}/Libs/templates/main.template"
-
-    shutil.copyfile()
+    template_file = f"{os.getcwd()}/libs/templates/main.template"
+    shutil.copyfile(template_file, f"{destination}/main.py")
     
       
 def create_folder(parent, working_dir):
