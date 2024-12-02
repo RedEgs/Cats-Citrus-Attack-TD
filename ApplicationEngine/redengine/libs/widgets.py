@@ -190,7 +190,11 @@ class PygameWidget(QWidget):
         #print("No game exists")
         try:
             if self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game') and not self.is_fullscreen and not self.paused:
-                self.surface = next(self.game.run_game())
+                try:
+                    self.surface = next(self.game.run_game())
+                except pygame.error as e:
+                    pass
+                
                 w=self.surface.get_width()
                 h=self.surface.get_height()
                 self.data=self.surface.get_buffer().raw
@@ -254,7 +258,6 @@ class PygameWidget(QWidget):
         center_y = (rect_height - scaled_image.height()) // 2
 
         qp.drawImage(center_x, center_y, scaled_image)
-        print("drawing image")
         
         if self.paused:
             grey_out_color = QColor(0, 0, 0, 150)  # Semi-transparent black
@@ -378,28 +381,21 @@ def load_project_resources(startpath, tree, project_libraries, main_file_name=No
         file_type = element.split(".")
 
         resources_items.append(element)
-
-        # if scenes_dir_path != None and path_info == scenes_dir_path:
-        #     load_project_resources(path_info, parent_itm)
-        #     parent_itm.setIcon(0, QIcon('assets/scenes_home.png'))
-        #     parent_itm.setData(0, 5, "Folder")
-        #     parent_itm.setData(0, 6, "Scenes")
-
-
         if os.path.isdir(path_info):
             parent_itm.setData(0, 5, "Folder")
-   
-
-                
+            
+            parent_itm.setText(1, "Folder")
             
             
             if load_project_resources(path_info, parent_itm, project_libraries) != []:  
                 parent_itm.setIcon(0, QIcon('assets/icons/folder-open-document.png'))
+            
                 
                 try:
                     if path_info in project_libraries:
-                        parent_itm.setIcon(0, QIcon('assets/icons/block.png'))
+                        parent_itm.setIcon(0, QIcon('assets/icons/folder-blocks.png'))
                         parent_itm.setData(0, 6, "Library")
+                        parent_itm.setText(1, "Library")
                 except: pass
                     
             else:
@@ -415,21 +411,28 @@ def load_project_resources(startpath, tree, project_libraries, main_file_name=No
             parent_itm.setIcon(0, QIcon('assets/icons/document-mainpy.png'))
             parent_itm.setData(0, 5, file_type[1])
             parent_itm.setData(0, 6, "Main")
+            parent_itm.setText(1, "Main")
+            parent_itm.setText(2, str(round(os.stat(path_info).st_size / (1000))) + " KB")
             #parent_itm.setBackground(0, QColor.fromRgb(48, 48, 48, 255))
 
         elif len(file_type) >= 2 and os.path.isfile(f'assets/icons/document-{file_type[len(file_type)-1]}.png'):
             parent_itm.setIcon(0, QIcon(f'assets/icons/document-{file_type[len(file_type)-1]}.png'))
             parent_itm.setData(0, 5, file_type[1])
+            parent_itm.setText(1, str(file_type[1]).title())
+            parent_itm.setText(2, str(round(os.stat(path_info).st_size / (1000))) + " KB")
             
             if element in hidden_files:
                 parent_itm.setHidden(True)
+      
                 
         else:
             parent_itm.setIcon(0, QIcon('assets/icons/document.png'))
             parent_itm.setData(0, 5, "Empty")
+            parent_itm.setText(1, "None")
             
             if element in hidden_files:
                 parent_itm.setHidden(True)
+                
 
 
     return resources_items
@@ -454,6 +457,21 @@ def get_tree_parent_path(item):
 def get_tree_item_path(working_dir, item):
     return f"{working_dir}/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
   
+def get_subtree_nodes(tree_widget_item):
+    """Returns all QTreeWidgetItems in the subtree rooted at the given node."""
+    nodes = []
+    nodes.append(tree_widget_item)
+    for i in range(tree_widget_item.childCount()):
+        nodes.extend(get_subtree_nodes(tree_widget_item.child(i)))
+    return nodes
+
+def get_all_items(tree_widget):
+    """Returns all QTreeWidgetItems in the given QTreeWidget."""
+    all_items = []
+    for i in range(tree_widget.topLevelItemCount()):
+        top_item = tree_widget.topLevelItem(i)
+        all_items.extend(get_subtree_nodes(top_item))
+    return all_items
 
 
 

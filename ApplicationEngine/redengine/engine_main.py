@@ -105,7 +105,9 @@ class Pyredengine(QMainWindow):
 
             self.ui.actionDocumentation.triggered.connect(self._open_online_docs)
 
-           
+            self.ui.resource_search_bar.textChanged.connect(self._filter_resources_tree)
+            self.ui.properties_search_bar.textChanged.connect(self._filter_properties_tree)
+            self.ui.object_search_bar.textChanged.connect(self._filter_object_tree)
 
  
     def _load_shortcuts(self):
@@ -1004,6 +1006,107 @@ class Pyredengine(QMainWindow):
                 folder_path = project_details["json"]["project_path"]
                 action.triggered.connect(partial(self._load_project_folder, folder_path))
 
+
+
+   
+    def _filter_resources_tree(self):
+        import libs.widgets as w
+
+        def filter_item(item, text_prompt):
+            """Recursively filter a QTreeWidgetItem and expand parent items if children match."""
+            # Check if the current item's text matches the filter
+            match = any(text_prompt.lower() in item.text(col).lower() for col in range(tree.columnCount()))
+
+            # Recursively filter child items
+            child_match = False
+            for j in range(item.childCount()):
+                child = item.child(j)
+                child_match = filter_item(child, text_prompt) or child_match
+
+            # Show the item if it or any of its children match
+            item.setHidden(not (match or child_match))
+
+            # Expand parent items if any child matches
+            if text_prompt:  # Only expand if there is a search term
+                item.setExpanded(child_match)
+            else:
+                item.setExpanded(False)  # Collapse all if search is empty
+
+            return match or child_match
+
+        tree = self.ui.resources_tree
+        text_prompt = self.ui.resource_search_bar.text()
+
+        for i in range(tree.topLevelItemCount()):
+            top_level_item = tree.topLevelItem(i)
+            filter_item(top_level_item, text_prompt)
+
+        # Collapse all top-level items if search is empty
+        if not text_prompt:
+            for i in range(tree.topLevelItemCount()):
+                tree.topLevelItem(i).setExpanded(False)
+                
+    def _filter_properties_tree(self):
+        import libs.widgets as w
+
+        table = self.ui.PropertiesTable  # Replace with your table widget
+        text_prompt = self.ui.properties_search_bar.text().lower()
+
+        # Reset visibility if search is empty
+        if not text_prompt:
+            for row in range(table.rowCount()):
+                table.setRowHidden(row, False)
+            return
+
+        # Filter rows
+        for row in range(table.rowCount()):
+            match = False
+            for col in range(table.columnCount()):
+                cell_text = table.item(row, col).text().lower() if table.item(row, col) else ""
+                if text_prompt in cell_text:
+                    match = True
+                    break
+            
+            # Hide the row if no match is found
+            table.setRowHidden(row, not match)
+
+    def _filter_object_tree(self):
+        import libs.widgets as w
+
+        def filter_item(item, text_prompt):
+            """Recursively filter a QTreeWidgetItem and expand parent items if children match."""
+            # Check if the current item's text matches the filter
+            match = any(text_prompt.lower() in item.text(col).lower() for col in range(tree.columnCount()))
+
+            # Recursively filter child items
+            child_match = False
+            for j in range(item.childCount()):
+                child = item.child(j)
+                child_match = filter_item(child, text_prompt) or child_match
+
+            # Show the item if it or any of its children match
+            item.setHidden(not (match or child_match))
+
+            # Expand parent items if any child matches
+            if text_prompt:  # Only expand if there is a search term
+                item.setExpanded(child_match)
+            else:
+                item.setExpanded(False)  # Collapse all if search is empty
+
+            return match or child_match
+
+        tree = self.ui.objectTreeWidget
+        text_prompt = self.ui.object_search_bar.text()
+
+        for i in range(tree.topLevelItemCount()):
+            top_level_item = tree.topLevelItem(i)
+            filter_item(top_level_item, text_prompt)
+
+        # Collapse all top-level items if search is empty
+        if not text_prompt:
+            for i in range(tree.topLevelItemCount()):
+                tree.topLevelItem(i).setExpanded(False)
+                
    
         
 

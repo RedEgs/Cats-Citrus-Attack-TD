@@ -2,16 +2,14 @@
     "cctd": {
         "json": {
             "project_name": "cctd",
-            "project_path": "/home/charlie/Documents/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample",
+            "project_path": "C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample",
             "date_created": "2024-11-13",
             "date_edited": "2024-11-13",
             "user": "charlie",
             "project_version": "poopegs",
             "project_libraries": [
-                "C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/cctd",
-                "/home/charlie/Documents/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/cctd"
-            ],
-            "project_libraries_backup": []
+                "C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/cctd"
+            ]
         }
     }
 }

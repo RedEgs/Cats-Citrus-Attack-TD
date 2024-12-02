@@ -1118,8 +1118,8 @@ color: rgb(255, 255, 255);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>544</height>
+          <width>294</width>
+          <height>459</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -1540,8 +1540,8 @@ color: rgb(255, 255, 255);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>544</height>
+          <width>98</width>
+          <height>28</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -1810,9 +1810,6 @@ color: rgb(255, 255, 255);</string>
            <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
              <widget class="QLineEdit" name="properties_search_bar">
-              <property name="inputMask">
-               <string>0</string>
-              </property>
               <property name="text">
                <string/>
               </property>

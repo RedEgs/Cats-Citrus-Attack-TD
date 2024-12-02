@@ -1,23 +1,8 @@
-from asyncio import FastChildWatcher
 from pypresence import Presence
 from functools import wraps
 import time, threading
 
-def run_methods_in_thread(cls):
-    """A class decorator to make all methods run in a thread."""
-    for attr_name in dir(cls):
-        attr = getattr(cls, attr_name)
-        if callable(attr) and not attr_name.startswith("__"):
-            # Wrap the method with threading logic
-            @wraps(attr)
-            def wrapper(self, *args, **kwargs):
-                thread = threading.Thread(target=attr, args=(self, *args), kwargs=kwargs, daemon=True)
-                thread.start()
-                return thread
-            setattr(cls, attr_name, wrapper)
-    return cls
 
-#@run_methods_in_thread
 class RichPresenceHandler():
     def __init__(self):
         self.client_id = "1312502880233853079"
