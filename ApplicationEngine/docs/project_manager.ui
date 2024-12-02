@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>545</width>
+    <width>590</width>
     <height>344</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="tabBarAutoHide">
       <bool>false</bool>
@@ -169,6 +169,28 @@
            <property name="icon">
             <iconset>
              <normaloff>../redengine/assets/icons/folder-horizontal.png</normaloff>../redengine/assets/icons/folder-horizontal.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="add_button">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../redengine/assets/icons/plus.png</normaloff>../redengine/assets/icons/plus.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="remove_button">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../redengine/assets/icons/minus.png</normaloff>../redengine/assets/icons/minus.png</iconset>
            </property>
           </widget>
          </item>

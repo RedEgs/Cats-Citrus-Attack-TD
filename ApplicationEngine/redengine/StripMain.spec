@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/example/.redengine/build/StripMain.py'],
+    ['C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/.redengine/build/StripMain.py'],
     pathex=[],
     binaries=[],
     datas=[],

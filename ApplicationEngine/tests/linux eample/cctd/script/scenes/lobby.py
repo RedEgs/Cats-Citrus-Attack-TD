@@ -147,11 +147,12 @@ class LobbyScene(Scene):
         return super().on_exit()
 
     def on_enter(self):
-        self.towers, self.tower_buttons, self.tower_ids = self.load_select_towers()
+        pass
+        # self.towers, self.tower_buttons, self.tower_ids = self.load_select_towers()
     
     def events(self, event): 
-        for button in self.tower_buttons:
-            button.handle_event(event)
+        # for button in self.tower_buttons:
+        #     button.handle_event(event)
         
         self.play_button.handle_event(event)
     
@@ -165,8 +166,8 @@ class LobbyScene(Scene):
         self.screen.blit(self.background_image, (0,0))
 
             #self.screen.blit(item[0], item[1])
-        for button in self.tower_buttons:
-            button.draw(self.screen)    
+        # for button in self.tower_buttons:
+        #     button.draw(self.screen)    
 
         self.tween_director.update([self.play_button.draw(self.screen, self.play_button_tween.get_output())])
                      

@@ -69,6 +69,7 @@ class Scene:
         pass
 
     def on_enter(self):
+        print(f"ENTERED SCENE: {self.scene_name}")
         pass
 
     def events(self, event):

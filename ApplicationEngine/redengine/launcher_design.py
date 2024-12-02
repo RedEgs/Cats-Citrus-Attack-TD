@@ -7,9 +7,9 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(545, 344)
+        Form.resize(590, 344)
         icon = QIcon()
-        icon.addFile(u"../redengine/assets/icons/red-python.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u"../redengine/assets/icon32.png", QSize(), QIcon.Normal, QIcon.Off)
         Form.setWindowIcon(icon)
         self.horizontalLayout = QHBoxLayout(Form)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -89,6 +89,22 @@ class Ui_Form(object):
 
         self.horizontalLayout_2.addWidget(self.create_button)
 
+        self.add_button = QPushButton(self.projectstab)
+        self.add_button.setObjectName(u"add_button")
+        icon4 = QIcon()
+        icon4.addFile(u"../redengine/assets/icons/plus.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.add_button.setIcon(icon4)
+
+        self.horizontalLayout_2.addWidget(self.add_button)
+
+        self.remove_button = QPushButton(self.projectstab)
+        self.remove_button.setObjectName(u"remove_button")
+        icon5 = QIcon()
+        icon5.addFile(u"../redengine/assets/icons/minus.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.remove_button.setIcon(icon5)
+
+        self.horizontalLayout_2.addWidget(self.remove_button)
+
         self.delete_button = QPushButton(self.projectstab)
         self.delete_button.setObjectName(u"delete_button")
         sizePolicy2 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
@@ -96,18 +112,18 @@ class Ui_Form(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.delete_button.sizePolicy().hasHeightForWidth())
         self.delete_button.setSizePolicy(sizePolicy2)
-        icon4 = QIcon()
-        icon4.addFile(u"../redengine/assets/icons/cross.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.delete_button.setIcon(icon4)
+        icon6 = QIcon()
+        icon6.addFile(u"../redengine/assets/icons/cross.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.delete_button.setIcon(icon6)
 
         self.horizontalLayout_2.addWidget(self.delete_button)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
-        icon5 = QIcon()
-        icon5.addFile(u"../redengine/assets/icons/folder-open.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.tabWidget.addTab(self.projectstab, icon5, "")
+        icon7 = QIcon()
+        icon7.addFile(u"../redengine/assets/icons/folder-open.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.tabWidget.addTab(self.projectstab, icon7, "")
         self.settingstab = QWidget()
         self.settingstab.setObjectName(u"settingstab")
         self.verticalLayout_3 = QVBoxLayout(self.settingstab)
@@ -121,9 +137,9 @@ class Ui_Form(object):
 
         self.verticalLayout_3.addItem(self.verticalSpacer)
 
-        icon6 = QIcon()
-        icon6.addFile(u"../redengine/assets/icons-shadowless/gear.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.tabWidget.addTab(self.settingstab, icon6, "")
+        icon8 = QIcon()
+        icon8.addFile(u"../redengine/assets/icons-shadowless/gear.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.tabWidget.addTab(self.settingstab, icon8, "")
         self.pythontab = QWidget()
         self.pythontab.setObjectName(u"pythontab")
         self.verticalLayout_2 = QVBoxLayout(self.pythontab)
@@ -152,22 +168,22 @@ class Ui_Form(object):
 
         self.install_button = QPushButton(self.pythontab)
         self.install_button.setObjectName(u"install_button")
-        icon7 = QIcon()
-        icon7.addFile(u"../redengine/assets/icons/download-cloud.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.install_button.setIcon(icon7)
+        icon9 = QIcon()
+        icon9.addFile(u"../redengine/assets/icons/download-cloud.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.install_button.setIcon(icon9)
 
         self.verticalLayout_2.addWidget(self.install_button)
 
-        icon8 = QIcon()
-        icon8.addFile(u"../redengine/assets/icons-shadowless/application-plus.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.tabWidget.addTab(self.pythontab, icon8, "")
+        icon10 = QIcon()
+        icon10.addFile(u"../redengine/assets/icons-shadowless/application-plus.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.tabWidget.addTab(self.pythontab, icon10, "")
 
         self.horizontalLayout.addWidget(self.tabWidget)
 
 
         self.retranslateUi(Form)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.launch_button.setDefault(True)
         self.delete_button.setDefault(False)
 
@@ -188,6 +204,8 @@ class Ui_Form(object):
         self.look_button.setText("")
         self.launch_button.setText(QCoreApplication.translate("Form", u"Launch Project", None))
         self.create_button.setText(QCoreApplication.translate("Form", u"Create Project", None))
+        self.add_button.setText("")
+        self.remove_button.setText("")
         self.delete_button.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.projectstab), QCoreApplication.translate("Form", u"Projects", None))
         self.option_rich_presence.setText(QCoreApplication.translate("Form", u"Enable Discord Rich Presence", None))

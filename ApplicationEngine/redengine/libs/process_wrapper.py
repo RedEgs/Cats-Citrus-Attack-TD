@@ -6,12 +6,13 @@ from pyredengine import PreviewMain # type: ignore
 from functools import partial
 
 class GameHandler():
-    def __init__(self, main_file_path: str, project_file_path: str, launch_fullscreen: bool = False) -> None:
+    def __init__(self, main_file_path: str, project_file_path: str, launch_fullscreen: bool = False, project_data = None) -> None:
         self.main_file_path = main_file_path
         self.project_file_path = project_file_path
         self.process_attached = False
         self.is_fullscreen = launch_fullscreen
         self.hotdump_location = f"{self.project_file_path}/.redengine/hotdump"
+        self.project_data = project_data
         
         self.exclusion_list = [""]
         self.type_exclusions = [pygame.surface.Surface, pygame.Clock, self.__class__]
@@ -35,7 +36,29 @@ class GameHandler():
                 print(f"Error importing main: {e}")
 
             try:
-                importlib.reload(main)  # Reload imports, which will update new code
+                self.hotload_modules()
+                importlib.reload(main)  # Reload imports, which will update new code  
+                
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
                 print("Reloading Import")
             except Exception as e:
                 print(f"Error reloading main: {e}")
@@ -44,7 +67,7 @@ class GameHandler():
 
         print("Before Instancing Game")
 
-        self.game: PreviewMain.MainGame = main.Main(self.is_fullscreen) # Instance the game within the handler
+        self.game: PreviewMain.MainGame = main.Main(fullscreen=self.is_fullscreen) # Instance the game within the handler
         self.game.engine_mode = True
         self.game.__parent = self
         print("After Instancing Game")
@@ -60,14 +83,51 @@ class GameHandler():
         self.process_attached = False
         self.is_app_process = False
         
+        
+    def hotload_modules(self):
+        import os
+        try:
+            modules = self.project_data["project_libraries"]
+        except: modules = []
+        
+        blacklisted_modules = [
+            "builtins", "importlib", "_frozen_importlib", "_frozen_importlib_external"
+        ]
+            
+        for module_name, module in list(sys.modules.items()):
+            if not module:
+                continue  # Skip uninitialized modules
+            
+            if (
+                any(module_name.startswith(bl) for bl in blacklisted_modules)
+                or module_name in sys.builtin_module_names
+            ):
+                # Skip blacklisted and built-in modules
+                continue
+            
+            try:
+                if modules == None or len(modules) == 0:
+                    pass
+                else: 
+                    for path in modules:
+                        if os.path.basename(path) in module_name:
+                            importlib.reload(module)
+            except: pass
+        
     def hot_reload(self):
         print("started hot reload")
 
         sys.path.insert(0, self.project_file_path) # Makes the project directory importable
-        import main # type: ignore # Import the main project file
+        import main, os # type: ignore # Import the main project file
         self.save_process_state() # Save the process state 
         
+        self.hotload_modules()
         importlib.reload(main) # Reload imports, which will update new code
+        
+       
+
+
+
 
         self.game: PreviewMain.MainGame = main.Main(self.is_fullscreen)
         self.load_process_state(self.game)
@@ -97,6 +157,7 @@ class GameHandler():
         if self.game is None:
             return False
         
+    
         fps = self.game.clock.get_fps()
         delta_time = self.game.get_dt()/1000
         blit_count = self.game.get_total_blits()
@@ -104,6 +165,7 @@ class GameHandler():
         bps = self.game.get_bps()
         draw_count = self.game.get_draw_calls()
         dps = self.game.get_dps()
+
 
         return [delta_time, fps, blit_count, current_tick, bps, draw_count, dps]
 
@@ -161,13 +223,17 @@ class GameHandler():
             setattr(game, name, value)
             print(f"set {name} to {value}")
 
+        
+        #game._hot_load_modules(self.project_data["project_libraries"]) # load all the modules 
         game.on_reload()  # Call a reload function in the game if necessary
+        
 
     def _find_hot_save_variables(self):  # sourcery skip: low-code-quality
         import ast
         """Parse the current file and find variable assignments with '#HOTSAVE' comment."""
         hot_save_vars = {}
         public_vars = []
+        unpacked_vars = []
 
         with open(self.main_file_path, "r") as source:
             source_code = source.read()
@@ -205,10 +271,21 @@ class GameHandler():
                                         public_vars.append(var_name)
                                     except Exception as e:
                                         print(f"Error evaluating {var_name}: {e}")
+                    
+                    elif line_num <= len(lines) and "#[UNPACK]" in lines[line_num - 1]:
+                        # Handle instance variables like self._h_var
+                        for target in node.targets:
+                            if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name):
+                                if target.value.id == "self":  # Detect instance variables
+                                    var_name = target.attr
+                                    try:
+                                        unpacked_vars.append(var_name)
+                                        public_vars.append(var_name)
+                                    except Exception as e:
+                                        print(f"Error evaluating {var_name}: {e}")
         
         
-        
-        return hot_save_vars, public_vars
+        return hot_save_vars, public_vars, unpacked_vars
    
 
 class Vector3Widget(QWidget):
@@ -432,23 +509,32 @@ class PropertiesThread(QThread):
         self.setup_table()  # Setup the initial table
 
     def setup_table(self):
-        
         # Populate the table with variable names and their corresponding values
         if self.ui.properties_options_1.isChecked():
             game_vars = dir(self.gamehandler.game)
         else:
-            _, game_vars = self.gamehandler._find_hot_save_variables()
+            _, game_vars, __ = self.gamehandler._find_hot_save_variables()
+        
+        if len(game_vars) == 0:
+            self.stop()
+        else: 
+            print("resuming properties thread")
+            self.running = True
+            self.table.clearContents()
+            self.table.setEnabled(True)
         
         
         built_in_types = (int, float, str, bool, tuple,  list, pygame.Color, pygame.Rect) # Add support for dicts
         blacklist_types = (pygame.Clock)
-        user_vars = [var for var in game_vars if not var.startswith("__") and not callable(getattr(self.gamehandler.game, var)) and not isinstance(getattr(self.gamehandler.game, var), blacklist_types)]
-
+        
+        user_vars = [var for var in game_vars if not var.startswith("__") and not callable(getattr(self.gamehandler.game, var)) and not isinstance(getattr(self.gamehandler.game, var), blacklist_types)]  
+        
         
 
         self.table.setColumnCount(2)
-        self.table.setRowCount(len(user_vars))
+        self.table.setRowCount(len(user_vars)+ 20)
         
+
 
         # Populate the table and create the attribute map
         for index, att in enumerate(user_vars):
@@ -460,7 +546,7 @@ class PropertiesThread(QThread):
             self.table.setItem(index, 0, tablewidget)  # Column 0: Variable name
             tablewidget._initial_value = initial_value
 
-            self.set_cell(index, 1, initial_value, att)
+            self.set_cell(index, 1, initial_value, att)   
 
     def set_cell(self, row, col, initial_value, att):
         index = row
@@ -560,9 +646,10 @@ class PropertiesThread(QThread):
             
             
     def run(self):
-        if self.pygame_widget.paused:
-            return
+        if self.pygame_widget.paused or getattr(self, "gamehandler") == None or self.running == False:
+            self.wait()
 
+        
         try:
             game_vars = dir(self.gamehandler.game)
             built_in_types = (int, float, str, bool, tuple, list, pygame.Color, pygame.Rect)
@@ -573,7 +660,11 @@ class PropertiesThread(QThread):
         prev_values = {}
         prev_types = {}  
         for att in user_vars:
-            current_value = getattr(self.gamehandler.game, att)  # Get current value as string
+            try:
+                current_value = getattr(self.gamehandler.game, att)  # Get current value as string
+            except:
+                return
+            
             current_type = type(current_value)
 
             # If the attribute is new or has changed, emit a signal to update the table
@@ -675,5 +766,157 @@ class PropertiesThread(QThread):
         
 
     def stop(self):
+        self.table.clearContents()
+        self.table.setEnabled(False)
+        self.timer.stop()
         self.running = False  # Method to stop the thread
-        self.timer.start(10)
+        
+class ObjectThread(QThread):
+    var_changed = pyqtSignal(int, str)  # Signal to emit index and new value
+
+    def __init__(self, gamehandler, tree, timer, pygamewidget, ui, parent=None):
+        super().__init__(parent)
+        
+        self.gamehandler = gamehandler
+        self.tree: QTreeWidget = tree
+        self.timer: QTimer = timer
+        self.running = True
+        self.pygame_widget = pygamewidget
+        self.ui = ui
+        self.attributes_map = {}  # Map to store attributes
+
+        self.setup_tree()  # Setup the initial table
+
+    def extract_attributes(self, obj, unpacked_attrs, depth=1):
+        """
+        Recursively extracts attributes of an object or a dictionary up to a maximum depth.
+        """
+        import inspect
+
+        if depth < 0:  # Base case: stop recursion
+            return None
+
+        obj_id = id(obj)  # Use the object's unique identifier as the key
+        if obj_id in unpacked_attrs:  # Avoid circular references
+            return unpacked_attrs[obj_id]
+
+        # Initialize the parent dictionary for this object
+        parent = unpacked_attrs[obj_id] = {}
+        
+        if isinstance(obj, dict):  # If obj is a dictionary
+            for key, value in obj.items():
+                if isinstance(value, dict):  # Recursively unpack nested dictionaries
+                    parent[key] = self.extract_attributes(value, unpacked_attrs, depth - 1)
+                elif inspect.isclass(value) or hasattr(value, '__dict__'):  # Handle objects or classes
+                    parent[key] = self.extract_attributes(value, unpacked_attrs, depth - 1)
+                else:  # Primitive types or non-objects
+                    parent[key] = value
+        else:  # Handle objects
+            for attribute in dir(obj):
+                if not attribute.startswith('__'):  # Ignore private/internal attributes
+                    try:
+                        attr_value = getattr(obj, attribute)
+                    except AttributeError:  # Skip attributes that raise an error
+                        continue
+                    if callable(attr_value):  # Skip methods or other callable attributes
+                        continue
+                    if isinstance(attr_value, dict):  # Recursively unpack nested dictionaries
+                        parent[attribute] = self.extract_attributes(attr_value, unpacked_attrs, depth - 1)
+                    elif inspect.isclass(attr_value) or hasattr(attr_value, '__dict__'):  # Handle objects or classes
+                        parent[attribute] = self.extract_attributes(attr_value, unpacked_attrs, depth - 1)
+                    else:  # Primitive types or non-objects
+                        parent[attribute] = attr_value
+
+        return parent
+
+    def _add_tree(self, tree_item, obj_name, obj_attrs):
+        """
+        Recursively adds object attributes to a QTreeWidgetItem.
+        """
+        obj_item = QTreeWidgetItem(tree_item, [str(obj_name)])
+        
+        for attr_name, attr_value in obj_attrs.items():
+            if isinstance(attr_value, dict):  # If the attribute is a nested object
+                self._add_tree(obj_item, attr_name, attr_value)
+            else:
+                QTreeWidgetItem(obj_item, [str(attr_name), str(attr_value)])
+
+    def setup_tree(self):
+        """
+        Populates the tree and builds the attributes map.
+        """
+        _, __, packed_vars = self.gamehandler._find_hot_save_variables()
+        
+        if len(packed_vars) == 0:
+            self.stop()
+            return
+        
+        self.tree.clear()
+        self.tree.setEnabled(True)
+
+        blacklist_types = (pygame.Clock,)
+        unpacked_attrs = {}
+
+        unpacked_vars = [
+            var for var in packed_vars
+            if not var.startswith("__")
+            and not callable(getattr(self.gamehandler.game, var))
+            and not isinstance(getattr(self.gamehandler.game, var), blacklist_types)
+            and getattr(self.gamehandler.game, var).__class__.__module__ != "builtins"
+        ]
+
+        self.tree.setColumnCount(2)
+        self.tree.setHeaderLabels(["Object", "Value"])
+        self.tree.setColumnWidth(1, 80)
+
+        for var in unpacked_vars:
+            obj = getattr(self.gamehandler.game, var)
+            obj_attrs = self.extract_attributes(obj, unpacked_attrs)
+            self.attributes_map[var] = obj_attrs  # Store the extracted attributes in the map
+            self._add_tree(self.tree, var, obj_attrs)
+
+    def run(self):
+        """
+        Updates the tree periodically using the attributes map.
+        """
+        if self.running == False:
+            self.wait()
+            
+        self.update_tree()
+
+
+    def update_tree(self):
+        """
+        Updates the tree using the attributes map.
+        """
+        for i in range(self.tree.topLevelItemCount()):
+            top_item = self.tree.topLevelItem(i)
+            var_name = top_item.text(0)
+            if var_name in self.attributes_map:
+                obj_attrs = self.attributes_map[var_name]
+                self._update_tree_item(top_item, obj_attrs)
+
+    def _update_tree_item(self, tree_item, obj_attrs):
+        """
+        Recursively updates the tree widget item values with the latest attributes.
+        """
+        for i in range(tree_item.childCount()):
+            child_item = tree_item.child(i)
+            attr_name = child_item.text(0)
+            if attr_name in obj_attrs:
+                attr_value = obj_attrs[attr_name]
+                if isinstance(attr_value, dict):  # If it's a nested object
+                    self._update_tree_item(child_item, attr_value)
+                else:
+                    current_value = child_item.text(1)
+                    new_value = str(getattr(attr_value, "__str__", lambda: attr_value)())
+                    if current_value != new_value:  # Only update if the value has changed
+                        child_item.setText(1, new_value)
+
+    def stop(self):
+        self.timer.stop()
+        self.tree.clear()
+        self.tree.setEnabled(False)
+        self.running = False     
+        
+    

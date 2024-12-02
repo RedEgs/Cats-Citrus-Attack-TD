@@ -3,8 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from functools import partial
-import os, json, sys, importlib, platform, traceback, asyncio
-import concurrent.futures
+import os, json, sys, platform, traceback
 # Find out how to include images
 
 class Pyredengine(QMainWindow):
@@ -19,11 +18,14 @@ class Pyredengine(QMainWindow):
         self.project_dir = None    
         self._app_launcher = launcher
         
+
+        
         self.application_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(self.application_path)
         
         self.ui = engine_design.Ui_main_window()
         self.ui.setupUi(self)
+        self.ui.pygame_widget._engine = self
         
         
         pm.check_recent_projects()
@@ -32,12 +34,10 @@ class Pyredengine(QMainWindow):
         if self.project_json_data != None:
             self._load_icons()
             self._load_project(self.project_json_data)   
-            
-            
-        
-    
         else:
             self.save_default_settings()
+            
+        rph.engine_state(self.project_name)
         
         self._load_menu_bar_actions()
         self._create_recent_projects_context_menu()
@@ -56,11 +56,15 @@ class Pyredengine(QMainWindow):
         self.ui.actionClear_All_Recent_Projects.triggered.connect(self._clear_recent_projects)
         
         if self.project_loaded:
+            self._load_shortcuts()
+            
             self.ui.actionDelete_Resource.triggered.connect(self._delete_file_resources_tree)
             self.ui.actionNew_File.triggered.connect(self._create_file_resources_tree)
             self.ui.actionNew_Folder.triggered.connect(self._create_folder_resources_tree)
             self.ui.actionRename.triggered.connect(self._rename_item_resources_tree)
             
+            self.ui.actionMark_As_Library.triggered.connect(self._mark_as_library)
+            self.ui.actionUnmark_As_Library.triggered.connect(self._unmark_as_library)
             self.ui.actionSet_as_Main_py.triggered.connect(self.set_main_project_file)
             self.ui.actionExample_Script.triggered.connect(self._generate_script_py)
             self.ui.actionExample_Main.triggered.connect(self._generate_main_py)
@@ -68,7 +72,7 @@ class Pyredengine(QMainWindow):
             self.ui.actionReload.triggered.connect(self._reload_project)
             
             self.ui.resources_tree.itemClicked.connect(self._select_item_resources_tree)
-            self.ui.resources_tree.itemDoubleClicked.connect(self.open_file_in_editor)
+            self.ui.resources_tree.itemDoubleClicked.connect(self._open_file_from_resources)
 
             self.ui.actionSave_Layout.triggered.connect(self.save_layout_settings)
             self.ui.actionLoad_Layout.triggered.connect(self.load_layout_settings)
@@ -90,6 +94,10 @@ class Pyredengine(QMainWindow):
 
             self.ui.actionPopout_Viewport.triggered.connect(self._popout_viewport)
             self.ui.actionReturnLauncher.triggered.connect(self._return_to_launcher)
+    
+            self.ui.actionRename_Project.triggered.connect(self._rename_project)
+            self.ui.actionChange_Project_Version.triggered.connect(self._change_project_version)
+            self.ui.actionChange_Project_Author.triggered.connect(self._change_project_author)        
     
             self.ui.actionRevert_Themes.triggered.connect(self._reset_theme)
     
@@ -131,7 +139,7 @@ class Pyredengine(QMainWindow):
 
         self.iconPlus = QIcon()
         self.iconPlus.addFile(u"../redengine/assets/icons/plus.png", QSize(), QIcon.Normal, QIcon.Off)
-
+        
           
     def _relaunch_window(self, data):
         self.newWindow = Pyredengine(data)
@@ -150,10 +158,13 @@ class Pyredengine(QMainWindow):
         self.project_loaded = True
         self.project_dir = project_json["project_path"]
         self.project_name = project_json["project_name"]
-        self.project_main_file = project_json["main_project_file"]
+        self.project_main_file = os.path.join(self.project_dir, "main.py")
         self.project_main_file_name = rm.get_file_from_path(self.project_main_file)
-
-        self.project_scenes_dir = project_json["project_scenes"]
+              
+        self.project_libraries = []
+        try:
+            self.project_libraries = json.loads(self.project_json_data)["project_libraries"]
+        except: pass
 
         
         pm.add_to_recent_projects(project_json["project_name"], project_json)
@@ -163,7 +174,7 @@ class Pyredengine(QMainWindow):
         self.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - "+ project_json["project_name"], None))
         
         try:
-            self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_main_file_name, self.application_path)
+            self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_json_data, self.project_main_file_name, self.application_path)
         except Exception as e:
             pass
         
@@ -179,7 +190,11 @@ class Pyredengine(QMainWindow):
         self.__game_process = None
       
         self.monitor_thread = QThread()
-        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file, self.project_dir, self.project_scenes_dir)
+        
+  
+            
+        
+        self.monitor_worker = rm.FileChangeMonitor(self.project_main_file, self.project_dir, self.project_libraries)
         self.monitor_worker.moveToThread(self.monitor_thread)
         self.monitor_thread.started.connect(self.monitor_worker.run)
         self.monitor_worker.file_changed.connect(self.hot_reload)
@@ -275,7 +290,7 @@ class Pyredengine(QMainWindow):
     def _reload_file_tree(self):
         import libs.widgets as w
     
-        self.resources_tree_files = w.reload_project_resources(self.project_dir, self.ui.resources_tree, self.project_main_file_name, os.path.dirname(os.path.abspath(__file__)))
+        self.resources_tree_files = w.reload_project_resources(self.project_dir, self.ui.resources_tree, self.project_json_data, self.project_main_file_name, os.path.dirname(os.path.abspath(__file__)))
     
     def _reload_project(self):
         self._reload_file_tree()
@@ -326,20 +341,27 @@ class Pyredengine(QMainWindow):
     
     
                       
-    def open_file_in_editor(self, item):
+    def _open_file_from_resources(self, item):
         import libs.widgets as w
+        import libs.resource_management as rm
         
         path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
         self.resources_tree_dselected_item = [path , item.data(0,0)]
+        file = self.resources_tree_dselected_item[0]
 
+        if os.path.isfile(file):
+            if rm.is_image(file):
+                rm.open_in_explorer(file)
+            elif rm.is_text_based(file):
+                self.ide_index =+ 1
+                new_ide_tab = w.QIdeWindow(self.ui.scripting_tab, self.resources_tree_dselected_item, self.ide_index)
+                text_edit = new_ide_tab.script_edit
+                self.ide_tabs.append(new_ide_tab)
 
-        if os.path.isfile(self.resources_tree_dselected_item[0]):
-            self.ide_index =+ 1
-            new_ide_tab = w.QIdeWindow(self.ui.scripting_tab, self.resources_tree_dselected_item, self.ide_index)
-            text_edit = new_ide_tab.script_edit
-            self.ide_tabs.append(new_ide_tab)
-
-            text_edit.setFocus()
+                text_edit.setFocus()
+            else:
+                rm.open_in_explorer(file)
+                
        
     def check_unsaved_tabs(self):
         for tab in self.ide_tabs:
@@ -370,12 +392,12 @@ class Pyredengine(QMainWindow):
         import libs.resource_management as rm
         
         item = self.resources_tree_selected_item_from_context
-        self._save_project()
+        #self._save_project()
         
         if item:
             path = w.get_tree_item_path(self.project_dir, item)
             cur_name = item.text(0).split(".")
-            rm.rename_file(self, self.project_dir, cur_name)
+            rm.rename_file(self, path, cur_name)
             self._reload_file_tree()
 
     def _delete_file_resources_tree(self, event):
@@ -417,6 +439,44 @@ class Pyredengine(QMainWindow):
         rm.create_folder(self, self.project_dir)
         self._reload_file_tree()
    
+    def _mark_as_library(self):
+        import libs.project_management as pm
+        import libs.widgets as w
+        
+        item = self.resources_tree_selected_item_from_context
+        lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
+
+        previous_libs: list = json.loads(self.project_json_data)["project_libraries"]
+        
+        
+        if previous_libs != None:
+            print("libraries already exist")
+            previous_libs.append(lib_path)
+            pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)
+        else:
+            pm.edit_project_json_from_path(self.project_dir, "project_libraries", [lib_path])
+            
+        w.info_box(self, "Requires a restart", "Adding a library requires the project to restart for changes to take place.")
+        self._return_to_launcher()
+        
+        
+    def _unmark_as_library(self):
+        import libs.project_management as pm
+        import libs.widgets as w
+        
+        item = self.resources_tree_selected_item_from_context
+        lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
+                
+        previous_libs = pm.read_project_json(self.project_dir)["project_libraries"]
+        previous_libs.remove(lib_path)
+        
+        pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)    
+        
+        
+        w.info_box(self, "Requires a restart", "Removing a library requires the project to restart for changes to take place.")
+        self._return_to_launcher()
+        
+   
     def set_main_project_file(self, path = None):  # sourcery skip: use-contextlib-suppress
         print("firing project main file setting")
         import libs.widgets as w
@@ -429,7 +489,7 @@ class Pyredengine(QMainWindow):
             pm.generate_project_path(self, self.project_dir, self.project_name, path)
             self._relaunch_window(self.project_json_data)
         elif project_main_dir := self.resources_tree_selected_item_from_context:
-            print(f"setting project path as {w.get_tree_item_path(self.project_dir, project_main_dir).replace("//", "/")}")
+            #print(f"setting project path as {w.get_tree_item_path(self.project_dir, project_main_dir).replace("//", "/")}")
             try:
                 if project_main_dir.data(0, 5) == "py":
                     pm.generate_project_path(self, self.project_dir, self.project_name, w.get_tree_item_path(self.project_dir, project_main_dir).replace("//", "/"))
@@ -475,16 +535,9 @@ class Pyredengine(QMainWindow):
 
 
     def _open_file_explorer(self):       
-        import os, subprocess
-
-        folder_path = os.path.realpath(self.project_dir)
-
-        if platform.system() == "Windows":
-            os.startfile(folder_path)
-        elif platform.system() == "Darwin":  # macOS
-            subprocess.run(["open", folder_path])
-        else:  # Linux
-            subprocess.run(["xdg-open", folder_path])
+        import libs.resource_management as rm
+        
+        rm.open_in_explorer(self.project_dir)
    
     def _main_file_disclaimer(self):
         import libs.resource_management as rm
@@ -506,7 +559,8 @@ class Pyredengine(QMainWindow):
                 self._reset_play_button(True)
 
                 self._stop_pygame_debug_values()
-                self._stop_properties_manager()
+                self._stop_inspector_thread()
+                rph.engine_default_state()
 
             else:
                 self._start_game(False)
@@ -526,34 +580,41 @@ class Pyredengine(QMainWindow):
 
 
                 self._stop_pygame_debug_values()
+                rph.engine_default_state()
 
             else:
                 self._start_game(True)
                 
     def _start_game(self, fullscreen = False):
+
         self.ui.pygame_widget.set_process(self.project_main_file, self.project_dir, fullscreen)
         self.__game_process = self.ui.pygame_widget.get_process()
         self._reset_play_button(False)
 
         self._populate_pygame_debug_table()
         self. _start_pygame_debug_values()
-        self._start_properties_manager()
+        self._start_inspector_thread()
+        rph.engine_play_state()
 
 
     def _pause_game(self):
-        if self.project_main_file != None and self.ui.pygame_widget.can_run:
-            self.ui.pygame_widget.paused = not self.ui.pygame_widget.paused
+        if self.project_main_file != None and self.ui.pygame_widget.can_run: # Check if can pause
+            self.ui.pygame_widget.paused = not self.ui.pygame_widget.paused # Flip current paused state
 
-            if self.ui.pygame_widget.paused:
+            if self.ui.pygame_widget.paused: # Unpause code
                 self.ui.reload_button.setDisabled(True)
                 self.ui.stop_button.setDisabled(True)
 
                 self.ui.pause_button.setIcon(self.iconControl)
-            else:
+                rph.engine_pause_state()
+                
+                
+            else: # Pause Code 
                 self.ui.reload_button.setDisabled(False)
                 self.ui.stop_button.setDisabled(False)
 
                 self.ui.pause_button.setIcon(self.iconControlPause)
+                rph.engine_play_state()
 
             self.ui.mainScriptPropertiesGroup.setEnabled(True)
          
@@ -645,14 +706,19 @@ class Pyredengine(QMainWindow):
         webbrowser.open("https://github.com/RedEgs")
         
     def _initialise_themes(self):        
-        for theme in os.listdir(self.application_path+"/assets/themes"):
-            if not (".qss" in theme or ".css" in theme):
+        for theme in os.listdir(f"{self.application_path}/assets/themes"):
+            if ".qss" not in theme and ".css" not in theme:
                 return
-        
+
             action: QAction = self.ui.menuLoad_Themes.addAction(theme)
             action.setIcon(self.iconColorSwatch)
             action.setText(theme.split(".")[0])
-            action.triggered.connect(partial(self._load_theme, self.application_path+"/assets/themes/" + theme))
+            action.triggered.connect(
+                partial(
+                    self._load_theme,
+                    f"{self.application_path}/assets/themes/{theme}",
+                )
+            )
             
     def _load_theme(self, path):
         with open(path, "r") as f:
@@ -675,24 +741,27 @@ class Pyredengine(QMainWindow):
             self.ui.pause_button.setEnabled(False)
             self.ui.reload_button.setEnabled(False)
         
-    def _start_properties_manager(self):
+    def _start_inspector_thread(self):
         import libs.process_wrapper as pw
-        
-       
-        # self.PropertiesManager.started.connect(self.PropertiesManager.run)
-        # self.PropertiesManager.start()
         
         self.PropertiesTimer = QTimer()
         self.PropertiesManager = pw.PropertiesThread(self.ui.pygame_widget.game, self.ui.PropertiesTable, self.PropertiesTimer, self.ui.pygame_widget, self.ui)
         self.PropertiesTimer.timeout.connect(self.PropertiesManager.run)
         self.PropertiesTimer.start(10)
         
+        self.ObjectTimer = QTimer()
+        self.ObjectManager = pw.ObjectThread(self.ui.pygame_widget.game, self.ui.objectTreeWidget, self.ObjectTimer, self.ui.pygame_widget, self.ui)
+        self.ObjectTimer.timeout.connect(self.ObjectManager.run)
+        self.ObjectTimer.start(10)
+        
         if self.ui.pygame_widget.paused:
             self.ui.mainScriptPropertiesGroup.setEnabled(False)
         
-    def _stop_properties_manager(self):
-        self.ui.PropertiesTable.clear()
-        self.PropertiesTimer.stop()
+    def _stop_inspector_thread(self):
+        self.ObjectManager.stop()
+        self.PropertiesManager.stop()
+        
+        
         
     
         
@@ -751,6 +820,7 @@ class Pyredengine(QMainWindow):
         self._fps_low = float("inf")
 
         gamehandler = self.ui.pygame_widget.game
+        gamehandler.project_data = json.loads(self.project_json_data)
 
         def get_debug_info(parent):
             info = gamehandler.debug_info()
@@ -820,8 +890,8 @@ class Pyredengine(QMainWindow):
 
     def _stop_pygame_debug_values(self):
         self._debug_timer.stop()
-        
-        
+
+
     def _create_creation_context_menu(self, menu):   
         creation_context_menu = QMenu(menu)
         creation_context_menu.setTitle("Create")
@@ -833,10 +903,7 @@ class Pyredengine(QMainWindow):
         creation_context_menu.addActions([self.ui.actionExample_Main, self.ui.actionExample_Script])
         
         return creation_context_menu
-        
-        
-        
-           
+          
     def _create_resources_context_menu(self, event):
         menu= QMenu(self.ui.resources_tree)
         
@@ -859,9 +926,15 @@ class Pyredengine(QMainWindow):
                 menu.addAction(self.ui.actionSet_as_Main_py)
                 menu.addSeparator()
             if item.data(0, 5) == "Folder":
-                #menu.addAction(self.ui.actionSet_as_Main_Scenes)
+                if item.data(0, 6) != "Library":
+                    menu.addAction(self.ui.actionMark_As_Library)
+                else:
+                    menu.addAction(self.ui.actionUnmark_As_Library)
+                    
                 menu.addSeparator()
                 self._create_creation_context_menu(menu)
+                menu.addSeparator()
+                
                 
             menu.addAction(self.ui.actionDelete_Resource)
             menu.addAction(self.ui.actionRename)
@@ -877,7 +950,7 @@ class Pyredengine(QMainWindow):
     def _create_recent_projects_context_menu(self):
         import libs.project_management as pm
         
-        self._r_projs = pm.load_recent_projects_from_json(self.application_path)
+        self._r_projs = pm.load_recent_projects_from_json()
 
         if self._r_projs is not None:
             for project_name, project_details in self._r_projs.items():
@@ -886,8 +959,39 @@ class Pyredengine(QMainWindow):
                 folder_path = project_details["json"]["project_path"]
                 action.triggered.connect(partial(self._load_project_folder, folder_path))
 
+   
+        
+
+    def _rename_project(self):
+        import libs.project_management as pm
+        import json
+        
+        new_name, done = QInputDialog.getText(
+            self, 'Input Dialog', 'Rename Project To: ') 
+        
+        if done:
+            new_data = pm.edit_project_json_from_path(self.project_dir, "project_name", new_name)
+            self._relaunch_window(json.dumps(new_data))
     
-    
+    def _change_project_version(self):
+        import libs.project_management as pm
+        import json
+        
+        new_version, done = QInputDialog.getText(
+            self, 'Input Dialog', 'Change Project Version: ') 
+        
+        if done:
+            new_data = pm.edit_project_json_from_path(self.project_dir, "project_version", new_version)
+        
+    def _change_project_author(self):
+        import libs.project_management as pm
+        import json
+        
+        new_author, done = QInputDialog.getText(
+            self, 'Input Dialog', 'Change Author To: ') 
+        
+        if done:
+            new_data = pm.edit_project_json_from_path(self.project_dir, "project_version", new_author)
   
     def _popout_viewport(self):
         class PopOutWindow(QMainWindow):
@@ -935,10 +1039,7 @@ class Pyredengine(QMainWindow):
     
     def _get_main_file(self):
         return self.project_main_file
-        
-        
-        
-        
+ 
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
@@ -954,12 +1055,19 @@ class Launcher(QWidget):
         import threading
         self.ui = launcher_design.Ui_Form()
         self.ui.setupUi(self)
+        self._load_icons()
+        
         self.application_path = os.path.dirname(os.path.abspath(__file__))
+        
+
+        self.setWindowIcon(self.iconRedEngine)
         
         self.ui.projects_table.itemClicked.connect(self._select_project)
         self.ui.projects_table.itemDoubleClicked.connect(self._load_project)
         self.ui.look_button.pressed.connect(self._look_project)
         self.ui.create_button.pressed.connect(self._save_project_as)
+        self.ui.add_button.pressed.connect(self._load_project_from_folder)
+        self.ui.remove_button.pressed.connect(self._remove_project)
         self.ui.delete_button.pressed.connect(self._delete_project)
         self.ui.install_button.pressed.connect(self._download_python_version)
         
@@ -974,6 +1082,12 @@ class Launcher(QWidget):
         self._versions_tab_loaded = False
         threading.Thread(target=lambda: self._get_python_versions()).start()
         
+    def _load_icons(self):
+        self.iconRedEngine = QIcon()
+        self.iconRedEngine.addFile(u"../redengine/assets/icon32.png", QSize(), QIcon.Normal, QIcon.Off)
+        
+        self.iconExclamation = QIcon()
+        self.iconExclamation.addFile(u"../redengine/assets/icons/exclamation-red.png", QSize(), QIcon.Normal, QIcon.Off)
 
 
     def _enable_project_buttons(self):
@@ -987,15 +1101,59 @@ class Launcher(QWidget):
         self.ui.delete_button.setEnabled(False)
             
     def _select_project(self, item):
-        project_data = self.ui.projects_table.item(item.row(), 0)._project_data
-        self._project_path = project_data["project_path"]
-        self._project_name = project_data["project_name"]
+        import libs.project_management as pm
         
-        with open(project_data["project_path"]+"/.redengine/project.json", 'r') as file:
-            self.project_data = file.read()
-                
-        self._enable_project_buttons()
-         
+        try:   
+                    
+            project_data = self.ui.projects_table.item(item.row(), 0)._project_data
+            self._project_path = project_data["project_path"]
+            self._project_name = project_data["project_name"]
+            
+            with open(project_data["project_path"]+"/.redengine/project.json", 'r') as file:
+                self.project_data = file.read()
+                    
+            self._enable_project_buttons()
+            
+        except FileNotFoundError as exc:
+            #print("file not found error loool")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Icon.Critical)
+            msg.setText("Project could not be located on system. Would you like to manually locate the project and re-assign its main path?")
+            msg.setWindowTitle("Project Path Could Not be Found")
+            msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+            value = msg.exec()
+            
+            if value == QMessageBox.StandardButton.Yes:
+                directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+                if directory and pm.check_is_project(directory):
+                    
+                    pm.edit_project_json_from_path(directory, "project_path", directory)
+                    self.ui.projects_table.clearContents()
+                    self.populate_projects_table()
+            
+    def _remove_project(self):
+        import libs.project_management as pm
+        
+        response = QMessageBox.critical(self, "Confirm", "Are you sure you want to remove this project from the launcher?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+        if response == QMessageBox.StandardButton.Yes: 
+            pm.remove_from_recent_projects(self._project_name)
+        
+            self.ui.projects_table.clearContents()
+            self.populate_projects_table()
+        
+        
+    def _load_project_from_folder(self):    
+        import libs.project_management as pm
+        
+        directory = QFileDialog.getExistingDirectory(self, "Select Project Directory")
+        if directory and pm.check_is_project(directory):
+            data = pm.read_project_json(directory)
+            pm.add_to_recent_projects(data["project_name"], data)
+            
+            self.ui.projects_table.clearContents()
+            self.populate_projects_table()
+
+        
     def _load_project(self):
         engine = Pyredengine(self.project_data, launcher)
         #self.ui.launch_button.disconnect(self.launch_connection)
@@ -1003,9 +1161,9 @@ class Launcher(QWidget):
         launcher.hide()
         
     def _look_project(self):
-        import webbrowser
+        import libs.resource_management as rm
         
-        webbrowser.open(self._project_path)
+        rm.open_in_explorer(self._project_path)
     
     def _delete_project(self):
         import libs.project_management as pm
@@ -1031,7 +1189,7 @@ class Launcher(QWidget):
         table = self.ui.projects_table
         table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table_items = 0
-        projs = pm.load_recent_projects_from_json(self.application_path)
+        projs = pm.load_recent_projects_from_json()
 
 
 
@@ -1040,19 +1198,31 @@ class Launcher(QWidget):
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
             for project_name, project_details in projs.items():
                 _project_data = project_details["json"]
+                
+                if "project_version" in _project_data:
+                    _project_version = _project_data["project_version"]
+                else: _project_version = "0.0.0.0"
+                    
+                _does_exist = True
 
                 if not os.path.exists(_project_data["project_path"]+"/.redengine/project.json"):
-                    print(f"file does not exist at {_project_data["project_path"]}")
-                    continue
-                print(f"file does exist at {_project_data["project_path"]}")
+                    print(f"file does not exist at {_project_data}")
+                    _does_exist = False
+                   
+                #print(f"file does exist at {_project_data["project_path"]}")
 
                 main_item = QTableWidgetItem(project_name)
                 main_item._project_data = project_details["json"]
 
 
                 table.setItem(self.table_items, 0, main_item)
-                table.setItem(self.table_items, 1, QTableWidgetItem("0.0.0"))
-                table.setItem(self.table_items, 2, QTableWidgetItem(project_details["json"]["project_path"]))
+                table.setItem(self.table_items, 1, QTableWidgetItem(_project_version))
+                
+                if _does_exist:
+                    table.setItem(self.table_items, 2, QTableWidgetItem(project_details["json"]["project_path"]))
+                else:
+                    table.setItem(self.table_items, 2, QTableWidgetItem("Not Found"))
+            
             
                 try:
                     table.setItem(self.table_items, 3, QTableWidgetItem(project_details["json"]["user"]))
@@ -1060,6 +1230,11 @@ class Launcher(QWidget):
                     table.setItem(self.table_items, 3, QTableWidgetItem("Unknown Author"))
             
                 self.table_items +=1
+                
+                if not _does_exist:
+                    main_item.setIcon(self.iconExclamation)
+                
+                
             table.setRowCount(self.table_items)
 
   
@@ -1111,7 +1286,7 @@ class Launcher(QWidget):
     def _download_python_version(self):
         import libs.red_engine as re
         import webbrowser
-        
+
         options = QFileDialog.Options()
         options |= QFileDialog.ShowDirsOnly
         if folder_path := QFileDialog.getExistingDirectory(
@@ -1119,7 +1294,9 @@ class Launcher(QWidget):
         ):
 
                     
-            self.progress_dialog = re.ProgressDialog(self.py_dl_link, folder_path+"/installer.exe", self.py_name[0])
+            self.progress_dialog = re.ProgressDialog(
+                self.py_dl_link, f"{folder_path}/installer.exe", self.py_name[0]
+            )
             self.progress_dialog.show()
             self.progress_dialog.download()
 
@@ -1193,6 +1370,13 @@ class Launcher(QWidget):
         
         self._versions_tab_loaded = True
 
+    def showEvent(self, a0):
+        super().showEvent(a0)
+        self.ui.projects_table.clearContents()
+        self.populate_projects_table()
+        
+        rph.launcher_state()
+        
 
 
 
@@ -1201,9 +1385,18 @@ class Launcher(QWidget):
 
 
 if __name__ == "__main__":
+    import libs.rich_presence as dcrp
     os.chdir(os.getcwd())
     sys.excepthook = handle_exception
-    
+
+    import ctypes
+    myappid = 'redegs.pyredengine.dev.1' # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+            
+
+    rph = dcrp.RichPresenceHandler()
+    rph.launcher_state()
+
     app = QApplication([])
     
 

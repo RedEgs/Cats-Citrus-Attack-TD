@@ -1,4 +1,3 @@
-from io import DEFAULT_BUFFER_SIZE
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -8,16 +7,20 @@ class FileChangeMonitor(QThread):
     file_changed = pyqtSignal(bool)
     folder_changed = pyqtSignal(str)
 
-    def __init__(self, main_file, project_dir, scenes_dir, parent=None) -> None:
+    def __init__(self, main_file, project_dir, project_libraries, parent=None) -> None:
         super().__init__(parent)
         self.main_file = main_file
         self.project_dir = project_dir
-        self.scenes_dir = scenes_dir
+        self.project_libraries = project_libraries
 
         self.watched_paths = []
 
 
+
         self.watched_paths.append(self.project_dir)
+        for library in self.project_libraries:
+            self.watched_paths.append(library)
+       
         if self.main_file is not None and os.path.isfile(self.main_file):
             self.watched_paths.append(self.main_file)
            
@@ -40,6 +43,11 @@ class FileChangeMonitor(QThread):
                     break
                 else:
                     self.folder_changed.emit(os.path.basename(change[1]))
+                    try:
+                        if os.path.basename(change[1]).split(".")[1] == "py":
+                            self.file_changed.emit(True)
+                    except: pass
+                    
                     break
                 
             
@@ -50,10 +58,9 @@ class FileChangeMonitor(QThread):
 
 
 
-def rename_file(parent, project_dir, split_name):
+def rename_file(parent, item_path, split_name):
     file_name = split_name[0]
     file_extension = f".{split_name[1]}"
-    working_dir = f"{project_dir}/{file_name + file_extension}"
 
     new_name, done = QInputDialog.getText(
         parent, 'Input Dialog', 'Rename to: ') 
@@ -61,14 +68,14 @@ def rename_file(parent, project_dir, split_name):
 
 
     if done:
-        if os.path.isfile(f"{working_dir}"):
-            os.rename(f"{working_dir}", f"{project_dir}/{new_name+file_extension}")
+        if os.path.isfile(item_path): 
+            os.rename(item_path, os.path.join(os.path.dirname(item_path), new_name+file_extension))
 
         else:
             QMessageBox.critical(
                 parent,
                 "File cannot be renamed",
-                f"{working_dir}",
+                item_path,
                 buttons=QMessageBox.Discard,
                 defaultButton=QMessageBox.Discard,
         )    
@@ -135,8 +142,6 @@ def create_py_file(parent, working_dir, filename = None):
                     defaultButton=QMessageBox.Discard,
             )
 
-
-# TODO Rename this here and in `create_py_file`
 def _copy_main_template(destination):
     import shutil 
 
@@ -167,3 +172,44 @@ def get_file_from_path(path):
     except:
         return None
       
+def open_in_explorer(path):
+    import os, subprocess, platform
+
+    folder_path = os.path.realpath(path)
+    if os.path.exists(folder_path):
+        if platform.system() == "Windows":
+            subprocess.run(["explorer", folder_path])
+        elif platform.system() == "Darwin":  # macOS
+            subprocess.run(["open", folder_path])
+        else:  # Linux
+            subprocess.run(["xdg-open", folder_path])
+        
+def is_image(path):
+    if os.path.isfile(path):
+        image = QImage()
+        return image.load(path)
+    
+def is_text_based(path):
+    """
+    Checks if a file is a text-based file.
+    
+    :param file_path: Path to the file
+    :return: True if the file is text-based, False otherwise
+    """
+    # Common text-based file extensions
+    text_extensions = ['.txt', '.csv', '.md', '.json', '.xml', '.html', '.py', '.css', '.java']
+    
+    # Check file extension
+    _, ext = os.path.splitext(path)
+    if ext.lower() in text_extensions:
+        return True
+    
+    # If extension is not enough, try opening the file and checking content
+    try:
+        with open(path, 'r', encoding='utf-8') as file:
+            # Try reading the first few characters to check if it's text
+            file.read(1024)  # Read a small portion to test
+        return True
+    except (UnicodeDecodeError, IOError):
+        # If reading as text fails, it's likely a binary file
+        return False

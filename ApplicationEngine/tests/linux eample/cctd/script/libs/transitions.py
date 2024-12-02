@@ -81,16 +81,19 @@ class FadeTransition(Transition):
 
     def update(self):
         if self.curr_percentage == self.timing * 100:
-            self.Fade.reverse(False)
+            #self.Fade.reverse(False)
+            self.Fade.kill()
             self.scene_director.set_scene(self.to_scene) # Change the scene while black
             
                 
         if self.curr_percentage == self.timing * 200:
             self.kill_transition()
-            self.Fade.kill()
+            #self.Fade.kill()
             self.completed = True
     
         self.curr_percentage += 1
+        print(self.curr_percentage)
+    
 
 
     def draw(self):

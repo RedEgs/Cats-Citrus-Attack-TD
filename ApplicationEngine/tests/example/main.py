@@ -33,7 +33,7 @@ class Main(PreviewMain.MainGame):
         self.square_color = pygame.Color(255, 255, 255) 
 
         self.pos = (0,0) 
-        self._h_angle = 0 #[HOTSAVE]
+        self._h_angle = 0 #s[PUBLIC]
         self.list = [] #[PUBLIC]
         self.flex_var = None #[PUBLIC]
         

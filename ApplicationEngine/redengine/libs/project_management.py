@@ -3,10 +3,57 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-def load_recent_projects_from_json(application_path):
+def check_is_project(path):
+    redengine = os.path.join(path, ".redengine")
+    project_json = os.path.join(redengine, "project.json")
+    
+    if os.path.exists(redengine) and os.path.isfile(project_json):
+        return True
+    else:
+        return False
+        
+def read_project_json(path) -> dict:
+    import json
+    
+    file = os.path.join(path, ".redengine", "project.json")
+      
+    with open(file) as f:
+        data = json.load(f)
+        
+    return data
+
+def edit_project_json_from_path(path, attribute, value):
+    """
+    path: Takes in PROJECT DIRECTORY not json directory
+    """
+    
+    import json
+    
+    file = os.path.join(path, ".redengine", "project.json")
+    data = read_project_json(path)
+    
+    remove_from_recent_projects(data["project_name"])
+    
+    new_data = data.copy()
+    new_data[attribute] = value
+    
+    with open(file, "w") as file:
+        print("saved and dumped")
+        json.dump(new_data, file)
+    
+
+    add_to_recent_projects(new_data["project_name"], new_data)
+    return new_data
+
+        
+
+def load_recent_projects_from_json():
     import json 
     
-    file_path = application_path + '/recents.json'
+    
+   
+    file_path =  os.path.join(os.path.dirname(__file__), "..", "recents.json")
+    print(file_path)
     
     if os.path.exists(file_path):
         print("path exists")
@@ -62,13 +109,13 @@ def clear_recent_projects():
         with open(file_path, 'w') as file:
             json.dump({}, file, indent=4)
 
-def remove_from_recent_projects(app_path, project_name):
+def remove_from_recent_projects(project_name):
     import json
     
-    data = load_recent_projects_from_json(app_path)
+    data = load_recent_projects_from_json()
     data.pop(project_name)
     
-    with open(app_path+"/recents.json", 'w') as file:
+    with open("recents.json", 'w') as file:
         json.dump(data, file, indent=4)
         
 
@@ -141,12 +188,6 @@ def generate_project_path(window, project_path, project_name, main_project_file=
         if key not in existing_data:
             existing_data[key] = value
 
-    if "main_project_file" not in existing_data or main_project_file is not None:
-        existing_data["main_project_file"] = f"{project_path}/main.py"
-
-    if "project_scenes" not in existing_data or project_scenes is not None:
-        existing_data["project_scenes"] = project_scenes
-
     # Write the project file to the specified path
     with open(project_file_path, "w") as file:
         json.dump(existing_data, file, indent=4)
@@ -160,8 +201,6 @@ def save_project_json(window, project_path, project_name, main_project_file, pro
     project_file_gen = {
         "project_name": project_name,
         "project_path": project_path,
-        "project_scenes": project_scenes,
-        "main_project_file": main_project_file, 
         "date_created": str(date.today()),
         "date_edited" : str(date.today()),
         "user": os.getlogin(),

@@ -1,7 +1,10 @@
 # Main project file
 import pygame, os, sys
+from sys import modules
+import importlib
 from pyredengine import PreviewMain # type: ignore
 
+import cctd
 from cctd.script.libs.scenes import *
 from cctd.script.libs.utils import *
 from cctd.script.libs.transitions import *
@@ -11,8 +14,7 @@ from cctd.script.scenes.example import ExampleScene
 from cctd.script.scenes.menu import Menu
 from cctd.script.scenes.lobby import LobbyScene
 from cctd.script.scenes.game import EndlessGameScene
-
-
+        
 
 """
 All code given is the bare minimum to safely run code within the engine.
@@ -20,62 +22,34 @@ Removing any code that already exists in not recommended and you WILL run into i
 When compiled, parts of code are removed to optimise and simplify the file.
 """
 
-
-
-class cctd:
-    def __init__(self, screen):
-        self.game_registry = Registry()
-        
-        self.transitionDirector = TransitionDirector(screen)
-        self.SceneDirector = SceneDirector("main_menu", screen, self.transitionDirector)
-
-    
-        game_scenes = []
-        game_scenes.append(Menu(screen, self.SceneDirector, "main_menu"))
-        game_scenes.append(LobbyScene(screen, self.game_registry, self.SceneDirector, "lobby_scene"))
-        #game_scenes.append(ExampleScene(screen, self.SceneDirector, "example_scene"))
-        game_scenes.append(EndlessGameScene(screen, self.game_registry, self.SceneDirector, "game_scene"))
-
-        # Game(self.SCREEN, self.SceneDirector, "debug_scene")
-        self.SceneDirector.load_scenes(game_scenes)
-   
-
-    def run(self):
-        self.game_registry.load_tower_registry()
-        self.events()
-        self.update()
-        self.draw()
-
-    def events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            self.eventQueue = event
-
-    def update(self):
-        self.SceneDirector.run_scene(self.eventQueue)
-        self.transitionDirector.update()
-
-    def draw(self):
-        pygame.display.flip()
-
 class Main(PreviewMain.MainGame):
     def __init__(self, fullscreen = False) -> None:
-        super().__init__(fullscreen)
+        super().__init__(fullscreen, [800, 600])
         """
         Make sure not to remove the super() method above, as it will break the whole script.
-        """
-
-        self.display = pygame.display.get_surface()
+        """        
+        self.display = pygame.display.get_surface() #sd[UNPACK]
         if self._engine_mode:
             abspath = os.path.abspath(__file__)
             dname = os.path.dirname(abspath)
             os.chdir(dname)
+            
         
-        self.cctd = cctd(self.display)
+        self.game_registry = Registry() #[UNPACK]
         
+        self.transitionDirector = TransitionDirector(self.display)
+        self.SceneDirector = SceneDirector("main_menu", self.display, self.transitionDirector) #[UNPACK]
+        
+    
+        game_scenes = []
+        game_scenes.append(Menu(self.display, self.SceneDirector, "main_menu"))
+        game_scenes.append(LobbyScene(self.display, self.game_registry, self.SceneDirector, "lobby_scene"))
+        #game_scenes.append(ExampleScene(self.display, self.SceneDirector, "example_scene"))
+        game_scenes.append(EndlessGameScene(self.display, self.game_registry, self.SceneDirector, "game_scene"))
+
+        # Game(self.self.display, self.SceneDirector, "debug_scene")
+        self.eventQueue = None
+        self.SceneDirector.load_scenes(game_scenes)
         
     
 
@@ -92,6 +66,7 @@ class Main(PreviewMain.MainGame):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
+            self.eventQueue = event
                
     def update(self):
         """
@@ -99,7 +74,11 @@ class Main(PreviewMain.MainGame):
         This is purely a conceptual seperator from the rest of the game code.
         Think of this as the "body" of your program.
         """
-        self.cctd.run()
+        #self.iterator += 1
+        
+        self.SceneDirector.run_scene(self.eventQueue)
+        self.transitionDirector.update()
+        
 
     def draw(self):
         """
@@ -110,3 +89,5 @@ class Main(PreviewMain.MainGame):
         pygame.display.flip()
     
     
+    def on_reload(self):
+        return super().on_reload()

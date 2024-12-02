@@ -24,6 +24,8 @@ class Registry:
         
         for tower in tower_list:
             self.tower_registry.append(tower)
+        
+        self.tower_registry = list(set(self.tower_registry))
 
     def load_enemy_registry(self):
         pass

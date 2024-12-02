@@ -148,6 +148,10 @@ class Button:
 
 
     def handle_event(self, event):
+        if event == None:
+            return
+            
+            
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             if self.hovered_state == False:
                 self.hovered_state = True

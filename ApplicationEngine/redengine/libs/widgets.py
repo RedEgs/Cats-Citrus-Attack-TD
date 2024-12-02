@@ -7,6 +7,12 @@ from PyQt5.Qsci import *
 from PyQt5.QtWidgets import QWidget
 import libs.process_wrapper as pw  
 import traceback, sys, os, pygame
+
+
+
+
+
+
 class PygameWidget(QWidget):
     def __init__(self, parent=None):
         super(PygameWidget,self).__init__(parent)
@@ -16,6 +22,7 @@ class PygameWidget(QWidget):
         self.can_draw = True
         self.paused = False
         self.parent = parent
+        self._engine = None
 
     def start_game_clock(self):
         self.timer = QTimer(self)
@@ -134,6 +141,7 @@ class PygameWidget(QWidget):
     def mouseMoveEvent(self, event):  # sourcery skip: class-extract-method
         """Catches mouse movement from the window/widget and sends to pygame.
         """
+
         if self.can_run and hasattr(self, 'image') and not self.is_fullscreen and not self.paused:
             pos = event.pos()
             coords = self.convert_mouse_coords(pos.x(),  pos.y())
@@ -175,7 +183,6 @@ class PygameWidget(QWidget):
         coords = self.convert_mouse_coords(pos.x(),  pos.y())
         if coords != [pos.x(), pos.y()]:
             self.game.send_event("mu", [coords[0], coords[1], 0])   
-            
                        
     def redraw(self):
         """Handles the drawing of the screen to an image
@@ -183,30 +190,26 @@ class PygameWidget(QWidget):
         #print("No game exists")
         try:
             if self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game') and not self.is_fullscreen and not self.paused:
-                try:
-                    self.surface = next(self.game.run_game())
-                    w=self.surface.get_width()
-                    h=self.surface.get_height()
-                    self.data=self.surface.get_buffer().raw
-                    self.image= QImage(self.data,w,h, QImage.Format_RGB32)
-                except Exception as e:
-                    pass
+                self.surface = next(self.game.run_game())
+                w=self.surface.get_width()
+                h=self.surface.get_height()
+                self.data=self.surface.get_buffer().raw
+                self.image= QImage(self.data,w,h, QImage.Format_RGB32)
             elif self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game') and self.is_fullscreen == True:
                 try:
                     next(self.game.run_game())
                 except StopIteration as e:
 
                     self.close_process() 
-                    self.parent.parent().parent().parent().parent().ui._reset_play_button(True)
+                    self._engine._reset_play_button(True)
 
         except Exception as e:
             print(traceback.format_exc())
 
             if e not in [StopIteration, pygame.error]:
                 QMessageBox.critical(self.parent, f"Fatal Error Within Render Loop | {str(os.path.basename(traceback.extract_tb(sys.exc_info()[2])[-1].filename))}", traceback.format_exc(), QMessageBox.Ok)
-                #self.close_process()            
-                self.parent.parent().parent().parent().parent()._reset_play_button(True)
-
+                self.close_process()            
+                self._engine._reset_play_button(True)
 
         self.repaint()
   
@@ -251,6 +254,7 @@ class PygameWidget(QWidget):
         center_y = (rect_height - scaled_image.height()) // 2
 
         qp.drawImage(center_x, center_y, scaled_image)
+        print("drawing image")
         
         if self.paused:
             grey_out_color = QColor(0, 0, 0, 150)  # Semi-transparent black
@@ -351,14 +355,14 @@ class QIdeWindow(QWidget):
 
         verticalLayout.addWidget(self) # type: ignore
          
-def load_project_resources(startpath, tree, main_file_name=None, app_path=None):
+def load_project_resources(startpath, tree, project_data, main_file_name=None, app_path=None):
     """
     Load Project structure tree
     :param startpath: 
     :param tree: 
     :return: 
     """
-    import os
+    import os, json
     from PyQt5.QtWidgets import QTreeWidgetItem
     from PyQt5.QtGui import QIcon
 
@@ -366,6 +370,8 @@ def load_project_resources(startpath, tree, main_file_name=None, app_path=None):
     hidden_folders = [".redengine", "__pycache__"]
     hidden_files = ["hotdump.pkl"]
     resources_items = []
+    pdata = json.loads(project_data)
+    
     for element in os.listdir(startpath):
         path_info = f"{str(startpath)}/{element}"
         parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
@@ -382,8 +388,20 @@ def load_project_resources(startpath, tree, main_file_name=None, app_path=None):
 
         if os.path.isdir(path_info):
             parent_itm.setData(0, 5, "Folder")
-            if load_project_resources(path_info, parent_itm) != []:
+   
+
+                
+            
+            
+            if load_project_resources(path_info, parent_itm, project_data) != []:  
                 parent_itm.setIcon(0, QIcon('assets/icons/folder-open-document.png'))
+                
+                try:
+                    if pdata["project_libraries"] and path_info in pdata["project_libraries"]:
+                        parent_itm.setIcon(0, QIcon('assets/icons/block.png'))
+                        parent_itm.setData(0, 6, "Library")
+                except: pass
+                    
             else:
                 parent_itm.setIcon(0, QIcon('assets/icons/folder-open.png'))
                 
@@ -416,10 +434,10 @@ def load_project_resources(startpath, tree, main_file_name=None, app_path=None):
 
     return resources_items
 
-def reload_project_resources(startpath, tree, main_file_name, app_path):    
+def reload_project_resources(startpath, tree, project_data, main_file_name, app_path):    
     os.chdir(app_path)
     tree.clear()
-    return load_project_resources(startpath, tree, main_file_name, app_path)
+    return load_project_resources(startpath, tree, project_data, main_file_name, app_path)
         
 def search_tree_view(tree_widget, line_edit):
     search_query = line_edit.text().lower()
