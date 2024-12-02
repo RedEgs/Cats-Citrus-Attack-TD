@@ -355,7 +355,7 @@ class QIdeWindow(QWidget):
 
         verticalLayout.addWidget(self) # type: ignore
          
-def load_project_resources(startpath, tree, project_data, main_file_name=None, app_path=None):
+def load_project_resources(startpath, tree, project_libraries, main_file_name=None, app_path=None):
     """
     Load Project structure tree
     :param startpath: 
@@ -370,8 +370,8 @@ def load_project_resources(startpath, tree, project_data, main_file_name=None, a
     hidden_folders = [".redengine", "__pycache__"]
     hidden_files = ["hotdump.pkl"]
     resources_items = []
-    pdata = json.loads(project_data)
     
+
     for element in os.listdir(startpath):
         path_info = f"{str(startpath)}/{element}"
         parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
@@ -393,11 +393,11 @@ def load_project_resources(startpath, tree, project_data, main_file_name=None, a
                 
             
             
-            if load_project_resources(path_info, parent_itm, project_data) != []:  
+            if load_project_resources(path_info, parent_itm, project_libraries) != []:  
                 parent_itm.setIcon(0, QIcon('assets/icons/folder-open-document.png'))
                 
                 try:
-                    if pdata["project_libraries"] and path_info in pdata["project_libraries"]:
+                    if path_info in project_libraries:
                         parent_itm.setIcon(0, QIcon('assets/icons/block.png'))
                         parent_itm.setData(0, 6, "Library")
                 except: pass
@@ -434,10 +434,10 @@ def load_project_resources(startpath, tree, project_data, main_file_name=None, a
 
     return resources_items
 
-def reload_project_resources(startpath, tree, project_data, main_file_name, app_path):    
+def reload_project_resources(startpath, tree, project_libraries, main_file_name, app_path):    
     os.chdir(app_path)
     tree.clear()
-    return load_project_resources(startpath, tree, project_data, main_file_name, app_path)
+    return load_project_resources(startpath, tree, project_libraries, main_file_name, app_path)
         
 def search_tree_view(tree_widget, line_edit):
     search_query = line_edit.text().lower()

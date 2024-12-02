@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 import engine_design, launcher_design
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -18,8 +19,6 @@ class Pyredengine(QMainWindow):
         self.project_dir = None    
         self._app_launcher = launcher
         
-
-        
         self.application_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(self.application_path)
         
@@ -37,7 +36,7 @@ class Pyredengine(QMainWindow):
         else:
             self.save_default_settings()
             
-        rph.engine_state(self.project_name)
+        rph.engine_state(self.project_name) # Updates the discord rich presence status
         
         self._load_menu_bar_actions()
         self._create_recent_projects_context_menu()
@@ -121,7 +120,7 @@ class Pyredengine(QMainWindow):
         
         
           
-    def _load_icons(self):
+    def _load_icons(self): # Loads various icons
         self.iconControlSquare = QIcon()
         self.iconControlSquare.addFile(u"../redengine/assets/icons-shadowless/control-stop-square.png", QSize(), QIcon.Normal, QIcon.Off)
           
@@ -141,12 +140,12 @@ class Pyredengine(QMainWindow):
         self.iconPlus.addFile(u"../redengine/assets/icons/plus.png", QSize(), QIcon.Normal, QIcon.Off)
         
           
-    def _relaunch_window(self, data):
+    def _relaunch_window(self, data): # Re-opens an instance of project when given json data in the .redengine format
         self.newWindow = Pyredengine(data)
         self.newWindow.show()
         self.close()
     
-    def _load_project(self, data):
+    def _load_project(self, data): # Responsible for loading majority of the features and data of the engine
         import libs.project_management as pm
         import libs.resource_management as rm
         import libs.widgets as w
@@ -161,39 +160,34 @@ class Pyredengine(QMainWindow):
         self.project_main_file = os.path.join(self.project_dir, "main.py")
         self.project_main_file_name = rm.get_file_from_path(self.project_main_file)
               
-        self.project_libraries = []
-        try:
-            self.project_libraries = json.loads(self.project_json_data)["project_libraries"]
-        except: pass
 
-        
-        pm.add_to_recent_projects(project_json["project_name"], project_json)
+        # Loads project libraries from the json, if non-found it defaults to an empty list
+        self._load_project_libraries()
+
+
+        pm.add_to_recent_projects(project_json["project_name"], project_json) # Moves project to the most recent project opened
 
         self.ide_tabs = []
-        # ---
+       
+    
         self.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - "+ project_json["project_name"], None))
         
-        try:
-            self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_json_data, self.project_main_file_name, self.application_path)
-        except Exception as e:
-            pass
-        
+        # Populates the resources panel, with all the files in a given directory.
+        self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_json_data, self.project_main_file_name, self.application_path)
         self.ui.resources_tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.resources_tree.customContextMenuRequested.connect(self._create_resources_context_menu)
         self.ui.resource_search_bar.textChanged.connect(lambda: w.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
 
-        self.load_layout_settings()
-        
-        self._initialise_themes()
+        self.load_layout_settings() # Loads the last saved layout if there is any
+        self._initialise_themes() # Loads the themes in the themes folder
 
         self._process_running = False
         self.__game_process = None
-      
-        self.monitor_thread = QThread()
-        
-  
-            
-        
+    
+
+
+        # Starts the file monitor thread which watches for changes in file/folder contents.
+        self.monitor_thread = QThread() 
         self.monitor_worker = rm.FileChangeMonitor(self.project_main_file, self.project_dir, self.project_libraries)
         self.monitor_worker.moveToThread(self.monitor_thread)
         self.monitor_thread.started.connect(self.monitor_worker.run)
@@ -201,10 +195,49 @@ class Pyredengine(QMainWindow):
         self.monitor_worker.folder_changed.connect(self._reload_project)
         self.monitor_worker.start()
       
-        #sys.stderr = self.console_output_stream
+        # Redirects all print statements and such to the console text box.
         sys.stdout = red_engine.ConsoleWrapper(self, self.ui.console)
       
+    def _load_project_libraries(self):
+        import libs.widgets as w
+        import libs.project_management as pm
 
+        self.project_libraries = []
+        try:
+            self.project_libraries = json.loads(self.project_json_data)["project_libraries"]
+        except Exception as e:
+            w.error_box(self, "Exception while loading libraries", f"{e}") 
+
+        backup_libraries = self.project_libraries
+        try:
+            backup_libraries = json.loads(self.project_json_data)["project_libraries_backup"]
+        except: pass
+
+
+
+        for index, library in enumerate(self.project_libraries):
+            if not os.path.isdir(library):
+                if not os.path.isdir(backup_libraries[index]):
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Icon.Critical)
+                    msg.setText(f"Library :{os.path.dirname(library)} could not be located on system. Would you like to manually locate the library and assign it as a backup?")
+                    msg.setWindowTitle(f"Library Path {os.path.dirname(library)} Could Not be Found")
+                    msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+                    value = msg.exec()
+            
+                    if value == QMessageBox.StandardButton.Yes:
+                        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+                        if directory:
+                            if len(backup_libraries) == 0:
+                                pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", [directory])
+                            else:    
+                                backup_libraries.append(directory)
+                                pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", backup_libraries)
+                else:
+                    self.project_libraries.append(backup_libraries[index])
+
+
+         
 
     def _load_project_folder(self, folder_path):  
         try:
@@ -260,7 +293,7 @@ class Pyredengine(QMainWindow):
     def _save_project_as_nodialog(self, folder_path):
         self.prompt_project_name(folder_path)
 
-    def _prompt_project_name(self, folder_path):
+    def _prompt_project_name(self, folder_path): # Opens up a text dialogue which is then used to create a project.
         import libs.project_management as pm
 
         project_name, ok = QInputDialog.getText(self, "Project Name", "Enter the project name:")
@@ -287,23 +320,23 @@ class Pyredengine(QMainWindow):
                 tab.save_file()
                 
         
-    def _reload_file_tree(self):
+    def _reload_file_tree(self): # Clears and repopulates the file tree
         import libs.widgets as w
     
         self.resources_tree_files = w.reload_project_resources(self.project_dir, self.ui.resources_tree, self.project_json_data, self.project_main_file_name, os.path.dirname(os.path.abspath(__file__)))
     
-    def _reload_project(self):
+    def _reload_project(self): # Soft reloads the project without closing it.
         self._reload_file_tree()
 
 
        
-    def _clear_recent_projects(self):
+    def _clear_recent_projects(self): # Wipes `recents.json`
         import libs.project_management as pm
         
         pm.clear_recent_projects()
         self._create_recent_projects_context_menu()
             
-    def save_layout_settings(self):      
+    def save_layout_settings(self): # Saves the positions, sizes and opened windows in their current state  
         settings = QSettings(self.project_name, "RedEngine")
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
@@ -313,7 +346,7 @@ class Pyredengine(QMainWindow):
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
         
-    def load_layout_settings(self):
+    def load_layout_settings(self): # Loads the last saved layout settings
         settings = QSettings(self.project_name, "RedEngine")
         geometry = settings.value("geometry")
         window_state = settings.value("windowState")
@@ -323,7 +356,7 @@ class Pyredengine(QMainWindow):
         if window_state:
             self.restoreState(window_state)
         
-    def revert_layout_settings(self):
+    def revert_layout_settings(self): # Reverts layout settings to the original ones.
         response = QMessageBox.question(
             self, "Revert to Default", "Are you sure you want to revert to the default layout?",
             QMessageBox.Yes | QMessageBox.No
@@ -341,18 +374,19 @@ class Pyredengine(QMainWindow):
     
     
                       
-    def _open_file_from_resources(self, item):
+    def _open_file_from_resources(self, item): # Opens a file appropriately, called when an item is double clicked inside of the resources tree
         import libs.widgets as w
         import libs.resource_management as rm
         
-        path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
+        # Gets the path of the item from its data.
+        path = w.get_tree_item_path(self.project_dir, item).replace("//", "/") # Normalizes strings so they read as actual file paths.
         self.resources_tree_dselected_item = [path , item.data(0,0)]
         file = self.resources_tree_dselected_item[0]
 
-        if os.path.isfile(file):
+        if os.path.isfile(file): 
             if rm.is_image(file):
-                rm.open_in_explorer(file)
-            elif rm.is_text_based(file):
+                rm.open_in_explorer(file) 
+            elif rm.is_text_based(file): # Opens any text based file inside of the engines integrated IDE
                 self.ide_index =+ 1
                 new_ide_tab = w.QIdeWindow(self.ui.scripting_tab, self.resources_tree_dselected_item, self.ide_index)
                 text_edit = new_ide_tab.script_edit
@@ -384,10 +418,10 @@ class Pyredengine(QMainWindow):
       
       
       
-    def _select_item_resources_tree(self, item:QTreeWidgetItem):
+    def _select_item_resources_tree(self, item:QTreeWidgetItem): # Makes the current selected item accessible from anywhere within the engines code.
         self.resources_tree_selected_item = f"{self.project_dir}/{item.data(0, 0)}"
 
-    def _rename_item_resources_tree(self, event):
+    def _rename_item_resources_tree(self, event): # Renames resource tree items and their corresponding files
         import libs.widgets as w
         import libs.resource_management as rm
         
@@ -400,7 +434,7 @@ class Pyredengine(QMainWindow):
             rm.rename_file(self, path, cur_name)
             self._reload_file_tree()
 
-    def _delete_file_resources_tree(self, event):
+    def _delete_file_resources_tree(self, event): # Deletes resource tree items and their corresponding files
         import libs.widgets as w
         import libs.resource_management as rm
 
@@ -410,7 +444,7 @@ class Pyredengine(QMainWindow):
             rm.delete_file(self, path)
             self._reload_file_tree()
         
-    def _create_file_resources_tree(self, event=None):
+    def _create_file_resources_tree(self, event=None): # Creates an actual file from within the resources tree
         import libs.widgets as w
         import libs.resource_management as rm
 
@@ -424,7 +458,7 @@ class Pyredengine(QMainWindow):
         rm.create_file(self, path)
         self._reload_file_tree()
       
-    def _create_folder_resources_tree(self, event):
+    def _create_folder_resources_tree(self, event): # Creates folders from within the resources tree
         import libs.widgets as w
         import libs.resource_management as rm
                 
@@ -439,7 +473,7 @@ class Pyredengine(QMainWindow):
         rm.create_folder(self, self.project_dir)
         self._reload_file_tree()
    
-    def _mark_as_library(self):
+    def _mark_as_library(self): # Marks a folder as library from within resources tree
         import libs.project_management as pm
         import libs.widgets as w
         
@@ -468,8 +502,9 @@ class Pyredengine(QMainWindow):
         lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
                 
         previous_libs = pm.read_project_json(self.project_dir)["project_libraries"]
-        previous_libs.remove(lib_path)
+         
         
+
         pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)    
         
         
@@ -1388,11 +1423,12 @@ if __name__ == "__main__":
     import libs.rich_presence as dcrp
     os.chdir(os.getcwd())
     sys.excepthook = handle_exception
-
-    import ctypes
-    myappid = 'redegs.pyredengine.dev.1' # arbitrary string
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-            
+    
+    try:
+        import ctypes
+        myappid = 'redegs.pyredengine.dev.1' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    except: pass    
 
     rph = dcrp.RichPresenceHandler()
     rph.launcher_state()
