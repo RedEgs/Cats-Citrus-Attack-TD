@@ -217,7 +217,7 @@ class Pyredengine(QMainWindow):
 
         for index, library in enumerate(self.project_libraries):
             if not os.path.isdir(library):
-                if not os.path.isdir(backup_libraries[index]):
+                if len(backup_libraries) > 0 and os.path.isdir(backup_libraries[index]):
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Icon.Critical)
                     msg.setText(f"Library :{os.path.dirname(library)} could not be located on system. Would you like to manually locate the library and assign it as a backup?")
@@ -234,7 +234,7 @@ class Pyredengine(QMainWindow):
                                 backup_libraries.append(directory)
                                 pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", backup_libraries)
                 else:
-                    self.project_libraries.append(backup_libraries[index])
+                    if len(backup_libraries) > 0: self.project_libraries.append(backup_libraries[index])
 
 
          
@@ -502,10 +502,20 @@ class Pyredengine(QMainWindow):
         lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
                 
         previous_libs = pm.read_project_json(self.project_dir)["project_libraries"]
-         
+        previous_backup_libs = pm.read_project_json(self.project_dir)["project_libraries_backup"] 
+        
+        if lib_path in previous_libs:
+            previous_libs.remove(lib_path)
+            pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)    
+        
+        elif lib_path in previous_backup_libs:
+            previous_backup_libs.remove(lib_path)
+            pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", previous_backup_libs)
         
 
-        pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)    
+
+
+               
         
         
         w.info_box(self, "Requires a restart", "Removing a library requires the project to restart for changes to take place.")

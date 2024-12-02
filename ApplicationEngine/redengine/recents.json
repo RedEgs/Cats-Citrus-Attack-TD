@@ -8,11 +8,10 @@
             "user": "charlie",
             "project_version": "poopegs",
             "project_libraries": [
-                "C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/cctd"
-            ],
-            "project_libraries_backup": [
+                "C:/Users/User/Desktop/A Level Proj/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/cctd",
                 "/home/charlie/Documents/Cats-Citrus-Attack-TD/ApplicationEngine/tests/linux eample/cctd"
-            ]
+            ],
+            "project_libraries_backup": []
         }
     }
 }
