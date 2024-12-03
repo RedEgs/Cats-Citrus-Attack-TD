@@ -543,8 +543,11 @@ class PropertiesThread(QThread):
 
             tablewidget = QTableWidgetItem(str(att))
             tablewidget.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            
             self.table.setItem(index, 0, tablewidget)  # Column 0: Variable name
             tablewidget._initial_value = initial_value
+            self.table.item(index, 0).setData(1, initial_value)
+                        
 
             self.set_cell(index, 1, initial_value, att)   
 
@@ -675,6 +678,7 @@ class PropertiesThread(QThread):
 
                         index = self.attribute_map[att]
                         initial_value = current_value
+                        
 
                         check = self.check_cell(index, 1, current_value, att)
                         
@@ -684,7 +688,7 @@ class PropertiesThread(QThread):
                             self.set_cell(index, 1, initial_value, att)
    
                         elif check == False:                        
-                        
+                            self.table.item(index, 0).setData(1, initial_value)
                         
 
                             if type(initial_value) in [str, int, float]:
@@ -720,6 +724,7 @@ class PropertiesThread(QThread):
         print("updating var")
         if self.check_cell(row, col, initial_value, att):
             widget = self.table.cellWidget(row, 1)
+ 
             
             if type(initial_value) in [str, int, float]:
                 if widget.text() != initial_value:
@@ -757,7 +762,6 @@ class PropertiesThread(QThread):
 
             # Update the game handler's attribute
             setattr(self.gamehandler.game, attribute_name, new_value)
-
 
 
         except Exception as e:
@@ -839,7 +843,12 @@ class ObjectThread(QThread):
             if isinstance(attr_value, dict):  # If the attribute is a nested object
                 self._add_tree(obj_item, attr_name, attr_value)
             else:
-                QTreeWidgetItem(obj_item, [str(attr_name), str(attr_value)])
+                # Handle displayable text for the value
+                display_text = str(attr_value) if attr_value is not None else "None"
+                item = QTreeWidgetItem(obj_item, [str(attr_name), display_text])
+                
+                # Store the actual value as data
+                item.setData(1, 0, attr_value)
 
     def setup_tree(self):
         """
@@ -901,7 +910,7 @@ class ObjectThread(QThread):
         Recursively updates the tree widget item values with the latest attributes.
         """
         for i in range(tree_item.childCount()):
-            child_item = tree_item.child(i)
+            child_item: QTreeWidgetItem = tree_item.child(i)
             attr_name = child_item.text(0)
             if attr_name in obj_attrs:
                 attr_value = obj_attrs[attr_name]
@@ -909,9 +918,14 @@ class ObjectThread(QThread):
                     self._update_tree_item(child_item, attr_value)
                 else:
                     current_value = child_item.text(1)
-                    new_value = str(getattr(attr_value, "__str__", lambda: attr_value)())
-                    if current_value != new_value:  # Only update if the value has changed
+                    new_value = getattr(attr_value, "__str__", lambda: attr_value)()
+    
+                    if current_value != str(new_value):  # Only update if the value has changed
                         child_item.setText(1, new_value)
+                    
+                    # current_data = child_item.data(1, 0)
+                    # if current_data != attr_value:  # Check if the actual data has changed
+                        child_item.setData(1, 1, attr_value)  # Update the actual data
 
     def stop(self):
         self.timer.stop()

@@ -91,11 +91,7 @@ class PygameWidget(QWidget):
         print("init game")
         self.game.start_process()
         print("started game")
-
-
-
-
-            
+   
 
     def close_process(self):
         """Closes the game or object, and prevents the screen from rendering regularly (at all).
@@ -276,10 +272,42 @@ class PygameWidget(QWidget):
             text_rect = self.rect()
             qp.drawText(text_rect, Qt.AlignCenter, "Reloaded")  # Draw text centered
 
+class SurfaceViewer(QWidget):
+    def __init__(self, parent=None):
+        super(SurfaceViewer,self).__init__(parent)
+        self.surface = None
+        self.image = None
+
+    def draw_surface(self, surface: pygame.Surface):
+        self.surface = surface
+        
+        w=self.surface.get_width()
+        h=self.surface.get_height()
+        self.data=self.surface.get_buffer().raw
+        self.image= QImage(self.data,w,h, QImage.Format_RGB32)
+        self.update()  # Trigger a repaint
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        if self.image is not None:
+            # Scale the image to fit within the widget while maintaining the aspect ratio
+            scaled_image = self.image.scaled(
+                self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+
+            # Calculate position to center the image
+            x = (self.width() - scaled_image.width()) // 2
+            y = (self.height() - scaled_image.height()) // 2
+
+            # Draw the scaled and centered image
+            painter.drawImage(x, y, scaled_image)
+        else:
+            # Draw a black rectangle filling the entire widget
+            painter.fillRect(self.rect(), QColor(0, 0, 0))
+    
         
 
-class QIdeWindow(QWidget):
-    
+class QIdeWindow(QWidget):  
     
     def __init__(self, parent_tabs:QTabWidget, filepath = None, index = None):
         super(QWidget, self).__init__(parent_tabs)
@@ -474,10 +502,11 @@ def get_all_items(tree_widget):
     return all_items
 
 
-
 def info_box(parent, title, text):
     QMessageBox.information(parent, title, text, QMessageBox.Ok)
 
 def error_box(parent, title, text):
     QMessageBox.critical(parent, title, text, QMessageBox.Ok)
+
+
 

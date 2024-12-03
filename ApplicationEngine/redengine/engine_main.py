@@ -109,6 +109,8 @@ class Pyredengine(QMainWindow):
             self.ui.properties_search_bar.textChanged.connect(self._filter_properties_tree)
             self.ui.object_search_bar.textChanged.connect(self._filter_object_tree)
 
+            self.ui.PropertiesTable.itemPressed.connect(self._select_property_from_table)
+            self.ui.objectTreeWidget.itemPressed.connect(self._select_property_from_table)
  
     def _load_shortcuts(self):
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
@@ -226,17 +228,17 @@ class Pyredengine(QMainWindow):
                     msg.setWindowTitle(f"Library Path {os.path.dirname(library)} Could Not be Found")
                     msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
                     value = msg.exec()
-            
+
                     if value == QMessageBox.StandardButton.Yes:
-                        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
-                        if directory:
+                        if directory := QFileDialog.getExistingDirectory(
+                            self, "Select Directory"
+                        ):
                             if len(backup_libraries) == 0:
                                 pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", [directory])
                             else:    
                                 backup_libraries.append(directory)
                                 pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", backup_libraries)
-                else:
-                    if len(backup_libraries) > 0: self.project_libraries.append(backup_libraries[index])
+                elif len(backup_libraries) > 0: self.project_libraries.append(backup_libraries[index])
 
 
          
@@ -426,11 +428,8 @@ class Pyredengine(QMainWindow):
     def _rename_item_resources_tree(self, event): # Renames resource tree items and their corresponding files
         import libs.widgets as w
         import libs.resource_management as rm
-        
-        item = self.resources_tree_selected_item_from_context
-        #self._save_project()
-        
-        if item:
+
+        if item := self.resources_tree_selected_item_from_context:
             path = w.get_tree_item_path(self.project_dir, item)
             cur_name = item.text(0).split(".")
             rm.rename_file(self, path, cur_name)
@@ -478,25 +477,26 @@ class Pyredengine(QMainWindow):
     def _mark_as_library(self): # Marks a folder as library from within resources tree
         import libs.project_management as pm
         import libs.widgets as w
-        
+
         item = self.resources_tree_selected_item_from_context
         lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
 
         previous_libs: list = json.loads(self.project_json_data)["project_libraries"]
-        
-        
-        if previous_libs != None:
-            print("libraries already exist")
+
+
+        if previous_libs is None:
+            pm.edit_project_json_from_path(self.project_dir, "project_libraries", [lib_path])
+
+        else:
             previous_libs.append(lib_path)
             pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)
-        else:
-            pm.edit_project_json_from_path(self.project_dir, "project_libraries", [lib_path])
-            
-        w.info_box(self, "Requires a restart", "Adding a library requires the project to restart for changes to take place.")
+                 
+        w.info_box(self, "Requires a  restart", "Adding a library requires the project to restart for changes to take place.")
         self._return_to_launcher()
+            
+    def _unmark_as_library(self): # Marks a folder as library from within resources tree
         
-        
-    def _unmark_as_library(self):
+
         import libs.project_management as pm
         import libs.widgets as w
         
@@ -514,22 +514,13 @@ class Pyredengine(QMainWindow):
             previous_backup_libs.remove(lib_path)
             pm.edit_project_json_from_path(self.project_dir, "project_libraries_backup", previous_backup_libs)
         
-
-
-
-               
-        
-        
         w.info_box(self, "Requires a restart", "Removing a library requires the project to restart for changes to take place.")
         self._return_to_launcher()
         
    
     def set_main_project_file(self, path = None):  # sourcery skip: use-contextlib-suppress
-        print("firing project main file setting")
         import libs.widgets as w
         import libs.project_management as pm
-
-        print("setting main file")
 
         if path is not None:
             print(f"settings project main file as: {path}")
@@ -599,20 +590,23 @@ class Pyredengine(QMainWindow):
         import libs.process_wrapper as pw
         import libs.widgets as w
 
-        if self.project_main_file != None:
-            if self.ui.pygame_widget.can_run:
-                self.__game_process = None
-                self.ui.pygame_widget.close_process()
-                self._reset_play_button(True)
-
-                self._stop_pygame_debug_values()
-                self._stop_inspector_thread()
-                rph.engine_default_state()
-
-            else:
-                self._start_game(False)
-        else:
+        if self.project_main_file is None:
             self._main_file_disclaimer()
+
+        elif self.ui.pygame_widget.can_run:
+            self._stop_pygame_process()
+        else:
+            self._start_game(False)
+
+    # TODO Rename this here and in `_run_game`
+    def _stop_pygame_process(self):
+        self.__game_process = None
+        self.ui.pygame_widget.close_process()
+        self._reset_play_button(True)
+
+        self._stop_pygame_debug_values()
+        self._stop_inspector_thread()
+        rph.engine_default_state()
 
             
     
@@ -796,10 +790,29 @@ class Pyredengine(QMainWindow):
         self.PropertiesTimer.timeout.connect(self.PropertiesManager.run)
         self.PropertiesTimer.start(10)
         
+        
+        
+        
+        
+        
+        
+        
+        
         self.ObjectTimer = QTimer()
         self.ObjectManager = pw.ObjectThread(self.ui.pygame_widget.game, self.ui.objectTreeWidget, self.ObjectTimer, self.ui.pygame_widget, self.ui)
         self.ObjectTimer.timeout.connect(self.ObjectManager.run)
         self.ObjectTimer.start(10)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         if self.ui.pygame_widget.paused:
             self.ui.mainScriptPropertiesGroup.setEnabled(False)
@@ -966,14 +979,13 @@ class Pyredengine(QMainWindow):
         menu.addSeparator()
         
 
-        if item:
-            
-                        
+        if item:   
             if item.data(0, 5) == "py":
                 menu.addAction(self.ui.actionSet_as_Main_py)
                 menu.addSeparator()
             if item.data(0, 5) == "Folder":
                 if item.data(0, 6) != "Library":
+                    
                     menu.addAction(self.ui.actionMark_As_Library)
                 else:
                     menu.addAction(self.ui.actionUnmark_As_Library)
@@ -1005,6 +1017,22 @@ class Pyredengine(QMainWindow):
                 
                 folder_path = project_details["json"]["project_path"]
                 action.triggered.connect(partial(self._load_project_folder, folder_path))
+
+
+    def _select_property_from_table(self, item):
+        import pygame
+        
+        if type(item) == QTableWidget:
+            data = item.data(1)
+        else:
+            
+            data = item.data(1, 1)
+            print(f"selected from tree: {type(data)}")
+        
+        if type(data) == pygame.Surface:
+            viewer = self.ui.pygame_surface_view
+            viewer.draw_surface(data)
+        
 
 
 
@@ -1263,7 +1291,6 @@ class Launcher(QWidget):
             self._enable_project_buttons()
             
         except FileNotFoundError as exc:
-            #print("file not found error loool")
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Critical)
             msg.setText("Project could not be located on system. Would you like to manually locate the project and re-assign its main path?")
@@ -1327,7 +1354,6 @@ class Launcher(QWidget):
             self.regenerate_table()
             
         else:
-            print("cancelled deletion")
             return False
             
 
@@ -1409,7 +1435,6 @@ class Launcher(QWidget):
                     self._project_data = json.load(file)
                     pm.add_to_recent_projects(self._project_data["project_name"], self._project_data)
                     
-                    print("added to recents")
                     for i in range(self.table_items):
                         self.ui.projects_table.removeRow(i)
                     
