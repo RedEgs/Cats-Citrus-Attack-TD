@@ -694,7 +694,7 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="minimumSize">
     <size>
-     <width>320</width>
+     <width>400</width>
      <height>300</height>
     </size>
    </property>
@@ -747,8 +747,8 @@ color: rgb(255, 255, 255);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>294</width>
-          <height>528</height>
+          <width>444</width>
+          <height>566</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -788,6 +788,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -833,6 +834,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -878,6 +880,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -923,6 +926,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -968,6 +972,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1016,6 +1021,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1118,8 +1124,8 @@ color: rgb(255, 255, 255);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>294</width>
-          <height>459</height>
+          <width>368</width>
+          <height>489</height>
          </rect>
         </property>
         <attribute name="icon">
@@ -1147,6 +1153,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1213,6 +1220,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1258,6 +1266,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1303,6 +1312,7 @@ color: rgb(255, 255, 255);</string>
               <property name="font">
                <font>
                 <family>Consolas</family>
+                <weight>50</weight>
                 <bold>false</bold>
                 <underline>false</underline>
                 <kerning>false</kerning>
@@ -1351,6 +1361,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1396,6 +1407,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1441,6 +1453,7 @@ color: rgb(255, 255, 255);</string>
            <property name="font">
             <font>
              <family>Consolas</family>
+             <weight>50</weight>
              <bold>false</bold>
              <underline>false</underline>
              <kerning>false</kerning>
@@ -1546,7 +1559,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="project_button">
@@ -1558,8 +1571,8 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>0</x>
        <y>-1</y>
-       <width>135</width>
-       <height>50</height>
+       <width>213</width>
+       <height>64</height>
       </rect>
      </property>
      <property name="title">
@@ -1575,8 +1588,8 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>496</x>
        <y>317</y>
-       <width>202</width>
-       <height>231</height>
+       <width>390</width>
+       <height>294</height>
       </rect>
      </property>
      <property name="title">
@@ -1648,6 +1661,7 @@ color: rgb(255, 255, 255);</string>
     <addaction name="separator"/>
     <addaction name="actionConsole"/>
     <addaction name="actionPropertiesWindow"/>
+    <addaction name="actionPygame_Information"/>
    </widget>
    <widget class="QMenu" name="help_button">
     <property name="title">
@@ -1739,7 +1753,7 @@ color: rgb(255, 255, 255);</string>
    <property name="minimumSize">
     <size>
      <width>338</width>
-     <height>608</height>
+     <height>670</height>
     </size>
    </property>
    <property name="focusPolicy">
@@ -2001,8 +2015,8 @@ color: rgb(255, 255, 255);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>283</width>
-          <height>123</height>
+          <width>366</width>
+          <height>137</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -2516,6 +2530,15 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>Unmark As Library</string>
+   </property>
+  </action>
+  <action name="actionPygame_Information">
+   <property name="icon">
+    <iconset>
+     <normaloff>../redengine/assets/icon_python_no_background.png</normaloff>../redengine/assets/icon_python_no_background.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pygame Information</string>
    </property>
   </action>
  </widget>

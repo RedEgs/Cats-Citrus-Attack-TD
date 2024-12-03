@@ -89,7 +89,7 @@ class Menu(Scene):
     def draw(self):
         self.screen.fill(0)
 
-        #self.screen.blit(self.background_image, (0,0))
+        self.screen.blit(self.background_image, (0,0))
         self.tween_director.update([self.background_image.set_alpha(self.background_image_tween.get_output()),
                                    self.screen.blit(self.logo_image, self.logo_image_tween.get_output()),
                                    

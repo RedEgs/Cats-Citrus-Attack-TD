@@ -1,4 +1,3 @@
-from contextlib import nullcontext
 import engine_design, launcher_design
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -1254,10 +1253,13 @@ class Launcher(QWidget):
         self.ui.install_button.setEnabled(False)
         
         self.populate_projects_table()
-        #self._get_python_versions()
         self._versions_tab_loaded = False
         threading.Thread(target=lambda: self._get_python_versions()).start()
         
+        self.ui.projects_table.horizontalHeader().setStretchLastSection(True)
+
+
+
     def _load_icons(self):
         self.iconRedEngine = QIcon()
         self.iconRedEngine.addFile(u"../redengine/assets/icon32.png", QSize(), QIcon.Normal, QIcon.Off)
