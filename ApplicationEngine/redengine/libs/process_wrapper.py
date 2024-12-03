@@ -165,7 +165,7 @@ class GameHandler():
         bps = self.game.get_bps()
         draw_count = self.game.get_draw_calls()
         dps = self.game.get_dps()
-
+        
 
         return [delta_time, fps, blit_count, current_tick, bps, draw_count, dps]
 
@@ -719,7 +719,6 @@ class PropertiesThread(QThread):
                 except Exception as e:
                     print(f"<<Warning>>{e}")
                 
-            
     def update_var(self, row, col, initial_value, att): 
         print("updating var")
         if self.check_cell(row, col, initial_value, att):
@@ -932,5 +931,41 @@ class ObjectThread(QThread):
         self.tree.clear()
         self.tree.setEnabled(False)
         self.running = False     
+
         
+class EventStackThread(QThread):
+    var_changed = pyqtSignal(int, str)  # Signal to emit index and new value
+
+    def __init__(self, gamehandler, qlist, timer, pygamewidget, ui, parent=None):
+        super().__init__(parent)
+        
+        self.gamehandler = gamehandler
+        self.qlist: QListWidget = qlist
+        self.timer: QTimer = timer
+        self.running = True
+        self.pygame_widget = pygamewidget
+        self.ui = ui
+
+
+    def run(self):
+        """
+        Updates the tree periodically using the attributes map.
+        """
+        if self.running == False:
+            self.wait()
+
+        for event in pygame.event.get():
+            self.qlist.addItem(str(event))
+        #if self.previous_event != self.gamehandler.last_event:
+            #self.event_stack.append(self.gamehandler.last_event)
+            #
+
+
+
+    def stop(self):
+        self.timer.stop()
+        self.running = False     
+
+
+
     

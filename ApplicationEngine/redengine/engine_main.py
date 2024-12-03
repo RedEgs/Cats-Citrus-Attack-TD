@@ -176,7 +176,7 @@ class Pyredengine(QMainWindow):
         self.setWindowTitle(QCoreApplication.translate("main_window", u"Red Engine - "+ project_json["project_name"], None))
         
         # Populates the resources panel, with all the files in a given directory.
-        self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_json_data, self.project_main_file_name, self.application_path)
+        self.resources_tree_files = w.load_project_resources(self.project_dir, self.ui.resources_tree, self.project_libraries, self.project_main_file_name, self.application_path)
         self.ui.resources_tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.resources_tree.customContextMenuRequested.connect(self._create_resources_context_menu)
         self.ui.resource_search_bar.textChanged.connect(lambda: w.search_tree_view(self.ui.resources_tree, self.ui.resource_search_bar))
@@ -789,22 +789,16 @@ class Pyredengine(QMainWindow):
         self.PropertiesTimer.timeout.connect(self.PropertiesManager.run)
         self.PropertiesTimer.start(10)
         
-        
-        
-        
-        
-        
-        
-        
-        
         self.ObjectTimer = QTimer()
         self.ObjectManager = pw.ObjectThread(self.ui.pygame_widget.game, self.ui.objectTreeWidget, self.ObjectTimer, self.ui.pygame_widget, self.ui)
         self.ObjectTimer.timeout.connect(self.ObjectManager.run)
         self.ObjectTimer.start(10)
         
-        
-        
-        
+        self.EventStackTimer = QTimer()
+        self.EventStackManager = pw.EventStackThread(self.ui.pygame_widget.game, self.ui.event_stack_list, self.EventStackTimer, self.ui.pygame_widget, self.ui)
+        self.EventStackTimer.timeout.connect(self.EventStackManager.run) 
+        self.EventStackTimer.start(10)
+        self.ui.pygame_menu_dock.show()
         
         
         

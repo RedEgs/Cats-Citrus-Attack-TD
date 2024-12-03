@@ -225,7 +225,7 @@ class PygameWidget(QWidget):
                     text = "Rendering in fullscreen"
                 else:
                     qp.fillRect(self.rect(), QColor(0, 0, 0))  # Fill the screen with black
-                    text = "No preview available"
+                    text = "Game process not running"
 
                 qp.setPen(QColor(255, 255, 255))  # Set the text color to white
                 qp.setFont(self.font())  # Use the default font

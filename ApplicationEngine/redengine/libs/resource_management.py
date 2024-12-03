@@ -16,10 +16,11 @@ class FileChangeMonitor(QThread):
         self.watched_paths = []
 
 
-
+        
         self.watched_paths.append(self.project_dir)
         for library in self.project_libraries:
-            self.watched_paths.append(library)
+            if os.path.isdir(library):
+                self.watched_paths.append(library)
        
         if self.main_file is not None and os.path.isfile(self.main_file):
             self.watched_paths.append(self.main_file)
