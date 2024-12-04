@@ -80,6 +80,7 @@ class Pyredengine(QMainWindow):
             self.ui.actionConsole.triggered.connect(self.ui.console_dock.show)
             self.ui.actionAssets_Library.triggered.connect(self.ui.debug_menu_dock.show)
             self.ui.actionPropertiesWindow.triggered.connect(self.ui.Properties_dock.show)
+            self.ui.actionPygame_Information.triggered.connect(self.ui.pygame_menu_dock.show)
 
             self.ui.actionCompile_Project.triggered.connect(self._compile_game)
             
@@ -111,6 +112,9 @@ class Pyredengine(QMainWindow):
             self.ui.PropertiesTable.itemPressed.connect(self._select_property_from_table)
             self.ui.objectTreeWidget.itemPressed.connect(self._select_property_from_table)
  
+            self.ui.dump_event_stack.pressed.connect(self._dump_events_to_file)
+            self.ui.clear_log_button.pressed.connect(self.ui.event_stack_list.clear)
+ 
     def _load_shortcuts(self):
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         save_shortcut.activated.connect(self._save_project) 
@@ -141,7 +145,7 @@ class Pyredengine(QMainWindow):
 
         self.iconPlus = QIcon()
         self.iconPlus.addFile(u"../redengine/assets/icons/plus.png", QSize(), QIcon.Normal, QIcon.Off)
-        
+         
           
     def _relaunch_window(self, data): # Re-opens an instance of project when given json data in the .redengine format
         self.newWindow = Pyredengine(data)
@@ -794,16 +798,20 @@ class Pyredengine(QMainWindow):
         self.ObjectTimer.timeout.connect(self.ObjectManager.run)
         self.ObjectTimer.start(10)
         
+        
+
         self.EventStackTimer = QTimer()
-        self.EventStackManager = pw.EventStackThread(self.ui.pygame_widget.game, self.ui.event_stack_list, self.EventStackTimer, self.ui.pygame_widget, self.ui)
+        self.EventStackManager = pw.EventStackThread(self.ui.pygame_widget.game, self.ui.event_stack_list, self.ui.groupBox_5, self.EventStackTimer, self.ui.pygame_widget, self.ui)
         self.EventStackTimer.timeout.connect(self.EventStackManager.run) 
         self.EventStackTimer.start(10)
-        self.ui.pygame_menu_dock.show()
+        
+
+           
+        
+    
         
         
-        
-        
-        
+
         
         
         
@@ -813,8 +821,10 @@ class Pyredengine(QMainWindow):
     def _stop_inspector_thread(self):
         self.ObjectManager.stop()
         self.PropertiesManager.stop()
+        self.EventStackManager.stop()
         
-        
+    def _dump_events_to_file(self):
+        pass
         
     
         

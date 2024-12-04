@@ -936,11 +936,12 @@ class ObjectThread(QThread):
 class EventStackThread(QThread):
     var_changed = pyqtSignal(int, str)  # Signal to emit index and new value
 
-    def __init__(self, gamehandler, qlist, timer, pygamewidget, ui, parent=None):
+    def __init__(self, gamehandler, qlist, groupbox, timer, pygamewidget, ui, parent=None):
         super().__init__(parent)
         
         self.gamehandler = gamehandler
         self.qlist: QListWidget = qlist
+        self.groupbox: QGroupBox = groupbox
         self.timer: QTimer = timer
         self.running = True
         self.pygame_widget = pygamewidget
@@ -951,20 +952,19 @@ class EventStackThread(QThread):
         """
         Updates the tree periodically using the attributes map.
         """
-        if self.running == False:
+        if self.running == False or not self.groupbox.isChecked():
             self.wait()
+        else:
+            for event in pygame.event.get():
+                self.qlist.addItem(f"{pygame.event.event_name(event.type)}: {event.dict}")
 
-        for event in pygame.event.get():
-            self.qlist.addItem(str(event))
-        #if self.previous_event != self.gamehandler.last_event:
-            #self.event_stack.append(self.gamehandler.last_event)
-            #
 
 
 
     def stop(self):
+        self.running = False 
         self.timer.stop()
-        self.running = False     
+            
 
 
 
