@@ -113,7 +113,7 @@ class Pyredengine(QMainWindow):
             self.ui.objectTreeWidget.itemPressed.connect(self._select_property_from_table)
  
             self.ui.dump_event_stack.pressed.connect(self._dump_events_to_file)
-            self.ui.clear_log_button.pressed.connect(self.ui.event_stack_list.clear)
+            self.ui.clear_event_stack_button.pressed.connect(self.ui.event_stack_list.clear)
  
     def _load_shortcuts(self):
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)

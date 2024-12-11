@@ -128,7 +128,7 @@ class LobbyScene(Scene):
         dir_list = self.registry.get_selected_towers_registry()
         index = get_item_list(tower_dir, dir_list)
         
-        
+        print("removed")
         
         clicked_button = self.gui_director.hovered_buttons[-1]
         print(self.gui_director.hovered_buttons) #.scale(1.1)
@@ -147,12 +147,11 @@ class LobbyScene(Scene):
         return super().on_exit()
 
     def on_enter(self):
-        pass
-        # self.towers, self.tower_buttons, self.tower_ids = self.load_select_towers()
+        self.towers, self.tower_buttons, self.tower_ids = self.load_select_towers()
     
     def events(self, event): 
-        # for button in self.tower_buttons:
-        #     button.handle_event(event)
+        for button in self.tower_buttons:
+            button.handle_event(event)
         
         self.play_button.handle_event(event)
     
@@ -164,10 +163,8 @@ class LobbyScene(Scene):
     def draw(self):
         self.screen.fill(0)
         self.screen.blit(self.background_image, (0,0))
-
-            #self.screen.blit(item[0], item[1])
-        # for button in self.tower_buttons:
-        #     button.draw(self.screen)    
+        for button in self.tower_buttons:
+            button.draw(self.screen)    
 
         self.tween_director.update([self.play_button.draw(self.screen, self.play_button_tween.get_output())])
                      

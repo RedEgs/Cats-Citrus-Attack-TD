@@ -150,23 +150,23 @@ class Button:
     def handle_event(self, event):
         if event == None:
             return
-            
-            
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
-            if self.hovered_state == False:
-                self.hovered_state = True
-                self.on_hover_enter()
+        
+        if event.type == pygame.MOUSEMOTION:
+            if self.rect.collidepoint(event.pos):
+                if self.hovered_state == False:
+                    self.hovered_state = True
+                    self.on_hover_enter()
+                else:
+                    pass       
             else:
-                pass       
-        else:
-            if self.hovered_state == True:
-                self.hovered_state = False
-                self.on_hover_exit()
-            else:
-                pass
+                if self.hovered_state == True:
+                    self.hovered_state = False
+                    self.on_hover_exit()
+                else:
+                    pass
     
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:  # Right Click
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.rect.collidepoint(event.pos):
                 self.click_state = True
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
             if self.click_state == True:
@@ -174,7 +174,7 @@ class Button:
                 self.on_right_click()
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.rect.collidepoint(event.pos):
                 self.click_state = True
                 self.scale(1.3, pytweening.easeInElastic)
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -185,7 +185,7 @@ class Button:
                 for tween in self.tween_director.get_clicked_tweens():
                     if not tween.check_finished():
                         tween.reverse()
-                
+                    
 
     def draw(self, screen, position):
         self.tween_director.update()
@@ -247,7 +247,7 @@ class SurfaceButton:
         tween_size.start(dont_finish_tween=True)
 
     def handle_event(self, event):
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
+        if self.rect.collidepoint(event.pos):
             if self.hovered_state == False:
                 self.hovered_state = True
                 self.on_hover_enter()
@@ -261,8 +261,9 @@ class SurfaceButton:
                 pass
     
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:  # Right Click
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.rect.collidepoint(event.pos):
                 self.click_state = True
+                print("clicked")
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
             if self.click_state == True:
                 self.click_state = False
@@ -270,7 +271,7 @@ class SurfaceButton:
                 
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left Click
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.rect.collidepoint(event.pos):
                 self.click_state = True
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.click_state == True:

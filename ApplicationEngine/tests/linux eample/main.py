@@ -39,6 +39,7 @@ class Main(PreviewMain.MainGame):
         
         self.transitionDirector = TransitionDirector(self.display)
         self.SceneDirector = SceneDirector("main_menu", self.display, self.transitionDirector) #[UNPACK]
+    
         
     
         game_scenes = []
@@ -46,6 +47,8 @@ class Main(PreviewMain.MainGame):
         game_scenes.append(LobbyScene(self.display, self.game_registry, self.SceneDirector, "lobby_scene"))
         #game_scenes.append(ExampleScene(self.display, self.SceneDirector, "example_scene"))
         game_scenes.append(EndlessGameScene(self.display, self.game_registry, self.SceneDirector, "game_scene"))
+
+
 
         # Game(self.self.display, self.SceneDirector, "debug_scene")
         self.eventQueue = None

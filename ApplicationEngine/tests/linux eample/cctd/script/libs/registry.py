@@ -18,6 +18,9 @@ class Registry:
         self.selected_towers = []
         self.selected_tower = None
 
+
+        
+
     def load_tower_registry(self):
         tower_dir = "cctd/towers"
         tower_list = os.listdir(tower_dir)
