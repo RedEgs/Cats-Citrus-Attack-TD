@@ -130,6 +130,8 @@ class GameHandler():
 
 
         os.chdir(self.project_file_path)
+        print("set working path: " + os.getcwd())
+
         self.game: PreviewMain.MainGame = main.Main(self.is_fullscreen)
         self.load_process_state(self.game)
 

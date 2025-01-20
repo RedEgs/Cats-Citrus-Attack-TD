@@ -219,11 +219,13 @@ class Text():
         screen.blit(self.image, self.rect)
 
 class Button:
-    def __init__(self, pos, size, image = None):
+    def __init__(self, pos, size, image = None, color = (0,0,0)):
         self.pos = pos
 
         if image == None:
             self.image = pygame.Surface(size)
+            if color != None:
+                self.image.fill(color)
         else:
             self.image = image
 

@@ -105,14 +105,21 @@ class Game(Scene):
                     tl = TowerPanel.rect.topleft
                     tr = TowerPanel.rect.topright
                     tm = ((tl[0] + tr[0]) / 2, (tl[1] + tr[1]) / 2)
+                    bm = (tm[0], TowerPanel.rect.bottomleft[1])
 
                     TowerText = Text(tower.tower_name, 26, (0,0))
-                    TowerText.rect.center = (tm[0], tm[1]+100)
+                    TowerText.rect.center = (tm[0], tm[1]+25)
+
+                    TowerSellBtn = Button(bm, (200, 100), color = (200, 0, 0))
+
 
                     self.gui_list.append(TowerPanel)
                     self.gui_list.append(TowerText)
+                    self.gui_list.append(TowerSellBtn)
+
                     self.tower_panel_list.append(TowerPanel)
                     self.tower_panel_list.append(TowerText)
+                    self.tower_panel_list.append(TowerSellBtn)
 
 
 
@@ -207,6 +214,7 @@ class Main(PreviewMain.MainGame):
             dname = os.path.dirname(abspath)
             os.chdir(dname)
 
+        print("current file is: " + os.path.abspath(__file__))
         # --------------------------
         self.MainMenu = MainMenu(self.display)
         self.Game = Game(self.display)

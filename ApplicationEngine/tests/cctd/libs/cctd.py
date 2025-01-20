@@ -105,7 +105,11 @@ class Tower():
     def __init__(self, position, parent) -> None:
         self.pos = position
         self.parent = parent
-        self.tower_name = "Citrus Cat"
+        self.tower_name = "Citrus Cats"
+
+        abspath = os.path.abspath(__file__)
+        dname = os.path.dirname(abspath)
+        os.chdir(os.path.join(dname, ".."))
 
         self.image = pygame.image.load("towers/sprite.png").convert_alpha()
         self.rect = self.image.get_rect()
