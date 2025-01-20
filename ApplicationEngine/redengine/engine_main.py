@@ -213,6 +213,7 @@ class Pyredengine(QMainWindow):
         try:
             self.project_libraries = json.loads(self.project_json_data)["project_libraries"]
         except Exception as e:
+            return
             w.error_box(self, "Exception while loading libraries", f"{e}") 
 
         backup_libraries = self.project_libraries
@@ -483,8 +484,14 @@ class Pyredengine(QMainWindow):
 
         item = self.resources_tree_selected_item_from_context
         lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
+        
+        try:
+            previous_libs = json.loads(self.project_json_data)["project_libraries"]
+        except Exception as e:
+            print(e)
+            previous_libs = None
+            pm.edit_project_json_from_path(self.project_dir, "project_libraries", [lib_path])
 
-        previous_libs: list = json.loads(self.project_json_data)["project_libraries"]
 
 
         if previous_libs is None:
@@ -506,9 +513,16 @@ class Pyredengine(QMainWindow):
         item = self.resources_tree_selected_item_from_context
         lib_path = w.get_tree_item_path(self.project_dir, item).replace("//", "/")
                 
-        previous_libs = pm.read_project_json(self.project_dir)["project_libraries"]
-        previous_backup_libs = pm.read_project_json(self.project_dir)["project_libraries_backup"] 
         
+        
+        try:
+            previous_libs = pm.read_project_json(self.project_dir)["project_libraries"]
+            previous_backup_libs = pm.read_project_json(self.project_dir)["project_libraries_backup"]
+        except Exception as e:
+            print(e)
+
+
+
         if lib_path in previous_libs:
             previous_libs.remove(lib_path)
             pm.edit_project_json_from_path(self.project_dir, "project_libraries", previous_libs)    
@@ -700,7 +714,17 @@ class Pyredengine(QMainWindow):
         print(f">> {command}")
         
         cli.clear()
-        
+       
+        if command == "help":
+            help_text = """
+            <<Warning>> Availible Commands ---
+                \n - scope: eng
+                \n - scope: game
+                \n - scope: none
+                \n - reload
+            """
+            print(help_text)
+
         if command == "reload":
             self._reload_project()
             self.hot_reload()
@@ -801,7 +825,7 @@ class Pyredengine(QMainWindow):
         
 
         self.EventStackTimer = QTimer()
-        self.EventStackManager = pw.EventStackThread(self.ui.pygame_widget.game, self.ui.event_stack_list, self.ui.groupBox_5, self.EventStackTimer, self.ui.pygame_widget, self.ui)
+        self.EventStackManager = pw.EventStackThread(self.ui.pygame_widget.game, self.ui.event_stack_list, self.EventStackTimer,  self.ui.pygame_widget, self.ui)
         self.EventStackTimer.timeout.connect(self.EventStackManager.run) 
         self.EventStackTimer.start(10)
         

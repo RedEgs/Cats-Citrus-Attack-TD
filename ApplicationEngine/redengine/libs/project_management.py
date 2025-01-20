@@ -164,6 +164,7 @@ def generate_project_path(window, project_path, project_name, main_project_file=
         "project_path": project_path,
         "date_created": str(date.today()),
         "date_edited": str(date.today()),
+        "project_libraries": [],
         "user": os.getlogin(),
     }
 

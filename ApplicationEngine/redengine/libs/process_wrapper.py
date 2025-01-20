@@ -1,4 +1,4 @@
-import sys, importlib, pickle, pygame, hashlib
+import sys, importlib, pickle, pygame, hashlib, os
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -13,12 +13,12 @@ class GameHandler():
         self.is_fullscreen = launch_fullscreen
         self.hotdump_location = f"{self.project_file_path}/.redengine/hotdump"
         self.project_data = project_data
-        
+
         self.exclusion_list = [""]
         self.type_exclusions = [pygame.surface.Surface, pygame.Clock, self.__class__]
-        
+
         print("intialised handler succesfulay ")
-    
+
     def start_process(self):  # sourcery skip: class-extract-method
         import importlib.util
 
@@ -28,7 +28,7 @@ class GameHandler():
             print("Before inserting path")
             sys.path.append(self.project_file_path) # Makes the project directory importable
             print(f"Importing Path: {self.project_file_path}")
-            
+
             try:
                 import main  # type: ignore # Import the main project file
                 print("Importing File")
@@ -37,10 +37,7 @@ class GameHandler():
 
             try:
                 self.hotload_modules()
-                importlib.reload(main)  # Reload imports, which will update new code  
-                
-                
-                
+                importlib.reload(main)  # Reload imports, which will update new code
 
 
 
@@ -58,7 +55,10 @@ class GameHandler():
 
 
 
-                    
+
+
+
+
                 print("Reloading Import")
             except Exception as e:
                 print(f"Error reloading main: {e}")
@@ -66,6 +66,7 @@ class GameHandler():
             print(f"Error in setup: {e}")
 
         print("Before Instancing Game")
+
 
         self.game: PreviewMain.MainGame = main.Main(fullscreen=self.is_fullscreen) # Instance the game within the handler
         self.game.engine_mode = True
@@ -82,63 +83,63 @@ class GameHandler():
         self.game = None
         self.process_attached = False
         self.is_app_process = False
-        
-        
+
+
     def hotload_modules(self):
         import os
         try:
             modules = self.project_data["project_libraries"]
         except: modules = []
-        
+
         blacklisted_modules = [
             "builtins", "importlib", "_frozen_importlib", "_frozen_importlib_external"
         ]
-            
+
         for module_name, module in list(sys.modules.items()):
             if not module:
                 continue  # Skip uninitialized modules
-            
+
             if (
                 any(module_name.startswith(bl) for bl in blacklisted_modules)
                 or module_name in sys.builtin_module_names
             ):
                 # Skip blacklisted and built-in modules
                 continue
-            
+
             try:
                 if modules == None or len(modules) == 0:
                     pass
-                else: 
+                else:
                     for path in modules:
                         if os.path.basename(path) in module_name:
                             importlib.reload(module)
             except: pass
-        
+
     def hot_reload(self):
         print("started hot reload")
 
         sys.path.insert(0, self.project_file_path) # Makes the project directory importable
         import main, os # type: ignore # Import the main project file
-        self.save_process_state() # Save the process state 
-        
+        self.save_process_state() # Save the process state
+
         self.hotload_modules()
         importlib.reload(main) # Reload imports, which will update new code
-        
-       
 
 
 
 
+
+        os.chdir(self.project_file_path)
         self.game: PreviewMain.MainGame = main.Main(self.is_fullscreen)
         self.load_process_state(self.game)
-        
+
         # self.game.engine_mode = True
         # self.game.__parent = self
 
-        
+
 
         print("function finished")
-        
+
     def send_event(self, id, event):
         if type(event) == str and id == "k":
             self.game._send_event(1, event)
@@ -147,17 +148,17 @@ class GameHandler():
         if type(event) == tuple or type(event) == list and id == "md":
             self.game._send_event(3, None, [int(event[0]), int(event[1]), int(event[2])])
         elif type(event) == list and id == "mu":
-            self.game._send_event(4, None, [int(event[0]), int(event[1]), 0])   
+            self.game._send_event(4, None, [int(event[0]), int(event[1]), 0])
 
     def run_game(self):
         return self.game.run_game()
 
     def debug_info(self):
-        
+
         if self.game is None:
             return False
-        
-    
+
+
         fps = self.game.clock.get_fps()
         delta_time = self.game.get_dt()/1000
         blit_count = self.game.get_total_blits()
@@ -165,19 +166,19 @@ class GameHandler():
         bps = self.game.get_bps()
         draw_count = self.game.get_draw_calls()
         dps = self.game.get_dps()
-        
+
 
         return [delta_time, fps, blit_count, current_tick, bps, draw_count, dps]
 
     def get_game_process(self):
         return self.game
-    
+
     def get_main_display(self) -> pygame.display: # type: ignore
         return self.game.display
-    
+
     def _get_properties(self):#
         return self.game._obtain_user_vars()
-    
+
     def _get_all_vars(self):
         return {
             attr: getattr(self.game, attr)
@@ -210,7 +211,7 @@ class GameHandler():
     def save_process_state(self):
         # Parse the AST of the current file and search for #HOTSAVE commented variables
         hot_saves = self._find_hot_save_variables()
-        
+
 
         with open(self.hotdump_location, 'wb') as f:
             pickle.dump(hot_saves, f)  # Serialize the hot-saved variables
@@ -223,10 +224,10 @@ class GameHandler():
             setattr(game, name, value)
             print(f"set {name} to {value}")
 
-        
-        #game._hot_load_modules(self.project_data["project_libraries"]) # load all the modules 
+
+        #game._hot_load_modules(self.project_data["project_libraries"]) # load all the modules
         game.on_reload()  # Call a reload function in the game if necessary
-        
+
 
     def _find_hot_save_variables(self):  # sourcery skip: low-code-quality
         import ast
@@ -257,10 +258,10 @@ class GameHandler():
                                         var_value = getattr(self.game, var_name)#eval(compile(ast.Expression(node.value), '<string>', 'eval'))
                                         public_vars.append(var_name)
                                         hot_save_vars[var_name] = var_value
-                                        
+
                                     except Exception as e:
                                         print(f"Error evaluating {var_name}: {e}")
-                                        
+
                     elif line_num <= len(lines) and "#[PUBLIC]" in lines[line_num - 1]:
                         # Handle instance variables like self._h_var
                         for target in node.targets:
@@ -271,7 +272,7 @@ class GameHandler():
                                         public_vars.append(var_name)
                                     except Exception as e:
                                         print(f"Error evaluating {var_name}: {e}")
-                    
+
                     elif line_num <= len(lines) and "#[UNPACK]" in lines[line_num - 1]:
                         # Handle instance variables like self._h_var
                         for target in node.targets:
@@ -283,10 +284,10 @@ class GameHandler():
                                         public_vars.append(var_name)
                                     except Exception as e:
                                         print(f"Error evaluating {var_name}: {e}")
-        
-        
+
+
         return hot_save_vars, public_vars, unpacked_vars
-   
+
 
 class Vector3Widget(QWidget):
     stateChanged = pyqtSignal(str, str, str)  # Custom signal to emit when any value changes
@@ -346,35 +347,35 @@ class Color3Widget(Vector3Widget):
 
     def __init__(self, x=0, y=0, z=0, parent=None):
         super().__init__(x=0, y=0, z=0, parent=None)
-        
+
         self.label_x.setText("R: ")
         self.label_y.setText("G: ")
         self.label_z.setText("B: ")
-        
+
         # self.line_x.setValidator(QIntValidator)
         # self.line_y.setValidator(QIntValidator)
         # self.line_z.setValidator(QIntValidator)
-        
-        
+
+
         self.line_x.editingFinished.connect(self.emit_state_changed)
         self.line_y.editingFinished.connect(self.emit_state_changed)
         self.line_z.editingFinished.connect(self.emit_state_changed)
-        
+
         self.line_x.disconnect(self.l1_con)
         self.line_y.disconnect(self.l2_con)
         self.line_z.disconnect(self.l3_con)
-        
-        
+
+
     def emit_state_changed(self):
         # Emit custom signal with current values when any field changes
         self.stateChanged.emit(pygame.Color(int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text())))
 
-        
+
     def update_value(self, value: pygame.Color):
         self.line_x.setText(str(value.r))
         self.line_y.setText(str(value.g))
         self.line_z.setText(str(value.b))
-        
+
     def get_val(self):
         return pygame.Color(int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text()))
 
@@ -437,7 +438,7 @@ class RectWidget(QWidget):
         self.line_y.setText(str(value.top))
         self.line_z.setText(str(value.width))
         self.line_w.setText(str(value.height))
-        
+
 
     def get_val(self):
         return pygame.Rect(int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text()), int(self.line_w.text()))
@@ -484,25 +485,25 @@ class Vector2Widget(QWidget):
     def update_value(self, value: tuple):
         self.line_x.setText(str(value[0]))
         self.line_y.setText(str(value[1]))
-        
+
     def get_val(self):
         return self.line_x.text(), self.line_y.text()
-        
 
-     
+
+
 class PropertiesThread(QThread):
     var_changed = pyqtSignal(int, str)  # Signal to emit index and new value
 
     def __init__(self, gamehandler, table, timer, pygamewidget, ui, parent=None):
         super().__init__(parent)
-        
+
         self.gamehandler = gamehandler
         self.table: QTableWidget = table
         self.timer: QTimer = timer
         self.running = True
         self.pygame_widget = pygamewidget
         self.ui = ui
-   
+
         self.updating = True
 
         self.attribute_map = {}  # Map to keep track of attribute to row index
@@ -514,26 +515,26 @@ class PropertiesThread(QThread):
             game_vars = dir(self.gamehandler.game)
         else:
             _, game_vars, __ = self.gamehandler._find_hot_save_variables()
-        
+
         if len(game_vars) == 0:
             self.stop()
-        else: 
+        else:
             print("resuming properties thread")
             self.running = True
             self.table.clearContents()
             self.table.setEnabled(True)
-        
-        
+
+
         built_in_types = (int, float, str, bool, tuple,  list, pygame.Color, pygame.Rect) # Add support for dicts
         blacklist_types = (pygame.Clock)
-        
-        user_vars = [var for var in game_vars if not var.startswith("__") and not callable(getattr(self.gamehandler.game, var)) and not isinstance(getattr(self.gamehandler.game, var), blacklist_types)]  
-        
-        
+
+        user_vars = [var for var in game_vars if not var.startswith("__") and not callable(getattr(self.gamehandler.game, var)) and not isinstance(getattr(self.gamehandler.game, var), blacklist_types)]
+
+
 
         self.table.setColumnCount(2)
         self.table.setRowCount(len(user_vars)+ 20)
-        
+
 
 
         # Populate the table and create the attribute map
@@ -543,18 +544,18 @@ class PropertiesThread(QThread):
 
             tablewidget = QTableWidgetItem(str(att))
             tablewidget.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            
+
             self.table.setItem(index, 0, tablewidget)  # Column 0: Variable name
             tablewidget._initial_value = initial_value
             self.table.item(index, 0).setData(1, initial_value)
-                        
 
-            self.set_cell(index, 1, initial_value, att)   
+
+            self.set_cell(index, 1, initial_value, att)
 
     def set_cell(self, row, col, initial_value, att):
         index = row
         self.table.setRowHeight(index, 28)
-                    
+
         if type(initial_value) == str:
             widget = QLineEdit()
             self.table.setCellWidget(index, 1, widget)
@@ -575,8 +576,8 @@ class PropertiesThread(QThread):
             self.table.setCellWidget(index, 1, widget)
             widget.setText(str(initial_value))
             widget.setValidator(QDoubleValidator())
-            
-            
+
+
 
             widget.editingFinished.connect(partial(self.update_var, index, 1, initial_value, att))
 
@@ -587,16 +588,16 @@ class PropertiesThread(QThread):
 
 
             widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
-            
+
         elif type(initial_value) == tuple:
             if len(initial_value) == 3:
                 widget = Vector3Widget(initial_value[0], initial_value[1], initial_value[2])
             elif len(initial_value) == 2:
                 widget = Vector2Widget(initial_value[0], initial_value[1])
-            
+
             self.table.setCellWidget(index, 1, widget)
             widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
-        
+
         elif type(initial_value) == list:
             widget = QTableWidget()
             widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
@@ -611,18 +612,18 @@ class PropertiesThread(QThread):
             widget.setGridStyle(Qt.NoPen)
             widget.setAutoFillBackground(True)
             widget.setStyleSheet(u"QTableWidget{ background-color: rgb(25, 25, 25); }")
-            
+
             for c_index, i in enumerate(initial_value):
                 child = QTableWidgetItem(str(i))
-                widget.setItem(c_index, 0, child) 
-            self.table.setCellWidget(index, 1, widget) 
+                widget.setItem(c_index, 0, child)
+            self.table.setCellWidget(index, 1, widget)
 
         elif type(initial_value) == pygame.Color:
             widget = Color3Widget(initial_value.r, initial_value.g, initial_value.b)
 
             self.table.setCellWidget(index, 1, widget)
             widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
-        
+
         elif type(initial_value) == pygame.Rect:
             widget = RectWidget(initial_value)
 
@@ -630,7 +631,7 @@ class PropertiesThread(QThread):
             widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
         else:
             widget = QLabel()
-            
+
             widget.setText(str(initial_value))
             self.table.setCellWidget(index, 1, widget)
 
@@ -638,21 +639,21 @@ class PropertiesThread(QThread):
     def check_cell(self, row, col, initial_value, att):
         if att is None or initial_value is None or row is None or col is None:
             return None
-            
+
         if initial_value != self.table.item(row, 0)._initial_value:
             if type(initial_value) != type(self.table.item(row, 0)._initial_value):
                 return True
             else:
                 return False
         else:
-            return None                  
-            
-            
+            return None
+
+
     def run(self):
         if self.pygame_widget.paused or getattr(self, "gamehandler") == None or self.running == False:
             self.wait()
 
-        
+
         try:
             game_vars = dir(self.gamehandler.game)
             built_in_types = (int, float, str, bool, tuple, list, pygame.Color, pygame.Rect)
@@ -661,13 +662,13 @@ class PropertiesThread(QThread):
             return
 
         prev_values = {}
-        prev_types = {}  
+        prev_types = {}
         for att in user_vars:
             try:
                 current_value = getattr(self.gamehandler.game, att)  # Get current value as string
             except:
                 return
-            
+
             current_type = type(current_value)
 
             # If the attribute is new or has changed, emit a signal to update the table
@@ -678,53 +679,53 @@ class PropertiesThread(QThread):
 
                         index = self.attribute_map[att]
                         initial_value = current_value
-                        
+
 
                         check = self.check_cell(index, 1, current_value, att)
-                        
+
                         if check == True:
-                        
+
                             self.table.item(index, 0)._initial_value = initial_value
                             self.set_cell(index, 1, initial_value, att)
-   
-                        elif check == False:                        
+
+                        elif check == False:
                             self.table.item(index, 0).setData(1, initial_value)
-                        
+
 
                             if type(initial_value) in [str, int, float]:
-                                self.table.cellWidget(index, 1).setText(str(initial_value))  
+                                self.table.cellWidget(index, 1).setText(str(initial_value))
 
                             elif type(initial_value) == bool:
                                 self.table.cellWidget(index, 1).setChecked(initial_value)
-                            
+
                             elif type(initial_value) == tuple:
                                 self.table.cellWidget(index, 1).update_value(initial_value)
-                            
+
                             elif type(initial_value) == list:
                                 table: QTableWidget = self.table.cellWidget(index, 1)
-                                
+
                                 table.clear()
                                 table.setRowCount(len(initial_value))
                                 for c_index, i in enumerate(initial_value):
                                     child = QTableWidgetItem(str(i))
-                                    table.setItem(c_index, 0, child) 
-                                    
+                                    table.setItem(c_index, 0, child)
+
                             elif type(initial_value) in [pygame.Rect, pygame.Color]:
                                 self.table.cellWidget(index, 1).update_value(initial_value)
                             else:
-                                self.table.cellWidget(index, 1).setText(str(initial_value))  
+                                self.table.cellWidget(index, 1).setText(str(initial_value))
 
 
 
                 except Exception as e:
                     print(f"<<Warning>>{e}")
-                
-    def update_var(self, row, col, initial_value, att): 
+
+    def update_var(self, row, col, initial_value, att):
         print("updating var")
         if self.check_cell(row, col, initial_value, att):
             widget = self.table.cellWidget(row, 1)
- 
-            
+
+
             if type(initial_value) in [str, int, float]:
                 if widget.text() != initial_value:
                     self.update_game_handler(att, widget.text())
@@ -736,11 +737,11 @@ class PropertiesThread(QThread):
                 if widget.get_val() != initial_value:
                     self.update_game_handler(att, widget.get_val())
 
-                            
-            
-            
 
-     
+
+
+
+
     def update_game_handler(self, attribute_name, new_value):
 
         # Assuming all attributes are strings or can be converted to their appropriate types
@@ -764,22 +765,22 @@ class PropertiesThread(QThread):
 
 
         except Exception as e:
-            print(f"Error updating attribute {attribute_name}: {e}")   
-     
-        
+            print(f"Error updating attribute {attribute_name}: {e}")
+
+
 
     def stop(self):
         self.table.clearContents()
         self.table.setEnabled(False)
         self.timer.stop()
         self.running = False  # Method to stop the thread
-        
+
 class ObjectThread(QThread):
     var_changed = pyqtSignal(int, str)  # Signal to emit index and new value
 
     def __init__(self, gamehandler, tree, timer, pygamewidget, ui, parent=None):
         super().__init__(parent)
-        
+
         self.gamehandler = gamehandler
         self.tree: QTreeWidget = tree
         self.timer: QTimer = timer
@@ -805,7 +806,7 @@ class ObjectThread(QThread):
 
         # Initialize the parent dictionary for this object
         parent = unpacked_attrs[obj_id] = {}
-        
+
         if isinstance(obj, dict):  # If obj is a dictionary
             for key, value in obj.items():
                 if isinstance(value, dict):  # Recursively unpack nested dictionaries
@@ -837,7 +838,7 @@ class ObjectThread(QThread):
         Recursively adds object attributes to a QTreeWidgetItem.
         """
         obj_item = QTreeWidgetItem(tree_item, [str(obj_name)])
-        
+
         for attr_name, attr_value in obj_attrs.items():
             if isinstance(attr_value, dict):  # If the attribute is a nested object
                 self._add_tree(obj_item, attr_name, attr_value)
@@ -845,7 +846,7 @@ class ObjectThread(QThread):
                 # Handle displayable text for the value
                 display_text = str(attr_value) if attr_value is not None else "None"
                 item = QTreeWidgetItem(obj_item, [str(attr_name), display_text])
-                
+
                 # Store the actual value as data
                 item.setData(1, 0, attr_value)
 
@@ -854,11 +855,11 @@ class ObjectThread(QThread):
         Populates the tree and builds the attributes map.
         """
         _, __, packed_vars = self.gamehandler._find_hot_save_variables()
-        
+
         if len(packed_vars) == 0:
             self.stop()
             return
-        
+
         self.tree.clear()
         self.tree.setEnabled(True)
 
@@ -889,7 +890,7 @@ class ObjectThread(QThread):
         """
         if self.running == False:
             self.wait()
-            
+
         self.update_tree()
 
 
@@ -918,10 +919,10 @@ class ObjectThread(QThread):
                 else:
                     current_value = child_item.text(1)
                     new_value = getattr(attr_value, "__str__", lambda: attr_value)()
-    
+
                     if current_value != str(new_value):  # Only update if the value has changed
                         child_item.setText(1, new_value)
-                    
+
                     # current_data = child_item.data(1, 0)
                     # if current_data != attr_value:  # Check if the actual data has changed
                         child_item.setData(1, 1, attr_value)  # Update the actual data
@@ -930,18 +931,17 @@ class ObjectThread(QThread):
         self.timer.stop()
         self.tree.clear()
         self.tree.setEnabled(False)
-        self.running = False     
+        self.running = False
 
-        
+
 class EventStackThread(QThread):
     var_changed = pyqtSignal(int, str)  # Signal to emit index and new value
 
-    def __init__(self, gamehandler, qlist, groupbox, timer, pygamewidget, ui, parent=None):
+    def __init__(self, gamehandler, qlist, timer, pygamewidget, ui, parent=None):
         super().__init__(parent)
-        
+
         self.gamehandler = gamehandler
         self.qlist: QListWidget = qlist
-        self.groupbox: QGroupBox = groupbox
         self.timer: QTimer = timer
         self.running = True
         self.pygame_widget = pygamewidget
@@ -952,20 +952,19 @@ class EventStackThread(QThread):
         """
         Updates the tree periodically using the attributes map.
         """
-        if self.running == False or not self.groupbox.isChecked():
-            self.wait()
-        else:
-            for event in pygame.event.get():
-                self.qlist.addItem(f"{pygame.event.event_name(event.type)}: {event.dict}")
+        pass
+        # if self.running == False or self.gamehandler:
+        #     self.wait()
 
+        # for event in pygame.event.get():
+        #     self.qlist.addItem(str(event))
+
+        #if self.previous_event != self.gamehandler.last_event:
+            #self.event_stack.append(self.gamehandler.last_event)
+            #
 
 
 
     def stop(self):
-        self.running = False 
         self.timer.stop()
-            
-
-
-
-    
+        self.running = False

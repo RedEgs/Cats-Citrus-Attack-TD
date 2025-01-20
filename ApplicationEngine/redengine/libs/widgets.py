@@ -5,11 +5,9 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import *
 from PyQt5.Qsci import *
 from PyQt5.QtWidgets import QWidget
+
 import libs.process_wrapper as pw  
 import traceback, sys, os, pygame
-
-
-
 
 
 
@@ -431,7 +429,7 @@ def load_project_resources(startpath, tree, project_libraries, main_file_name=No
                 
                 
 
-            if element in hidden_folders:
+            if element in hidden_folders or element.startswith("."):
                 parent_itm.setHidden(True)
             
         elif element == main_file_name:

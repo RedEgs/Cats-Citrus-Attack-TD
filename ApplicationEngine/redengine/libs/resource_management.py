@@ -41,6 +41,7 @@ class FileChangeMonitor(QThread):
             for change in changes:
                 if os.path.basename(change[1]) == "main.py":
                     self.file_changed.emit(True)
+                    print(" main file changed")
                     break
                 else:
                     self.folder_changed.emit(os.path.basename(change[1]))
