@@ -1231,6 +1231,7 @@ class Pyredengine(QMainWindow):
 
     def _return_to_launcher(self):
         self._app_launcher.show()
+        self._app_launcher._on_launcher_show()
         self.close()
 
     def closeEvent(self, event):
@@ -1266,6 +1267,7 @@ class Launcher(QWidget):
 
         self.ui.projects_table.itemClicked.connect(self._select_project)
         self.ui.projects_table.itemDoubleClicked.connect(self._load_project)
+        self.ui.projects_table.itemPressed.connect(self._select_project)
         self.ui.look_button.pressed.connect(self._look_project)
         self.ui.create_button.pressed.connect(self._save_project_as)
         self.ui.add_button.pressed.connect(self._load_project_from_folder)
@@ -1273,7 +1275,7 @@ class Launcher(QWidget):
         self.ui.delete_button.pressed.connect(self._delete_project)
         self.ui.install_button.pressed.connect(self._download_python_version)
 
-        self.launch_connection = self.ui.launch_button.pressed.connect(self._load_project)
+        self.ui.launch_button.pressed.connect(self._load_project)
 
 
         self.ui.create_button.setEnabled(True)
@@ -1308,6 +1310,7 @@ class Launcher(QWidget):
     def _select_project(self, item):
         import libs.project_management as pm
 
+        print("selected element")
         try:
 
             project_data = self.ui.projects_table.item(item.row(), 0)._project_data
@@ -1317,6 +1320,7 @@ class Launcher(QWidget):
             with open(project_data["project_path"]+"/.redengine/project.json", 'r') as file:
                 self.project_data = file.read()
 
+            print("selected project to load: " + self._project_path)
             self._enable_project_buttons()
 
         except FileNotFoundError as exc:
@@ -1359,10 +1363,14 @@ class Launcher(QWidget):
 
 
     def _load_project(self):
+        self._select_project(self.ui.projects_table.currentItem())
         engine = Pyredengine(self.project_data, launcher)
-        #self.ui.launch_button.disconnect(self.launch_connection)
+
         engine.show()
         launcher.hide()
+
+    def _on_launcher_show(self):
+        pass
 
     def _look_project(self):
         import libs.resource_management as rm
@@ -1574,9 +1582,9 @@ class Launcher(QWidget):
 
     def showEvent(self, a0):
         super().showEvent(a0)
-        self.ui.projects_table.clearContents()
-        self.populate_projects_table()
 
+        self.regenerate_table()
+        self.project_data = None
         rph.launcher_state()
 
 

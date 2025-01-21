@@ -1,5 +1,9 @@
-pyqt5 
+pyqt5
 qscintilla
 pygame-ce
 pyredengine
-
+colorama
+moderngl
+psutil
+forbiddenfruit
+pypresence
