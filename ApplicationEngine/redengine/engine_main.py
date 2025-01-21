@@ -1250,7 +1250,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     print("Unhandled exception:", exc_value)
     traceback.print_exception(exc_type, exc_value, exc_traceback)
 
-
 class Launcher(QWidget):
     def __init__(self):
         super().__init__()
@@ -1590,6 +1589,7 @@ class Launcher(QWidget):
 if __name__ == "__main__":
     import libs.rich_presence as dcrp
     os.chdir(os.getcwd())
+    sys.excepthook = handle_exception
 
     try:
         import ctypes

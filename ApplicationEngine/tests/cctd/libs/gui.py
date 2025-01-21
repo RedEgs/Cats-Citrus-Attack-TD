@@ -219,8 +219,9 @@ class Text():
         screen.blit(self.image, self.rect)
 
 class Button:
-    def __init__(self, pos, size, image = None, color = (0,0,0)):
+    def __init__(self, pos, size, image = None, color = (0,0,0), text = None):
         self.pos = pos
+        self.text = text
 
         if image == None:
             self.image = pygame.Surface(size)
@@ -229,10 +230,18 @@ class Button:
         else:
             self.image = image
 
+        if text != None:
+            self.text.rect.center = pos
+            self.text.pos = self.text.rect.center
+
         self.rect = self.image.get_rect(center=pos)
+
+    def handle_events(self, event, mouse_pos):
+        pass
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+        if self.text != None: self.text.draw(screen)
 
     def is_clicked(self, mouse_pos):
         return self.rect.collidepoint(mouse_pos)

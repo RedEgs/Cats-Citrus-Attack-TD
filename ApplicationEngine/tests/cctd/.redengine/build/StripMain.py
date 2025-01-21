@@ -1,10 +1,7 @@
- # Main project file
-import pygame, os, ast, math, time # type: ignore
-from pyredengine import PreviewMain # type: ignore
-from pyredengine import SceneService # type: ignore
-from libs.cctd import * # type: ignore
-from libs.gui import * # type: ignore
-
+import pygame, os, ast, math, time
+from libs.cctd import *
+from libs.gui import *
+pygame.init()
 """
 All code given is the bare minimum to safely run code within the engine.
 Removing any code that already exists in not recommended and you WILL run into issues.
@@ -12,24 +9,23 @@ When compiled, parts of code are removed to optimise and simplify the file.
 """
 
 
-
 class MainMenu(Scene):
+
     def __init__(self, display: pygame.Surface):
         super().__init__(self)
         self.display = display
-
-        centerx = self.display.get_size()[0]//2
-        centery = self.display.get_size()[1]//2
-
+        centerx = self.display.get_size()[0] // 2
+        centery = self.display.get_size()[1] // 2
         self.PlayButton = Button((centerx, centery), (300, 100))
 
     def on_enter(self):
-        print("entered")
+        print('entered')
 
     def handle_events(self, event: pygame.event.Event, mouse_pos):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.PlayButton.is_clicked(mouse_pos):
-                pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1, {"Scene": "Game"}))
+                pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1,
+                    {'Scene': 'Game'}))
 
     def update(self):
         pass
@@ -37,33 +33,29 @@ class MainMenu(Scene):
     def draw(self):
         self.PlayButton.draw(self.display)
 
+
 class Game(Scene):
+
     def __init__(self, display: pygame.Surface):
         super().__init__(self)
-
-        self.display =  display
-
+        self.display = display
         self.LivesCount = 100
         self.Cash = 100
         self.MaxTowers = 5
         self.Round = 1
-
         self.enemy_list = []
         self.gui_list = []
-
         self.damage_text_list = []
         self.tower_panel_list = []
-
-        self.GameMap = GameMap("map1")
-        self.RoundManager = RoundManager(self.Round, self.Cash, self.GameMap, self.enemy_list)
-        self.LivesText = Text(f"Lives: {self.LivesCount}", 24, (10, 10))
-        self.MoneyText = Text(f"Cash: ${self.Cash}", 24, (230, 10))
-        self.RoundText = Text(f"Round: {self.Round}/100", 24, (10, 45))
+        self.GameMap = GameMap('map1')
+        self.RoundManager = RoundManager(self.Round, self.Cash, self.
+            GameMap, self.enemy_list)
+        self.LivesText = Text(f'Lives: {self.LivesCount}', 24, (10, 10))
+        self.MoneyText = Text(f'Cash: ${self.Cash}', 24, (230, 10))
+        self.RoundText = Text(f'Round: {self.Round}/100', 24, (10, 45))
         self.TowerPanel = None
-
         self.tower_list = []
         self.debug_mode = False
-
         self.gui_list.append(self.LivesText)
         self.gui_list.append(self.MoneyText)
         self.gui_list.append(self.RoundText)
@@ -74,72 +66,52 @@ class Game(Scene):
     def handle_events(self, event: pygame.event.Event, mouse_pos):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
-                if self.Cash - 20 < 0: return
-
+                if self.Cash - 20 < 0:
+                    return
                 tower = Tower(mouse_pos, self.tower_list)
                 tower.button = Button(tower.pos, tower.rect.size)
                 self.tower_list.append(tower)
-                if tower.check_overlap(self.GameMap.get_mask(), (0,0)) or len(self.tower_list) > 5:
+                if tower.check_overlap(self.GameMap.get_mask(), (0, 0)) or len(
+                    self.tower_list) > 5:
                     self.tower_list.remove(tower)
                     return
-
                 self.RoundManager.spend_money(20, self.MoneyText)
-
-
             if event.key == pygame.K_SPACE:
                 self.RoundManager.start_round()
-                # Spawning Logic
-
         if event.type == pygame.MOUSEBUTTONDOWN:
             for tower in self.tower_list:
                 btn = tower.button
                 if btn.is_clicked(mouse_pos) and self.tower_panel_list == []:
-
-
-                    TowerPanel = Panel(
-                        (self.display.get_size()[0]-200,  (self.display.get_size()[1])//2),
-                        (350, self.display.get_size()[1]-50),
-                    )
-
+                    TowerPanel = Panel((self.display.get_size()[0] - 200, 
+                        self.display.get_size()[1] // 2), (350, self.
+                        display.get_size()[1] - 50))
                     tl = TowerPanel.rect.topleft
                     tr = TowerPanel.rect.topright
-                    tm = ((tl[0] + tr[0]) / 2, (tl[1] + tr[1]) / 2)
-                    bm = (tm[0], TowerPanel.rect.bottomleft[1])
-
-                    TowerText = Text(tower.tower_name, 26, (0,0))
-                    TowerText.rect.center = (tm[0], tm[1]+25)
-
-                    TowerSellBtn = Button((bm[0], bm[1]-75), (200, 100), color = (200, 0, 00),
-                        text = Text("Sell", 50, (0,0))
-                    )
-
-
+                    tm = (tl[0] + tr[0]) / 2, (tl[1] + tr[1]) / 2
+                    bm = tm[0], TowerPanel.rect.bottomleft[1]
+                    TowerText = Text(tower.tower_name, 26, (0, 0))
+                    TowerText.rect.center = tm[0], tm[1] + 25
+                    TowerSellBtn = Button((bm[0], bm[1] - 75), (200, 100),
+                        color=(200, 0, 0), text=Text('Sell', 50, (0, 0)))
                     self.gui_list.append(TowerPanel)
                     self.gui_list.append(TowerText)
                     self.gui_list.append(TowerSellBtn)
-
                     self.tower_panel_list.append(TowerPanel)
                     self.tower_panel_list.append(TowerText)
                     self.tower_panel_list.append(TowerSellBtn)
-
-
                 elif btn.is_clicked(mouse_pos) and self.TowerPanel != []:
                     for element in self.tower_panel_list:
                         self.gui_list.remove(element)
                     self.tower_panel_list = []
-
         if event.type == pygame.MOUSEBUTTONUP:
-            print("heello")
-
+            print('heello')
         for gui in self.gui_list:
             gui.handle_events(event, mouse_pos)
 
-
-    def on_tower_damage(self, target = None, damage = None):
-        if target == None: return
-
-
-        text = Text(f"-{damage}", 14, target.rect.center)
+    def on_tower_damage(self, target=None, damage=None):
+        if target == None:
+            return
+        text = Text(f'-{damage}', 14, target.rect.center)
         self.gui_list.append(text)
         self.damage_text_list.append(text)
 
@@ -148,90 +120,62 @@ class Game(Scene):
         for enemy in self.enemy_list:
             if enemy.update() == True:
                 self.LivesCount -= 1
-                self.LivesText.update_text(f"Lives: {self.LivesCount}")
-
+                self.LivesText.update_text(f'Lives: {self.LivesCount}')
                 if self.LivesCount <= 1:
                     self.run = False
-
-        self.RoundManager.update(self.current_time, self.RoundText, self.MoneyText)
-
-        # Check if it's time to spawn an enemy
+        self.RoundManager.update(self.current_time, self.RoundText, self.
+            MoneyText)
         for tower in self.tower_list:
             tower.update(self.enemy_list, self)
-
         self.Round = self.RoundManager.RoundCount
         self.Cash = self.RoundManager.MoneyCount
 
     def draw(self):
         self.display.blit(self.GameMap.get_surface())
-
         if self.debug_mode:
-            # if self.draw_mask:
-            #     self.display.blit(self.GameMap.mask_texture)
-
             for i, obj in enumerate(self.GameMap.waypoints):
                 if i == 0:
-                    pygame.draw.circle(self.display, (0, 0, 255),  obj, 10)
-                elif i == len(self.GameMap.waypoints)-1:
+                    pygame.draw.circle(self.display, (0, 0, 255), obj, 10)
+                elif i == len(self.GameMap.waypoints) - 1:
                     pygame.draw.circle(self.display, (0, 255, 255), obj, 10)
                 else:
                     pygame.draw.circle(self.display, (255, 255, 0), obj, 10)
-
             self.GameMap.draw_points(self.display)
-
         for enemy in self.enemy_list:
             enemy.draw(self.display)
-
         for tower in self.tower_list:
             tower.draw(self.display)
-
         for gui in self.gui_list:
             if isinstance(gui, Text) and gui in self.damage_text_list:
-                gui.pos = (gui.pos[0], gui.pos[1]-0.5)
+                gui.pos = gui.pos[0], gui.pos[1] - 0.5
                 gui.rect.center = gui.pos
-
                 if self.current_time - gui.created_time >= 500:
                     self.damage_text_list.remove(gui)
                     self.gui_list.remove(gui)
-
             gui.draw(self.display)
 
 
+class Main:
 
-
-class Main(PreviewMain.MainGame):
-    def __init__(self, fullscreen = False) -> None:
-        super().__init__(fullscreen)
+    def __init__(self, fullscreen=False) ->None:
+        self.display = pygame.display.set_mode((1280, 720))
+        pygame.display.set_caption('tarkov inventory')
+        self.run = True
+        self.clock = pygame.time.Clock()
+        self._engine_mode = False
         """
         Make sure not to remove the super() method above, as it will break the whole script.
         """
-
         self.display = pygame.display.get_surface()
         if self._engine_mode:
             abspath = os.path.abspath(__file__)
             dname = os.path.dirname(abspath)
             os.chdir(dname)
-
-        print("current file is: " + os.path.abspath(__file__))
-        # --------------------------
+        print('current file is: ' + os.path.abspath(__file__))
         self.MainMenu = MainMenu(self.display)
-        self.Game = Game(self.display) #[UNPACK]
-
-        self.Scenes = {
-            "Game": self.Game,
-            "MainMenu": self.MainMenu
-        } #[PUBLIC]
-
-        self.CurrentScene: Scene = self.MainMenu #[PUBLIC]
-        #--------------------------
-
-
-
-        # -------------
-
-
-
-
+        self.Game = Game(self.display)
+        self.Scenes = {'Game': self.Game, 'MainMenu': self.MainMenu}
+        self.CurrentScene: Scene = self.MainMenu
 
     def handle_events(self):
         """
@@ -244,13 +188,10 @@ class Main(PreviewMain.MainGame):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
-
             if event.type == scene_switch_event:
                 self.CurrentScene = self.Scenes[event.Scene]
                 self.CurrentScene.on_enter()
-
             self.CurrentScene.handle_events(event, self.mouse_pos)
-
 
     def update(self):
         """
@@ -260,7 +201,6 @@ class Main(PreviewMain.MainGame):
         """
         self.CurrentScene.update()
 
-
     def draw(self):
         """
         This is where your drawing code should do.
@@ -268,12 +208,20 @@ class Main(PreviewMain.MainGame):
         Make sure that `self.display.fill()` is at the start too.
 
         """
-
-
-
         self.display.fill((180, 100, 20))
-
         self.CurrentScene.draw()
-
-
         pygame.display.flip()
+
+    def test_run(self):
+        """Handles the running of the game"""
+        while self.run:
+            self.clock.tick()
+            self.handle_events()
+            self.update()
+            self.draw()
+        pygame.quit()
+        sys.exit()
+
+
+game = Main()
+game.test_run()
