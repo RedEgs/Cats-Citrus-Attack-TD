@@ -13,25 +13,30 @@ class ConsoleWrapper(io.StringIO):
         self.parent = parent
 
     def write(self, message):
-        if "Traceback" in message:  # Check for an exception
+        if "Traceback".lower() in message.lower():  # Check for an exception
             # Format exception message in red
             self.text_edit.append(f'<span style="color: red;">{message}</span>')
             self.parent._cError_count += 1
-        elif "<<Warning>>" in message:
+        elif "<<Warning>>".lower() in message.lower():
             message = message.replace("<<Warning>>", "")
             self.text_edit.append(f'<span style="color: yellow;">{message}</span>')
             self.parent._cWarning_count += 1
+
+        elif "<<Success>>".lower() in message.lower():
+            message = message.replace("<<Success>>", "")
+            self.text_edit.append(f'<span style="color: green;">{message}</span>')
+
         else:
             if message != "" or message != "\n" or message != " ":
                 self.text_edit.append(message)
                 self.parent._cInfo_count += 1
-            
+
         self.parent._update_console()
 
     def flush(self):  # Required method for file-like objects
         pass
-    
-    
+
+
 class ProgressDialog(QDialog):
     def __init__(self, url, save_path, python_name):
         super().__init__()
@@ -41,12 +46,12 @@ class ProgressDialog(QDialog):
 
         self.initUI()
 
-        
+
 
     def initUI(self):
         self.setWindowTitle("Download Progress")
         self.setGeometry(400, 400, 300, 100)
-        
+
         # Layout for the progress bar
         layout = QVBoxLayout()
 
@@ -62,21 +67,21 @@ class ProgressDialog(QDialog):
 
         # Set layout
         self.setLayout(layout)
-        
+
     def Handle_Progress(self, blocknum, blocksize, totalsize):
- 
+
         ## calculate the progress
         readed_data = blocknum * blocksize
- 
+
         if totalsize > 0:
             download_percentage = readed_data * 100 / totalsize
             self.progress_bar.setValue(int(download_percentage))
             QApplication.processEvents()
-            
+
     def download(self):
         from urllib.request import urlretrieve
         import webbrowser
-        
+
         urlretrieve(self.url, self.save_path, self.Handle_Progress)
         webbrowser.open(self.save_path)
         self.close()

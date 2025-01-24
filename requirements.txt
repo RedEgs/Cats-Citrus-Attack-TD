@@ -1,9 +1,13 @@
 pyqt5
 qscintilla
+requests
 pygame-ce
 pyredengine
 colorama
 moderngl
 psutil
 forbiddenfruit
+astor
 pypresence
+watchfiles
+bs4

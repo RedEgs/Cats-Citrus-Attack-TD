@@ -11,6 +11,10 @@ class Pyredengine(QMainWindow):
         import libs.project_management as pm
         import libs.widgets as w
         import libs.compiler as cmp
+        import libs.plugins as pl
+
+        self.plugin_manager = pl.PluginManager(self)
+
 
         super().__init__(*args, **kwargs)
         self.project_json_data = project_json_data
@@ -21,24 +25,35 @@ class Pyredengine(QMainWindow):
         self.application_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(self.application_path)
 
+        self.plugin_manager.pre_init_ui_phase()
+
         self.ui = engine_design.Ui_main_window()
         self.ui.setupUi(self)
         self.ui.pygame_widget._engine = self
+
+        self.plugin_manager.post_init_ui_phase()
 
 
         pm.check_recent_projects()
         self._load_console()
         self._support_message()
+
+
         if self.project_json_data != None:
             self._load_icons()
             self._load_project(self.project_json_data)
         else:
             self.save_default_settings()
 
+
         rph.engine_state(self.project_name) # Updates the discord rich presence status
 
         self._load_menu_bar_actions()
         self._create_recent_projects_context_menu()
+
+        self.plugin_manager.post_setup_phase()
+
+
 
     def _load_menu_bar_actions(self):
         import libs.project_management as pm
@@ -1310,7 +1325,6 @@ class Launcher(QWidget):
     def _select_project(self, item):
         import libs.project_management as pm
 
-        print("selected element")
         try:
 
             project_data = self.ui.projects_table.item(item.row(), 0)._project_data
@@ -1319,8 +1333,6 @@ class Launcher(QWidget):
 
             with open(project_data["project_path"]+"/.redengine/project.json", 'r') as file:
                 self.project_data = file.read()
-
-            print("selected project to load: " + self._project_path)
             self._enable_project_buttons()
 
         except FileNotFoundError as exc:
@@ -1474,7 +1486,6 @@ class Launcher(QWidget):
 
                     for i in range(self.table_items):
                         self.ui.projects_table.removeRow(i)
-
 
                     self.populate_projects_table()
 
