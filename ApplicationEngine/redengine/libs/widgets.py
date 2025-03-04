@@ -19,6 +19,7 @@ class PygameWidget(QWidget):
         self.paused = False
         self.parent = parent
         self._engine = None
+        self.plugin_manager = None
 
     def start_game_clock(self):
         self.timer = QTimer(self)
@@ -84,6 +85,7 @@ class PygameWidget(QWidget):
         self.start_game_clock()
         print("started clock")
         self.game = pw.GameHandler(file_path, project_file_path, self.is_fullscreen)
+        self.game.plugin_manager = self.plugin_manager
         print("init game")
         self.game.start_process()
         print("started game")
@@ -184,6 +186,8 @@ class PygameWidget(QWidget):
             if self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game') and not self.is_fullscreen and not self.paused:
                 try:
                     self.surface = next(self.game.run_game())
+                    self.plugin_manager.on_game_tick()
+
                 except pygame.error as e:
                     pass
 
@@ -191,9 +195,13 @@ class PygameWidget(QWidget):
                 h=self.surface.get_height()
                 self.data=self.surface.get_buffer().raw
                 self.image= QImage(self.data,w,h, QImage.Format_RGB32)
+
+                self.plugin_manager.on_game_frame_draw(self.image)
+
             elif self.can_run and hasattr(self, 'game') and hasattr(self.game, 'game') and self.is_fullscreen == True:
                 try:
                     next(self.game.run_game())
+                    self.plugin_manager.on_game_tick()
                 except StopIteration as e:
 
                     self.close_process()

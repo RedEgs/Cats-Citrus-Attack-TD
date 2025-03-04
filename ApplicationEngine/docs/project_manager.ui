@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>590</width>
-    <height>344</height>
+    <width>814</width>
+    <height>454</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,12 +19,12 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="QTabWidget" name="pluginsTab">
      <property name="tabShape">
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="tabBarAutoHide">
       <bool>false</bool>
@@ -217,6 +217,15 @@
         </layout>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="pluginstab">
+      <attribute name="icon">
+       <iconset>
+        <normaloff>../redengine/assets/icons/plug.png</normaloff>../redengine/assets/icons/plug.png</iconset>
+      </attribute>
+      <attribute name="title">
+       <string>Plugins</string>
+      </attribute>
      </widget>
      <widget class="QWidget" name="settingstab">
       <attribute name="icon">

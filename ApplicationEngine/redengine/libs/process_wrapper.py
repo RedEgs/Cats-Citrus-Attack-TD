@@ -13,9 +13,11 @@ class GameHandler():
         self.is_fullscreen = launch_fullscreen
         self.hotdump_location = f"{self.project_file_path}/.redengine/hotdump"
         self.project_data = project_data
+        self.plugin_manager = None
 
         self.exclusion_list = [""]
         self.type_exclusions = [pygame.surface.Surface, pygame.Clock, self.__class__]
+
 
         print("intialised handler succesfulay ")
 
@@ -143,6 +145,8 @@ class GameHandler():
         print("function finished")
 
     def send_event(self, id, event):
+        self.plugin_manager.on_game_input_event(event)
+
         if type(event) == str and id == "k":
             self.game._send_event(1, event)
         elif type(event) == tuple or type(event) == list and id == "mm":
@@ -342,17 +346,22 @@ class Vector3Widget(QWidget):
         self.line_z.setText(str(value[2]))
 
     def get_val(self):
-        return self.line_x.text(), self.line_y.text(), self.line_z.text()
+        return (int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text()))
 
 class Color3Widget(Vector3Widget):
     stateChanged = pyqtSignal(pygame.Color)  # Custom signal to emit when any value changes
 
     def __init__(self, x=0, y=0, z=0, parent=None):
-        super().__init__(x=0, y=0, z=0, parent=None)
+        super().__init__(x=x, y=y, z=z, parent=None)
 
         self.label_x.setText("R: ")
         self.label_y.setText("G: ")
         self.label_z.setText("B: ")
+
+        # Create LineEdits for X, Y, and Z values
+        self.line_x = QLineEdit(str(x))
+        self.line_y = QLineEdit(str(y))
+        self.line_z = QLineEdit(str(z))
 
         # self.line_x.setValidator(QIntValidator)
         # self.line_y.setValidator(QIntValidator)
@@ -381,6 +390,8 @@ class Color3Widget(Vector3Widget):
     def get_val(self):
         return pygame.Color(int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text()))
 
+    def get_tuple(self):
+        return [int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text())]
 
 class RectWidget(QWidget):
     stateChanged = pyqtSignal(pygame.Rect)  # Custom signal to emit when any value changes
@@ -489,7 +500,7 @@ class Vector2Widget(QWidget):
         self.line_y.setText(str(value[1]))
 
     def get_val(self):
-        return self.line_x.text(), self.line_y.text()
+        return (self.line_x.text(), self.line_y.text())
 
 
 
@@ -538,7 +549,6 @@ class PropertiesThread(QThread):
         self.table.setRowCount(len(user_vars)+ 20)
 
 
-
         # Populate the table and create the attribute map
         for index, att in enumerate(user_vars):
             self.attribute_map[att] = index  # Map the attribute to its row index
@@ -563,7 +573,8 @@ class PropertiesThread(QThread):
             self.table.setCellWidget(index, 1, widget)
             widget.setText(str(initial_value))
 
-            widget.editingFinished.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.editingFinished.connect(partial(self.update_var, index, 1, widget.text(), att))
+
 
         elif type(initial_value) == int:
             widget = QLineEdit()
@@ -571,7 +582,8 @@ class PropertiesThread(QThread):
             widget.setText(str(initial_value))
             widget.setValidator(QIntValidator())
 
-            widget.editingFinished.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.editingFinished.connect(partial(self.update_var, index, 1, widget.text(), att))
+
 
         elif type(initial_value) == float:
             widget = QLineEdit()
@@ -581,15 +593,16 @@ class PropertiesThread(QThread):
 
 
 
-            widget.editingFinished.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.editingFinished.connect(partial(self.update_var, index, 1, widget.text(), att))
 
         elif type(initial_value) == bool:
             widget = QCheckBox()
             self.table.setCellWidget(index, 1, widget)
             widget.setChecked(initial_value)
 
+            print("setting check")
 
-            widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.stateChanged.connect(partial(self.update_var, index, 1, widget.checkState(), att))
 
         elif type(initial_value) == tuple:
             if len(initial_value) == 3:
@@ -598,7 +611,7 @@ class PropertiesThread(QThread):
                 widget = Vector2Widget(initial_value[0], initial_value[1])
 
             self.table.setCellWidget(index, 1, widget)
-            widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.stateChanged.connect(partial(self.update_var, index, 1, widget.get_val(), att))
 
         elif type(initial_value) == list:
             widget = QTableWidget()
@@ -621,16 +634,16 @@ class PropertiesThread(QThread):
             self.table.setCellWidget(index, 1, widget)
 
         elif type(initial_value) == pygame.Color:
-            widget = Color3Widget(initial_value.r, initial_value.g, initial_value.b)
+            widget = Color3Widget(initial_value[0], initial_value[1], initial_value[2])
 
             self.table.setCellWidget(index, 1, widget)
-            widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.stateChanged.connect(partial(self.update_var, index, 1, widget.get_val(), att))
 
         elif type(initial_value) == pygame.Rect:
             widget = RectWidget(initial_value)
 
             self.table.setCellWidget(index, 1, widget)
-            widget.stateChanged.connect(partial(self.update_var, index, 1, initial_value, att))
+            widget.stateChanged.connect(partial(self.update_var, index, 1, widget.get_val(), att))
         else:
             widget = QLabel()
 
@@ -638,23 +651,28 @@ class PropertiesThread(QThread):
             self.table.setCellWidget(index, 1, widget)
 
 
-    def check_cell(self, row, col, initial_value, att):
+    def check_cell(self, row, col, initial_value, att, _edit_change = False):
         if att is None or initial_value is None or row is None or col is None:
+            if _edit_change: print("all params are None")
             return None
+        elif _edit_change:
+            print("changing")
+            return True
 
         if initial_value != self.table.item(row, 0)._initial_value:
             if type(initial_value) != type(self.table.item(row, 0)._initial_value):
+                print("changing")
                 return True
             else:
                 return False
         else:
+            if _edit_change: print(f"No change in values")
             return None
 
 
     def run(self):
         if self.pygame_widget.paused or getattr(self, "gamehandler") == None or self.running == False:
             self.wait()
-
 
         try:
             game_vars = dir(self.gamehandler.game)
@@ -682,7 +700,6 @@ class PropertiesThread(QThread):
                         index = self.attribute_map[att]
                         initial_value = current_value
 
-
                         check = self.check_cell(index, 1, current_value, att)
 
                         if check == True:
@@ -691,6 +708,7 @@ class PropertiesThread(QThread):
                             self.set_cell(index, 1, initial_value, att)
 
                         elif check == False:
+                            self.table.item(index, 0)._initial_value = initial_value
                             self.table.item(index, 0).setData(1, initial_value)
 
 
@@ -716,49 +734,52 @@ class PropertiesThread(QThread):
                                 self.table.cellWidget(index, 1).update_value(initial_value)
                             else:
                                 self.table.cellWidget(index, 1).setText(str(initial_value))
-
-
-
                 except Exception as e:
                     print(f"<<Warning>>{e}")
 
     def update_var(self, row, col, initial_value, att):
-        print("updating var")
-        if self.check_cell(row, col, initial_value, att):
-            widget = self.table.cellWidget(row, 1)
+        print(f"updating var: {row},{col} | {initial_value} ({type(initial_value)}) -> {att}")
+        check_val = self.check_cell(row, col, initial_value, att, True)
+        if check_val:
 
+            widget = self.table.cellWidget(row, 1)
 
             if type(initial_value) in [str, int, float]:
                 if widget.text() != initial_value:
                     self.update_game_handler(att, widget.text())
 
-            elif type(initial_value) == bool:
-                if widget.isChecked() != initial_value:
-                    self.update_game_handler(att, widget.isChecked())
+            elif type(initial_value) in [Qt.CheckState]:
+                if widget.checkState() == 0:
+                    self.update_game_handler(att, False)
+                else:
+                    self.update_game_handler(att, True)
+
             else:
                 if widget.get_val() != initial_value:
                     self.update_game_handler(att, widget.get_val())
-
+        else:
+            print(check_val)
 
 
 
 
 
     def update_game_handler(self, attribute_name, new_value):
-
+        print("trying to update atrr: " + attribute_name)
         # Assuming all attributes are strings or can be converted to their appropriate types
         try:
             # You may need to convert the new_value to the appropriate type (e.g., int, float)
             # Here we're assuming the attribute can be set as a string
             current_value = getattr(self.gamehandler.game, attribute_name)
+            print(f"setting new val {type(new_value)}")
 
             # Convert the new_value to the same type as the current_value
-            if isinstance(current_value, int):
+            if type(current_value) == int:
                 new_value = int(new_value)
-            elif isinstance(current_value, float):
+            elif type(current_value) == float:
                 new_value = float(new_value)
-            elif isinstance(current_value, bool):
-                new_value = new_value.lower() in ['true', '1', 'yes']
+            elif type(current_value) == bool:
+                new_value = bool(new_value)
             else:
                 new_value = new_value
 

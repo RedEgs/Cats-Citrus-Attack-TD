@@ -29,7 +29,9 @@ class Pyredengine(QMainWindow):
 
         self.ui = engine_design.Ui_main_window()
         self.ui.setupUi(self)
+
         self.ui.pygame_widget._engine = self
+        self.ui.pygame_widget.plugin_manager = self.plugin_manager
 
         self.plugin_manager.post_init_ui_phase()
 
@@ -487,7 +489,7 @@ class Pyredengine(QMainWindow):
 
         if item != None:
             path = w.get_tree_item_path(self.project_dir, item) #self.project_dir + f"/{get_tree_parent_path(item)}" + f"/{item.data(0, 0)}"
-            self.resources_tree.expandItem(item)
+            self.ui.resources_tree.expandItem(item)
 
 
         rm.create_folder(self, self.project_dir)
@@ -599,7 +601,7 @@ class Pyredengine(QMainWindow):
         import libs.compiler as cmplr
         import libs.widgets as widgets
 
-        comp_dialogue = cmplr.CompileDialog(self._get_main_file(), self.project_dir, parent=self)
+        comp_dialogue = cmplr.CompileDialog(self._get_main_file(), self.project_dir, engine_instance=self)
         comp_dialogue.exec_()
 
 
@@ -638,13 +640,14 @@ class Pyredengine(QMainWindow):
 
         self._stop_pygame_debug_values()
         self._stop_inspector_thread()
+
+        self.plugin_manager.on_game_end()
         rph.engine_default_state()
 
 
 
     def _run_game_fullscreen(self):
         import libs.compiler as cmplr
-
         if self.project_main_file != None:
             if self.ui.pygame_widget.can_run:
                 self.__game_process = None
@@ -667,6 +670,9 @@ class Pyredengine(QMainWindow):
         self._populate_pygame_debug_table()
         self. _start_pygame_debug_values()
         self._start_inspector_thread()
+
+        fs = fullscreen
+        self.plugin_manager.on_game_start(fullscreen = fs)
         rph.engine_play_state()
 
 
@@ -679,6 +685,8 @@ class Pyredengine(QMainWindow):
                 self.ui.stop_button.setDisabled(True)
 
                 self.ui.pause_button.setIcon(self.iconControl)
+
+                self.plugin_manager.on_game_unpause()
                 rph.engine_pause_state()
 
 
@@ -687,6 +695,8 @@ class Pyredengine(QMainWindow):
                 self.ui.stop_button.setDisabled(False)
 
                 self.ui.pause_button.setIcon(self.iconControlPause)
+
+                self.plugin_manager.on_game_pause()
                 rph.engine_play_state()
 
             self.ui.mainScriptPropertiesGroup.setEnabled(True)
@@ -694,11 +704,17 @@ class Pyredengine(QMainWindow):
 
 
 
-    def hot_reload(self):
+    def hot_reload(self, is_main = False, file = None):
         import libs.widgets as w
 
+
+        if file != None:
+            self.plugin_manager.on_file_change(file)
+
         if self.project_main_file != None and self.ui.pygame_widget.can_run:
+            self.plugin_manager.on_game_reload()
             self.ui.pygame_widget.reload_process()
+
 
     def _load_console(self):
         self._cError_count = 0

@@ -16,21 +16,21 @@ class Cmplr:
 
     def __init__(self, script, parent_dir, parent):
         self.parent_dir = parent_dir
-        self.parent = parent
-        
+        self.parent = parent # Instance of engine
+
         script_content = self.scanfile(script)
         self.translate_file(script_content)
-            
+
     def scanfile(self, file):
         with open(file, "r") as f:
             print(f"Reading file: {file}")
             return f.read()
-    
+
     def translate_file(self, content):   # sourcery skip: low-code-quality
-        print("Parsing file")
         tree = ast.parse(content)
-        print("Finished parsing")
+
         project_instance = self.parent
+        project_name = self.parent.project_name
 
 
 
@@ -224,7 +224,7 @@ class Cmplr:
                 set_caption_expr = ast.Expr(
                     value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='pygame.display', ctx=ast.Load()), attr='set_caption', ctx=ast.Load()),
-                        args=[ast.Constant(value=project_instance.project_name)],
+                        args=[ast.Constant(value=project_name)],
                         keywords=[]
                     )
                 )
@@ -292,7 +292,7 @@ class Cmplr:
                 set_caption_expr = ast.Expr(
                     value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='pygame.display', ctx=ast.Load()), attr='set_caption', ctx=ast.Load()),
-                        args=[ast.Constant(value="tarkov inventory")],
+                        args=[ast.Constant(value=project_instance.project_name)],
                         keywords=[]
                     )
                 )
@@ -365,8 +365,8 @@ class Cmplr:
             f.write(new_code)
 
         return output_file_path
-            
-        
+
+
 
     def add_initial_code(self, tree):
         # Create the code you want to insert
@@ -377,14 +377,14 @@ class Cmplr:
                 keywords=[]
             )
         )
-        
+
         # Find the first non-import node in the module body
         for index, node in enumerate(tree.body):
             if not isinstance(node, (ast.Import, ast.ImportFrom)):
                 # Insert the initial code just before the first non-import node
                 tree.body.insert(index, initial_code)
                 return
-        
+
         # If all nodes are imports, add the initial code at the end
         tree.body.append(initial_code)
 
@@ -398,7 +398,7 @@ class Cmplr:
                 keywords=[]
             )
         )
-        
+
         test_run_call = ast.Expr(
             value=ast.Call(
                 func=ast.Attribute(value=ast.Name(id='game', ctx=ast.Load()), attr='test_run', ctx=ast.Load()),
@@ -406,7 +406,7 @@ class Cmplr:
                 keywords=[]
             )
         )
-        
+
         # Append the game assignment and test_run call at the end of the module body
         tree.body.append(game_assignment)
         tree.body.append(test_run_call)
@@ -414,7 +414,7 @@ class Cmplr:
 
 
 class CompileDialog(QDialog):
-    def __init__(self, script_path, project_path, parent=None):
+    def __init__(self, script_path, project_path, engine_instance, parent=None):
         super(CompileDialog, self).__init__(parent)
 
         # Dialog layout
@@ -460,8 +460,8 @@ class CompileDialog(QDialog):
         self.progressBar.setValue(0)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_progress_bar)
-        
-        Compiler = Cmplr(script_path, project_path, self.parent)
+
+        Compiler = Cmplr(script_path, project_path, engine_instance)
 
         # Store the script path
         self.script_path = script_path
@@ -483,7 +483,7 @@ class CompileDialog(QDialog):
 
     def start_compilation(self):
         # Disable start button and enable cancel button once compilation starts
-        
+
         self.startButton.setEnabled(False)
         self.cancelButton.setEnabled(True)
 
@@ -497,6 +497,7 @@ class CompileDialog(QDialog):
             "PyInstaller",
             "--onefile",
             "--windowed",
+            "--distpath", f"{self.project_path}/.redengine/build"
             # Optional: Hide console window for the final game
         ]
 
@@ -527,8 +528,7 @@ class CompileDialog(QDialog):
             self.progressBar.setValue(self.progress)
 
     def on_process_finished(self, exit_code, exit_status):
-        # sourcery skip: extract-method
-        import webbrowser
+        import webbrowser, platform
         # Stop the timer and set the progress bar to 100% when done
         self.timer.stop()
         self.progressBar.setValue(100)
@@ -538,10 +538,11 @@ class CompileDialog(QDialog):
                 if os.path.exists(f"{self.project_path}/.redengine/build/StripMain.py"):
                     os.remove(f"{self.project_path}/.redengine/build/StripMain.py")
 
-  
-            shutil.rmtree("build")
-            shutil.move(f"dist/StripMain.exe", f"{self.project_path}/.redengine/build/Main.exe") 
-            shutil.rmtree("dist")
+
+            if platform.system() != "Windows":
+                shutil.move(f"{self.project_path}/.redengine/build/StripMain", f"{self.project_path}/.redengine/build/Main")
+            else:
+                shutil.move(f"{self.project_path}/.redengine/build/StripMain.exe", f"{self.project_path}/.redengine/build/Main.exe")
 
 
             self.outputConsole.append("\nCompilation successful.")
@@ -563,6 +564,3 @@ class CompileDialog(QDialog):
             self.progressBar.setValue(0)
             self.cancelButton.setEnabled(False)
             self.startButton.setEnabled(True)  # Enable start button again
-
-
-

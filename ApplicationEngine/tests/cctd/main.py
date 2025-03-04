@@ -12,7 +12,6 @@ When compiled, parts of code are removed to optimise and simplify the file.
 """
 
 
-
 class MainMenu(Scene):
     def __init__(self, display: pygame.Surface):
         super().__init__(self)
