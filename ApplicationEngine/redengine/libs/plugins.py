@@ -95,7 +95,7 @@ class PluginManager():
             spec.loader.exec_module(foo) # type: ignore
 
             plug_inst = foo.Plugin(self)
-            plug_inst.name = f"{json_data["Name"]}"
+            plug_inst.name = f"{json_data['Name']}"
             self.loaded_plugins[plugin] = plug_inst
 
     def pre_init_ui_phase(self):
