@@ -348,50 +348,65 @@ class Vector3Widget(QWidget):
     def get_val(self):
         return (int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text()))
 
-class Color3Widget(Vector3Widget):
-    stateChanged = pyqtSignal(pygame.Color)  # Custom signal to emit when any value changes
+
+class Color3Widget(QWidget):
+    stateChanged = pyqtSignal(str, str, str)  # Custom signal to emit when any value changes
 
     def __init__(self, x=0, y=0, z=0, parent=None):
-        super().__init__(x=x, y=y, z=z, parent=None)
-
-        self.label_x.setText("R: ")
-        self.label_y.setText("G: ")
-        self.label_z.setText("B: ")
+        super().__init__(parent)
 
         # Create LineEdits for X, Y, and Z values
         self.line_x = QLineEdit(str(x))
         self.line_y = QLineEdit(str(y))
         self.line_z = QLineEdit(str(z))
 
-        # self.line_x.setValidator(QIntValidator)
-        # self.line_y.setValidator(QIntValidator)
-        # self.line_z.setValidator(QIntValidator)
+        validator = QIntValidator(0, 255, self)
+        self.line_x.setValidator(validator)
+        self.line_y.setValidator(validator)
+        self.line_z.setValidator(validator)
 
+        # Create Labels for X, Y, and Z
+        self.label_x = QLabel("R:")
+        self.label_y = QLabel("G:")
+        self.label_z = QLabel("B:")
 
-        self.line_x.editingFinished.connect(self.emit_state_changed)
-        self.line_y.editingFinished.connect(self.emit_state_changed)
-        self.line_z.editingFinished.connect(self.emit_state_changed)
+        # Connect text changes to a custom handler
+        self.l1_con = self.line_x.editingFinished.connect(self.emit_state_changed)
+        self.l2_con = self.line_y.editingFinished.connect(self.emit_state_changed)
+        self.l3_con = self.line_z.editingFinished.connect(self.emit_state_changed)
 
-        self.line_x.disconnect(self.l1_con)
-        self.line_y.disconnect(self.l2_con)
-        self.line_z.disconnect(self.l3_con)
+        # Set a layout and add Labels and LineEdits
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)  # Remove margins for a clean fit
 
+        # Add labels and line edits to the layout
+        layout.addWidget(self.label_x)
+        layout.addWidget(self.line_x)
+        layout.addWidget(self.label_y)
+        layout.addWidget(self.line_y)
+        layout.addWidget(self.label_z)
+        layout.addWidget(self.line_z)
+
+        # Set stretch factors to make all LineEdits fit equally
+        layout.setStretch(1, 1)  # Stretch X field
+        layout.setStretch(3, 1)  # Stretch Y field
+        layout.setStretch(5, 1)  # Stretch Z field
+
+        # Set the layout for this widget
+        self.setLayout(layout)
 
     def emit_state_changed(self):
         # Emit custom signal with current values when any field changes
-        self.stateChanged.emit(pygame.Color(int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text())))
+        self.stateChanged.emit(self.line_x.text(), self.line_y.text(), self.line_z.text())
 
-
-    def update_value(self, value: pygame.Color):
-        self.line_x.setText(str(value.r))
-        self.line_y.setText(str(value.g))
-        self.line_z.setText(str(value.b))
+    def update_value(self, value: tuple):
+        self.line_x.setText(str(value[0]))
+        self.line_y.setText(str(value[1]))
+        self.line_z.setText(str(value[2]))
 
     def get_val(self):
         return pygame.Color(int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text()))
 
-    def get_tuple(self):
-        return [int(self.line_x.text()), int(self.line_y.text()), int(self.line_z.text())]
 
 class RectWidget(QWidget):
     stateChanged = pyqtSignal(pygame.Rect)  # Custom signal to emit when any value changes
@@ -538,7 +553,7 @@ class PropertiesThread(QThread):
             self.table.setEnabled(True)
 
 
-        built_in_types = (int, float, str, bool, tuple,  list, pygame.Color, pygame.Rect) # Add support for dicts
+        built_in_types = (int, float, str, bool, tuple,  list, pygame.Color, pygame.Rect, pygame.Vector2, pygame.Vector3) # Add support for dicts
         blacklist_types = (pygame.Clock)
 
         user_vars = [var for var in game_vars if not var.startswith("__") and not callable(getattr(self.gamehandler.game, var)) and not isinstance(getattr(self.gamehandler.game, var), blacklist_types)]
@@ -604,7 +619,7 @@ class PropertiesThread(QThread):
 
             widget.stateChanged.connect(partial(self.update_var, index, 1, widget.checkState(), att))
 
-        elif type(initial_value) == tuple:
+        elif type(initial_value) in [tuple, pygame.Vector2, pygame.Vector3]:
             if len(initial_value) == 3:
                 widget = Vector3Widget(initial_value[0], initial_value[1], initial_value[2])
             elif len(initial_value) == 2:
@@ -626,7 +641,6 @@ class PropertiesThread(QThread):
             self.table.setRowHeight(index, 100)
             widget.setGridStyle(Qt.NoPen)
             widget.setAutoFillBackground(True)
-            widget.setStyleSheet(u"QTableWidget{ background-color: rgb(25, 25, 25); }")
 
             for c_index, i in enumerate(initial_value):
                 child = QTableWidgetItem(str(i))
@@ -753,6 +767,8 @@ class PropertiesThread(QThread):
                     self.update_game_handler(att, False)
                 else:
                     self.update_game_handler(att, True)
+            elif type(initial_value) in [pygame.Vector2, pygame.Vector3]:
+                pass
 
             else:
                 if widget.get_val() != initial_value:

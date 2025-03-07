@@ -39,10 +39,16 @@ class Main(PreviewMain.MainGame):
         self.rect.fill((255, 255, 255))
 
         self.testObject = TestObject() #[UNPACK]
-        self.publicAttr = 55.0 #[PUBLIC]
-        self.stringVal = "hello" #[PUBLIC]
+        #self.publicAttr = 55.0 #[PUBLIC]
+        #self.stringVal = "hello" #[PUBLIC]
+        #self.tupleVal = [0, 1, 2, 3] #[PUBLIC]
+        #self.listVal = ["hello", "world"] #[PUBLIC]
+        #self.arrayVal = ["Hello", 100.0] #[PUBLIC]
+        self.vector2Val = pygame.Vector2(20, 20) #[PUBLIC]
+        self.vector3Val = pygame.Vector3(20, 20, 20) #[PUBLIC]
 
-        self.background_colour = (255, 100, 200) #[PUBLIC]
+        self.background_colour = pygame.Color(255, 100, 200) #[PUBLIC]
+        self.square_rect = self.rect.get_rect() #[PUBLIC]
 
     def handle_events(self):
         """

@@ -4,17 +4,17 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from functools import partial
 import os, json, sys, platform, traceback
-# Find out how to include images
 
-class Pyredengine(QMainWindow):
+class Pyredengine(QMainWindow): # Engine Instance
     def __init__(self, project_json_data = None, launcher = None, *args, **kwargs) -> None:
         import libs.project_management as pm
         import libs.widgets as w
         import libs.compiler as cmp
         import libs.plugins as pl
 
-        self.plugin_manager = pl.PluginManager(self)
+        # Import
 
+        self.plugin_manager = pl.PluginManager(self)
 
         super().__init__(*args, **kwargs)
         self.project_json_data = project_json_data
