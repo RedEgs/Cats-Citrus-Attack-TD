@@ -1,4 +1,0 @@
-2024-06-18 11:52:48,633 | INFO - Initialised the logger!
-2024-06-18 11:52:48,670 | INFO - Initialised Service: GuiService at index 0
-2024-06-18 11:52:48,670 | INFO - Initialised Service: TweenService at index 1
-2024-06-18 11:52:48,670 | INFO - Initialised Service: TransitionService at index 2
