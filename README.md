@@ -5,7 +5,7 @@ RedEngine is a game engine designed on top of [pygame-ce](https://github.com/pyg
 
 # Background (You can skip)
 
-PyRedEngine was originally a framework I had written for pygame when I was first learning it. As I improved, I started getting irritated by all the flaws of the engine and it honestly proved to be more cumbersome than just writing for the components that I needed at the time. 
+[PyRedEngine](https://github.com/RedEgs/PyRedEngine) was originally a framework I had written for pygame when I was first learning it. As I improved, I started getting irritated by all the flaws of the engine and it honestly proved to be more cumbersome than just writing for the components that I needed at the time. 
 
 The framework also became a huge time sink as I spent far more hours making the framework than the game itself, I'm sure if you've tried making any tools for yourself, you'd find thats also the case. 
 
