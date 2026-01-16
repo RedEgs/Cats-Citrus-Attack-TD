@@ -2,7 +2,7 @@ pyqt5
 qscintilla
 requests
 pygame-ce
-pyredengine
+pyredengine==1.0.0
 colorama
 moderngl
 psutil
